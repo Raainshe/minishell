@@ -16,7 +16,7 @@ SRCS =	minishell.c \
 # Compiler
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
-INCLUDES = -I./includes -I./libft
+INCLUDES = -I./includes -I./libft/includes
 
 # Libft
 LIBFT = libft/libft.a

@@ -1,6 +1,7 @@
 .DS_Store
 minishell
-
+.cursor
+*.txt
 # Prerequisites
 *.d
 
