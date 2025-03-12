@@ -1,31 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/12 15:25:04 by ksinn            ###   ########.fr       */
+/*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
+/*   Updated: 2025/03/12 15:52:22 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(int argc, char **argv)
+int	ft_tokenize(char **tokens)
 {
-	char	*input;
-	char	**tokens;
-	int		i;
-
-	(void)argc;
-	input = argv[1];
-	tokens = ft_split_tokens(input);
-	i = 0;
-	while (tokens[i])
-	{
-		printf("%s\n", tokens[i]);
-		i++;
-	}
-	return (0);
+	
 }

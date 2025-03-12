@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/12 14:57:14 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/12 15:49:34 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # include "libft.h"
+# include "typedef.h"
 # include <curses.h>
 # include <dirent.h>
 # include <errno.h>
@@ -29,19 +30,6 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <unistd.h>
-
-typedef struct s_token_info
-{
-	char	**tokens;
-	char	*input;
-	int		count;
-	int		i;
-	int		j;
-	int		token_start;
-	bool	in_quote;
-	bool	in_double_quote;
-	bool	in_token;
-}			t_token_info;
 
 // ms_split_helper.c
 int			ft_isspace(char c);

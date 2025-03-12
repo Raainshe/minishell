@@ -7,11 +7,15 @@ OUT_DIR = out
 OBJS = $(addprefix $(OUT_DIR)/, $(SRCS:.c=.o))
 
 SRC_SUBDIRS =	$(SRC_DIR) \
+				$(SRC_DIR)/Tokenizer
 
 VPATH = $(SRC_SUBDIRS)
 
 # source files
 SRCS =	minishell.c \
+		ms_split.c \
+		ms_split_helper.c \
+		ft_strndup.c \
 
 # Compiler
 CC = cc
