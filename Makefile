@@ -7,7 +7,8 @@ OUT_DIR = out
 OBJS = $(addprefix $(OUT_DIR)/, $(SRCS:.c=.o))
 
 SRC_SUBDIRS =	$(SRC_DIR) \
-				$(SRC_DIR)/Tokenizer
+				$(SRC_DIR)/Tokenizer \
+				$(SRC_DIR)/GarbageCollector
 
 VPATH = $(SRC_SUBDIRS)
 

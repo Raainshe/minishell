@@ -36,7 +36,7 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_OUT,
 	TOKEN_HERE_DOC,
 	TOKEN_APPEND,
-	
+	TOKEN_END
 }					t_token_type;
 
 typedef struct s_token
