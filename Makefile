@@ -16,6 +16,7 @@ SRCS =	minishell.c \
 		ms_split.c \
 		ms_split_helper.c \
 		ft_strndup.c \
+		tokenize.c
 
 # Compiler
 CC = cc

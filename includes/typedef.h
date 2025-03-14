@@ -6,12 +6,14 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/12 15:50:27 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/14 15:45:32 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPEDEF_H
 # define TYPEDEF_H
+
+# include <stdbool.h>
 
 typedef struct s_token_info
 {
@@ -33,7 +35,8 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_HERE_DOC,
-	TOKEN_APPEND
+	TOKEN_APPEND,
+	
 }					t_token_type;
 
 typedef struct s_token
