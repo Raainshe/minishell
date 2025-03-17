@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:15:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 17:35:31 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,6 @@
 # define TYPEDEF_H
 
 # include <stdbool.h>
-
-typedef struct s_quote_state
-{
-	bool			in_quote;
-	bool			in_double_quote;
-}					t_quote_state;
 
 typedef struct s_token_info
 {
