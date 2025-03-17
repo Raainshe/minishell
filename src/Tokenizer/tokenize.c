@@ -6,11 +6,28 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:04:24 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 13:17:07 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** This function should only be used for manual cleanup when needed
+** In most cases, use gc_free_context(TOKENIZER) instead
+*/
+void	ft_free_tokens(char **tokens, int j)
+{
+	if (!tokens)
+		return ;
+	while (j > 0 && tokens[j - 1])
+	{
+		j--;
+		if (tokens[j])
+			free(tokens[j]);
+	}
+	free(tokens);
+}
 
 static t_token	create_token(char *content)
 {

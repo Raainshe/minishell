@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:00:02 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 12:55:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 13:08:54 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ char	**ft_split_tokens(char *str)
 		return (NULL);
 	token_count = ft_count_tokens(str);
 	if (token_count == 0)
-		token_count = 1; // Always allocate at least for NULL termination
+		token_count = 1;
 	tokens = (char **)gc_malloc(sizeof(char *) * (token_count + 1));
 	if (!tokens)
 		return (NULL);

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:00:49 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 13:17:19 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@
 int		ft_isspace(char c);
 void	ft_update_quote_state(char c, bool *in_quote, bool *in_double_quote);
 int		ft_count_tokens(char *str);
-void	ft_free_tokens(char **tokens, int j);
 void	ft_init_token_info(t_token_info *info, char *str, int token_count);
 // ms_split.c
 char	**ft_split_tokens(char *str);
 // ft_strndup.c
 char	*ft_strndup(const char *s, size_t n);
 // tokenize.c
+void	ft_free_tokens(char **tokens, int j);
 t_token	*ft_tokenize(char **tokens);
 
 #endif
