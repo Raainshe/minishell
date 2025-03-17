@@ -16,8 +16,13 @@ VPATH = $(SRC_SUBDIRS)
 SRCS =	minishell.c \
 		ms_split.c \
 		ms_split_helper.c \
+		ms_split_helper_helper.c \
+		ms_split_helper_helper_helper.c \
 		ft_strndup.c \
-		tokenize.c
+		tokenize.c \
+		gc_free_context.c \
+		gc_malloc.c \
+		gc_holder.c
 
 # Compiler
 CC = cc

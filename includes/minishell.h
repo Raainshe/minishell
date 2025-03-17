@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:17:19 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 14:46:17 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,25 @@
 # include <termios.h>
 # include <unistd.h>
 
-// ms_split_helper.c
+/* ms_split_helper_helper_helper.c */
 int		ft_isspace(char c);
+bool	ft_is_operator(char c);
+/* ms_split_helper_helper.c */
+bool	ft_handle_token_start(t_token_info *info);
+bool	ft_handle_token_end(t_token_info *info);
+bool	ft_handle_operator(t_token_info *info, char current, char next);
+bool	ft_handle_next_operator(t_token_info *info, char current, char next);
+bool	ft_handle_multi_char_op(t_token_info *info, char current, char next);
+/* ms_split_helper.c */
 void	ft_update_quote_state(char c, bool *in_quote, bool *in_double_quote);
 int		ft_count_tokens(char *str);
 void	ft_init_token_info(t_token_info *info, char *str, int token_count);
-// ms_split.c
+/* ms_split.c */
 char	**ft_split_tokens(char *str);
-// ft_strndup.c
+bool	ft_add_token(t_token_info *info, int start, int end);
+/* ft_strndup.c */
 char	*ft_strndup(const char *s, size_t n);
-// tokenize.c
+/* tokenize.c */
 void	ft_free_tokens(char **tokens, int j);
 t_token	*ft_tokenize(char **tokens);
 

@@ -6,43 +6,36 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:00:02 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:08:54 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 14:39:23 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static bool	ft_handle_token_start(t_token_info *info)
+bool	ft_add_token(t_token_info *info, int start, int end)
 {
-	char	current;
-
-	current = info->input[info->i];
-	if (!info->in_token && !ft_isspace(current))
-	{
-		info->token_start = info->i;
-		info->in_token = true;
-	}
-	return (info->in_token);
-}
-
-static bool	ft_handle_token_end(t_token_info *info)
-{
-	char	current;
 	char	*token;
 
-	current = info->input[info->i];
-	if (info->in_token && ft_isspace(current) && !info->in_quote
-		&& !info->in_double_quote)
+	token = ft_strndup(&info->input[start], end - start);
+	if (!token)
+		return (false);
+	info->tokens[info->j] = token;
+	info->j++;
+	return (true);
+}
+
+/* Handle case where we have a token after the last processed character */
+static bool	ft_handle_remaining_tokens(char *str, t_token_info *info)
+{
+	int	remaining_start;
+
+	remaining_start = info->i;
+	while (str[remaining_start] && ft_isspace(str[remaining_start]))
+		remaining_start++;
+	if (str[remaining_start])
 	{
-		token = ft_strndup(&info->input[info->token_start], info->i
-				- info->token_start);
-		if (!token)
-		{
-			return (false);
-		}
-		info->tokens[info->j] = token;
-		info->j++;
-		info->in_token = false;
+		info->i = ft_strlen(str);
+		return (ft_add_token(info, remaining_start, info->i));
 	}
 	return (true);
 }
@@ -56,11 +49,14 @@ static bool	ft_process_final_token(t_token_info *info)
 		token = ft_strndup(&info->input[info->token_start], info->i
 				- info->token_start);
 		if (!token)
-		{
 			return (false);
-		}
 		info->tokens[info->j] = token;
 		info->j++;
+	}
+	if (info->input[info->i] && info->j < info->count)
+	{
+		if (!ft_handle_remaining_tokens(info->input, info))
+			return (false);
 	}
 	info->tokens[info->j] = NULL;
 	return (true);
@@ -96,8 +92,7 @@ char	**ft_split_tokens(char *str)
 	if (!str)
 		return (NULL);
 	token_count = ft_count_tokens(str);
-	if (token_count == 0)
-		token_count = 1;
+	token_count += 1;
 	tokens = (char **)gc_malloc(sizeof(char *) * (token_count + 1));
 	if (!tokens)
 		return (NULL);
