@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/14 15:45:50 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 13:04:24 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,17 @@ t_token	*ft_tokenize(char **tokens)
 	int		token_count;
 	int		i;
 
+	if (!tokens)
+		return (NULL);
 	token_count = 0;
-	while (tokens[token_count])
+	while (tokens && tokens[token_count])
 		token_count++;
-	token_arr = (t_token *)malloc(sizeof(t_token) * token_count + 1);
+	token_arr = (t_token *)gc_malloc(sizeof(t_token) * (token_count + 1));
 	if (!token_arr)
 		return (NULL);
+	gc_add_context(TOKENIZER, token_arr);
 	i = 0;
-	while (i < token_count)
+	while (i < token_count && tokens[i])
 	{
 		token_arr[i] = create_token(tokens[i]);
 		i++;

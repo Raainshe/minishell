@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:00:02 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/12 14:56:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 12:55:56 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,19 @@ static bool	ft_handle_token_start(t_token_info *info)
 static bool	ft_handle_token_end(t_token_info *info)
 {
 	char	current;
+	char	*token;
 
 	current = info->input[info->i];
 	if (info->in_token && ft_isspace(current) && !info->in_quote
 		&& !info->in_double_quote)
 	{
-		info->tokens[info->j] = ft_strndup(&info->input[info->token_start],
-				info->i - info->token_start);
-		if (!info->tokens[info->j])
+		token = ft_strndup(&info->input[info->token_start], info->i
+				- info->token_start);
+		if (!token)
 		{
-			ft_free_tokens(info->tokens, info->j);
 			return (false);
 		}
+		info->tokens[info->j] = token;
 		info->j++;
 		info->in_token = false;
 	}
@@ -48,15 +49,17 @@ static bool	ft_handle_token_end(t_token_info *info)
 
 static bool	ft_process_final_token(t_token_info *info)
 {
+	char	*token;
+
 	if (info->in_token && info->j < info->count)
 	{
-		info->tokens[info->j] = ft_strndup(&info->input[info->token_start],
-				info->i - info->token_start);
-		if (!info->tokens[info->j])
+		token = ft_strndup(&info->input[info->token_start], info->i
+				- info->token_start);
+		if (!token)
 		{
-			ft_free_tokens(info->tokens, info->j);
 			return (false);
 		}
+		info->tokens[info->j] = token;
 		info->j++;
 	}
 	info->tokens[info->j] = NULL;
@@ -67,6 +70,8 @@ static char	**ft_process_tokens(char *str, char **tokens, int token_count)
 {
 	t_token_info	info;
 
+	if (!str || !tokens)
+		return (NULL);
 	ft_init_token_info(&info, str, token_count);
 	info.tokens = tokens;
 	while (str[info.i] && info.j < token_count)
@@ -88,9 +93,14 @@ char	**ft_split_tokens(char *str)
 	char	**tokens;
 	int		token_count;
 
+	if (!str)
+		return (NULL);
 	token_count = ft_count_tokens(str);
-	tokens = (char **)malloc(sizeof(char *) * (token_count + 1));
+	if (token_count == 0)
+		token_count = 1; // Always allocate at least for NULL termination
+	tokens = (char **)gc_malloc(sizeof(char *) * (token_count + 1));
 	if (!tokens)
 		return (NULL);
+	gc_add_context(TOKENIZER, tokens);
 	return (ft_process_tokens(str, tokens, token_count));
 }

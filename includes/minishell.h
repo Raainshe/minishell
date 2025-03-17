@@ -6,13 +6,14 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/14 15:38:50 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/17 13:00:49 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "garbage_collector.h"
 # include "libft.h"
 # include "typedef.h"
 # include <curses.h>
