@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 14:46:17 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/18 16:03:23 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,23 @@ char	*ft_strndup(const char *s, size_t n);
 /* tokenize.c */
 void	ft_free_tokens(char **tokens, int j);
 t_token	*ft_tokenize(char **tokens);
+/* parser_utils.c */
+void	init_parser_context(t_parser_context *context, t_token *tokens);
+t_token	current_token(t_parser_context *context);
+t_token	peek_next_token(t_parser_context *context);
+t_token	next_token(t_parser_context *context);
+void	parser_error(t_parser_context *context, char *msg);
+/* nodes.c */
+t_node	*create_node(t_node_type type, void *data, t_node *left, t_node *right);
+t_node	*create_command_node(char **args);
+t_node	*create_redirect_node(t_node_type type, char *filename,
+			t_node *command);
+t_node	*create_pipe_node(t_node *left, t_node *right);
+/* parser.c */
+t_node	*parse_pipeline(t_parser_context *context);
+/*parser_command.c*/
+t_node	*parse_command(t_parser_context *context);
+/*parser_redirect.c*/
+t_node	*handle_redirection(t_parser_context *context, t_node *command);
 
 #endif

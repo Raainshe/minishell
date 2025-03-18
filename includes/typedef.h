@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 17:35:31 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/18 14:49:24 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,42 @@ typedef struct s_token
 	char			*content;
 	t_token_type	type;
 }					t_token;
+
+typedef enum e_node_type
+{
+	NODE_COMMAND,
+	NODE_PIPE,
+	NODE_REDIRECT_IN,
+	NODE_REDIRECT_OUT,
+	NODE_HERE_DOC,
+	NODE_APPEND,
+}					t_node_type;
+
+typedef struct s_node
+{
+	t_node_type		type;
+	void			*data;
+	struct s_node	*left;
+	struct s_node	*right;
+}					t_node;
+
+typedef struct s_command
+{
+	char			**args;
+	t_list			*redirects;
+}					t_command;
+
+typedef struct s_redirect
+{
+	char			*filename;
+}					t_redirect;
+
+typedef struct s_parser_context
+{
+	t_token			*tokens;
+	int				current_index;
+	int				error;
+	char			*error_msg;
+}					t_parser_context;
 
 #endif

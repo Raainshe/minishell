@@ -8,7 +8,8 @@ OBJS = $(addprefix $(OUT_DIR)/, $(SRCS:.c=.o))
 
 SRC_SUBDIRS =	$(SRC_DIR) \
 				$(SRC_DIR)/Tokenizer \
-				$(SRC_DIR)/GarbageCollector
+				$(SRC_DIR)/GarbageCollector \
+				$(SRC_DIR)/AST
 
 VPATH = $(SRC_SUBDIRS)
 
@@ -22,7 +23,12 @@ SRCS =	minishell.c \
 		tokenize.c \
 		gc_free_context.c \
 		gc_malloc.c \
-		gc_holder.c
+		gc_holder.c \
+		nodes.c \
+		parser_command.c \
+		parser_redirect.c \
+		parser_utils.c \
+		parser.c
 
 # Compiler
 CC = cc
