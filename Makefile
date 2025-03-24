@@ -34,6 +34,7 @@ SRCS =	minishell.c \
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 INCLUDES = -I./includes -I./libft/includes
+LDFLAGS = -lreadline
 
 # Libft
 LIBFT = libft/libft.a
@@ -51,7 +52,7 @@ $(LIBFT):
 
 $(NAME): $(OUT_DIR) $(LIBFT) $(OBJS)
 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME)
 	@echo "$(GREEN)$(NAME) built successfully!$(NC)"
 
 $(OUT_DIR)/%.o: %.c

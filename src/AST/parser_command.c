@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:01:26 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/18 16:12:25 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	count_command_args(t_parser_context *ctx)
 					|| token.type == TOKEN_REDIRECT_OUT
 					|| token.type == TOKEN_HERE_DOC
 					|| token.type == TOKEN_APPEND) && ctx->tokens[i
-				+ 1].type == TOKEN_WORD)
+					+ 1].type == TOKEN_WORD)
 			{
 				i += 2;
 				token = ctx->tokens[i];
@@ -55,7 +55,10 @@ t_node	*parse_command(t_parser_context *ctx)
 	int		arg_count;
 	int		i;
 	t_node	*cmd_node;
+	int		start_pos;
 
+	// Save the starting position of the command
+	start_pos = ctx->current_index;
 	token = current_token(ctx);
 	if (token.type != TOKEN_WORD)
 	{
@@ -70,6 +73,9 @@ t_node	*parse_command(t_parser_context *ctx)
 		return (NULL);
 	gc_add_context(AST, args);
 	i = 0;
+	// Reset to the beginning of the command
+	ctx->current_index = start_pos;
+	// Only collect WORD tokens for arguments, skip redirections
 	while (i < arg_count)
 	{
 		token = current_token(ctx);
@@ -92,5 +98,7 @@ t_node	*parse_command(t_parser_context *ctx)
 	cmd_node = create_command_node(args);
 	if (!cmd_node)
 		return (NULL);
+	// Reset to the beginning of the command for redirection processing
+	ctx->current_index = start_pos;
 	return (handle_redirection(ctx, cmd_node));
 }

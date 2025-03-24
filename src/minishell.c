@@ -6,26 +6,97 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/12 15:25:04 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(int argc, char **argv)
+static void	print_ast(t_node *node, int depth)
+{
+	int			i;
+	t_command	*cmd;
+	int			j;
+
+	if (!node)
+		return ;
+	i = 0;
+	while (i < depth)
+	{
+		printf("  ");
+		i++;
+	}
+	if (node->type == NODE_COMMAND)
+	{
+		cmd = (t_command *)node->data;
+		printf("COMMAND: %s\n", cmd->args[0]);
+		i = 1;
+		while (cmd->args[i])
+		{
+			j = 0;
+			while (j < depth + 1)
+			{
+				printf("  ");
+				j++;
+			}
+			printf("ARG: %s\n", cmd->args[i]);
+			i++;
+		}
+	}
+	else if (node->type == NODE_PIPE)
+		printf("PIPE\n");
+	else if (node->type == NODE_REDIRECT_IN)
+		printf("REDIRECT_IN: %s\n", ((t_redirect *)node->data)->filename);
+	else if (node->type == NODE_REDIRECT_OUT)
+		printf("REDIRECT_OUT: %s\n", ((t_redirect *)node->data)->filename);
+	else if (node->type == NODE_HERE_DOC)
+		printf("HERE_DOC: %s\n", ((t_redirect *)node->data)->filename);
+	else if (node->type == NODE_APPEND)
+		printf("APPEND: %s\n", ((t_redirect *)node->data)->filename);
+	print_ast(node->left, depth + 1);
+	print_ast(node->right, depth + 1);
+}
+
+int	main(void)
 {
 	char	*input;
-	char	**tokens;
-	int		i;
+	t_token	*tokens;
+	char	**token_strings;
+	t_node	*ast;
 
-	(void)argc;
-	input = argv[1];
-	tokens = ft_split_tokens(input);
-	i = 0;
-	while (tokens[i])
+	while (1)
 	{
-		printf("%s\n", tokens[i]);
-		i++;
+		input = readline("minishell> ");
+		if (!input)
+		{
+			printf("exit\n");
+			break ;
+		}
+		add_history(input);
+		token_strings = ft_split_tokens(input);
+		if (!token_strings)
+		{
+			printf("ft_split_tokens error\n");
+			free(input);
+			continue ;
+		}
+		free(input);
+		tokens = ft_tokenize(token_strings);
+		if (!tokens)
+		{
+			printf("ft_tokenize error\n");
+			continue ;
+		}
+		ast = parse_tokens(tokens);
+		if (!ast)
+		{
+			printf("parse_tokens error\n");
+			continue ;
+		}
+		gc_free_context(TOKENIZER);
+		print_ast(ast, 0);
+		// TODO: execute ast
+		gc_free_context(AST);
 	}
 	return (0);
 }

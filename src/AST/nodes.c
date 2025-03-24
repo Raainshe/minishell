@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:29:16 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/18 15:46:02 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/24 15:04:21 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_node	*create_command_node(char **args)
 
 t_node	*create_redirect_node(t_node_type type, char *filename, t_node *command)
 {
-	t_node	*node;
+	t_node		*node;
 	t_redirect	*redirect;
 
 	redirect = (t_redirect *)gc_malloc(sizeof(t_redirect));

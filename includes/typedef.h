@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/18 14:49:24 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/24 14:33:08 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef enum e_node_type
 	NODE_REDIRECT_IN,
 	NODE_REDIRECT_OUT,
 	NODE_HERE_DOC,
-	NODE_APPEND,
+	NODE_APPEND
 }					t_node_type;
 
 typedef struct s_node

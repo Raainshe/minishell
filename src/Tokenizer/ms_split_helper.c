@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:53:15 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 14:45:54 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static bool	ft_is_multi_char_op(char *str, int i)
 	if (!str || !str[i] || !str[i + 1])
 		return (false);
 	return ((str[i] == '<' && str[i + 1] == '<') || (str[i] == '>' && str[i
-				+ 1] == '>'));
+			+ 1] == '>'));
 }
 
 static void	ft_process_token_state(t_token_info *info, int i, int *count)
@@ -34,23 +34,33 @@ static void	ft_process_token_state(t_token_info *info, int i, int *count)
 	char	current;
 
 	current = info->input[i];
+	// Start new token if not in a token and not whitespace
 	if (!(info->in_token) && !ft_isspace(current))
 	{
 		info->in_token = true;
 		(*count)++;
 	}
-	else if (info->in_token && (ft_isspace(current) || (ft_is_operator(current)
+	// End current token if we hit whitespace or an operator (when not quoted)
+	if (info->in_token && (ft_isspace(current) || (ft_is_operator(current)
 				&& !info->in_quote && !info->in_double_quote)))
 	{
 		info->in_token = false;
+		// Operators are separate tokens
+		if (ft_is_operator(current) && !info->in_quote
+			&& !info->in_double_quote)
+		{
+			(*count)++;
+			if (ft_is_multi_char_op(info->input, i))
+				i++; // Skip the next char for multi-char operators
+		}
 	}
-	if (ft_is_operator(current) && !info->in_quote && !info->in_double_quote
-		&& !(info->in_token))
+	// Standalone operators are tokens on their own
+	else if (ft_is_operator(current) && !info->in_quote
+		&& !info->in_double_quote && !(info->in_token))
 	{
 		(*count)++;
-		info->in_token = true;
 		if (ft_is_multi_char_op(info->input, i))
-			info->in_token = false;
+			i++; // Skip the next char for multi-char operators
 	}
 }
 

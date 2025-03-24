@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/18 16:03:23 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
+# include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
@@ -39,7 +40,7 @@ bool	ft_is_operator(char c);
 bool	ft_handle_token_start(t_token_info *info);
 bool	ft_handle_token_end(t_token_info *info);
 bool	ft_handle_operator(t_token_info *info, char current, char next);
-bool	ft_handle_next_operator(t_token_info *info, char current, char next);
+bool	ft_handle_next_operator(t_token_info *info, char next);
 bool	ft_handle_multi_char_op(t_token_info *info, char current, char next);
 /* ms_split_helper.c */
 void	ft_update_quote_state(char c, bool *in_quote, bool *in_double_quote);
@@ -66,6 +67,7 @@ t_node	*create_redirect_node(t_node_type type, char *filename,
 			t_node *command);
 t_node	*create_pipe_node(t_node *left, t_node *right);
 /* parser.c */
+t_node	*parse_tokens(t_token *tokens);
 t_node	*parse_pipeline(t_parser_context *context);
 /*parser_command.c*/
 t_node	*parse_command(t_parser_context *context);
