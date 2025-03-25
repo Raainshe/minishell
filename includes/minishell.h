@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:05:12 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 /* ms_split_helper_helper_helper.c */
 int		ft_isspace(char c);
 bool	ft_is_operator(char c);
+bool	ft_is_multi_char_op(char *str, int i);
 /* ms_split_helper_helper.c */
 bool	ft_handle_token_start(t_token_info *info);
 bool	ft_handle_token_end(t_token_info *info);

@@ -3,15 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   ms_split_helper_helper.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 14:33:32 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:05:17 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Handles the start of a token in the input string
+ * @param info The token information structure
+ * @return true if we're in a token, false otherwise
+ */
 bool	ft_handle_token_start(t_token_info *info)
 {
 	char	current;
@@ -25,6 +30,11 @@ bool	ft_handle_token_start(t_token_info *info)
 	return (info->in_token);
 }
 
+/**
+ * @brief Handles the end of a token in the input string
+ * @param info The token information structure
+ * @return false on error, true otherwise
+ */
 bool	ft_handle_token_end(t_token_info *info)
 {
 	char	current;
@@ -49,6 +59,13 @@ bool	ft_handle_token_end(t_token_info *info)
 	return (true);
 }
 
+/**
+ * @brief Handles operators in the token parsing process
+ * @param info The token information structure
+ * @param current The current character being processed
+ * @param next The next character in the input
+ * @return false on error, true otherwise
+ */
 bool	ft_handle_operator(t_token_info *info, char current, char next)
 {
 	if (ft_handle_multi_char_op(info, current, next))
@@ -68,6 +85,12 @@ bool	ft_handle_operator(t_token_info *info, char current, char next)
 	return (true);
 }
 
+/**
+ * @brief Checks if the next character is an operator and handles it
+ * @param info The token information structure
+ * @param next The next character in the input
+ * @return false on error, true otherwise
+ */
 bool	ft_handle_next_operator(t_token_info *info, char next)
 {
 	if (next && ft_is_operator(next) && !info->in_quote
@@ -83,6 +106,14 @@ bool	ft_handle_next_operator(t_token_info *info, char next)
 	return (true);
 }
 
+/**
+ * @brief Handles multi-character operators (<< and >>) in the tokenization
+ * process
+ * @param info The token information structure
+ * @param current The current character being processed
+ * @param next The next character in the input
+ * @return true if handled, false if not a multi-char operator or on error
+ */
 bool	ft_handle_multi_char_op(t_token_info *info, char current, char next)
 {
 	if ((current == '<' && next == '<') || (current == '>' && next == '>'))

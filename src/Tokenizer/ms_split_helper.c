@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   ms_split_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:53:15 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:14:50 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Updates the quote state based on the current character
+ * @param c The character being processed
+ * @param in_quote Pointer to boolean flag for single quote state
+ * @param in_double_quote Pointer to boolean flag for double quote state
+ * @return None
+ */
 void	ft_update_quote_state(char c, bool *in_quote, bool *in_double_quote)
 {
 	if (c == '\'' && !(*in_double_quote))
@@ -20,50 +27,58 @@ void	ft_update_quote_state(char c, bool *in_quote, bool *in_double_quote)
 		*in_double_quote = !(*in_double_quote);
 }
 
-/* Check if we have a multi-character operator (<< or >>) at position i */
-static bool	ft_is_multi_char_op(char *str, int i)
+/**
+ * @brief This is a continuiation of process_token_state
+ * @return None
+ */
+void	ft_process_token_state_two(int *count, t_token_info *info, int *i)
 {
-	if (!str || !str[i] || !str[i + 1])
-		return (false);
-	return ((str[i] == '<' && str[i + 1] == '<') || (str[i] == '>' && str[i
-			+ 1] == '>'));
+	(*count)++;
+	if (ft_is_multi_char_op(info->input, *i))
+		(*i)++;
 }
 
+/**
+ * @brief Processes the token state for the current character
+ * @param info The token information structure
+ * @param i The current position in the input
+ * @param count Pointer to the token count
+ * @return None
+ */
 static void	ft_process_token_state(t_token_info *info, int i, int *count)
 {
 	char	current;
 
 	current = info->input[i];
-	// Start new token if not in a token and not whitespace
 	if (!(info->in_token) && !ft_isspace(current))
 	{
 		info->in_token = true;
 		(*count)++;
 	}
-	// End current token if we hit whitespace or an operator (when not quoted)
 	if (info->in_token && (ft_isspace(current) || (ft_is_operator(current)
 				&& !info->in_quote && !info->in_double_quote)))
 	{
 		info->in_token = false;
-		// Operators are separate tokens
 		if (ft_is_operator(current) && !info->in_quote
 			&& !info->in_double_quote)
 		{
 			(*count)++;
 			if (ft_is_multi_char_op(info->input, i))
-				i++; // Skip the next char for multi-char operators
+				i++;
 		}
 	}
-	// Standalone operators are tokens on their own
 	else if (ft_is_operator(current) && !info->in_quote
 		&& !info->in_double_quote && !(info->in_token))
 	{
-		(*count)++;
-		if (ft_is_multi_char_op(info->input, i))
-			i++; // Skip the next char for multi-char operators
+		ft_process_token_state_two(count, info, &i);
 	}
 }
 
+/**
+ * @brief Counts the number of tokens in a string
+ * @param str The string to count tokens in
+ * @return The number of tokens, or 0 if str is NULL
+ */
 int	ft_count_tokens(char *str)
 {
 	int				count;
@@ -87,6 +102,13 @@ int	ft_count_tokens(char *str)
 	return (count);
 }
 
+/**
+ * @brief Initializes a token_info structure with the given parameters
+ * @param info The token_info structure to initialize
+ * @param str The input string to tokenize
+ * @param token_count The number of tokens expected
+ * @return None
+ */
 void	ft_init_token_info(t_token_info *info, char *str, int token_count)
 {
 	if (!info || !str)
