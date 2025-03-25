@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   ms_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:00:02 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 14:39:23 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 15:11:20 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Adds a new token to the token array from substring of input
+ * @param info The token information structure
+ * @param start The starting index of the token in the input string
+ * @param end The ending index (exclusive) of the token in the input string
+ * @return false on error, true on success
+ */
 bool	ft_add_token(t_token_info *info, int start, int end)
 {
 	char	*token;
@@ -24,7 +31,12 @@ bool	ft_add_token(t_token_info *info, int start, int end)
 	return (true);
 }
 
-/* Handle case where we have a token after the last processed character */
+/**
+ * @brief Handles remaining tokens after the main tokenization loop
+ * @param str The input string
+ * @param info The token information structure
+ * @return false on error, true on success
+ */
 static bool	ft_handle_remaining_tokens(char *str, t_token_info *info)
 {
 	int	remaining_start;
@@ -40,6 +52,11 @@ static bool	ft_handle_remaining_tokens(char *str, t_token_info *info)
 	return (true);
 }
 
+/**
+ * @brief Processes the final token in the input string
+ * @param info The token information structure
+ * @return false on error, true on success
+ */
 static bool	ft_process_final_token(t_token_info *info)
 {
 	char	*token;
@@ -62,6 +79,13 @@ static bool	ft_process_final_token(t_token_info *info)
 	return (true);
 }
 
+/**
+ * @brief Processes all tokens in the input string
+ * @param str The input string to tokenize
+ * @param tokens The token array to fill
+ * @param token_count The maximum number of tokens to extract
+ * @return The token array or NULL on error
+ */
 static char	**ft_process_tokens(char *str, char **tokens, int token_count)
 {
 	t_token_info	info;
@@ -84,6 +108,11 @@ static char	**ft_process_tokens(char *str, char **tokens, int token_count)
 	return (tokens);
 }
 
+/**
+ * @brief Splits a string into tokens according to shell parsing rules
+ * @param str The input string to tokenize
+ * @return An array of token strings or NULL on error
+ */
 char	**ft_split_tokens(char *str)
 {
 	char	**tokens;
