@@ -3,19 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   gc_free_context.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:31:32 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/03/17 13:01:04 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 13:43:52 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "garbage_collector.h"
 
-/*
-** Safely frees all memory associated with a specific context
-** This allows for more granular memory management than free_gc()
-*/
+/**
+ * @brief Safely frees all memory associated with a specific context
+ *
+ * This allows for more granular memory management than free_gc().
+ * It iterates through the linked list of the specified context,
+ * frees each node's content and the node itself, then sets the
+ * context pointer to NULL.
+ *
+ * @param context The garbage collector context to free
+ * @return None (void function)
+ */
 void	gc_free_context(t_gc_context context)
 {
 	t_list	**collections;

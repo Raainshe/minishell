@@ -3,18 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   gc_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:43:32 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:02:02 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 13:43:48 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "garbage_collector.h"
 
-/*
-** Frees all memory tracked by the garbage collector
-*/
+/**
+ * @brief Frees all memory tracked by the garbage collector
+ *
+ * Iterates through all contexts in the garbage collector and frees
+ * each linked list node and its content, then sets all context
+ * pointers to NULL.
+ *
+ * @return None (void function)
+ */
 void	free_gc(void)
 {
 	t_list	**collections;
@@ -44,10 +50,15 @@ void	free_gc(void)
 	}
 }
 
-/*
-** Allocates memory using malloc
-** If allocation fails, frees all garbage collected memory before returning NULL
-*/
+/**
+ * @brief Allocates memory using malloc and tracks it with the garbage collector
+ *
+ * If allocation fails,
+	frees all garbage collected memory before returning NULL.
+ *
+ * @param size Number of bytes to allocate
+ * @return Pointer to the allocated memory, or NULL if allocation fails
+ */
 void	*gc_malloc(size_t size)
 {
 	void	*ptr;
@@ -61,9 +72,17 @@ void	*gc_malloc(size_t size)
 	return (ptr);
 }
 
-/*
-** Adds a pointer to a specific context for tracking
-*/
+/**
+ * @brief Adds a pointer to a specific context for tracking
+ *
+ * Creates a new linked list node for the pointer and adds it to the
+ * specified context's linked list. If the context doesn't exist yet,
+ * initializes it with the new node.
+ *
+ * @param context The context to add the pointer to
+ * @param ptr The pointer to track
+ * @return None (void function)
+ */
 void	gc_add_context(t_gc_context context, void *ptr)
 {
 	t_list	**collections;
