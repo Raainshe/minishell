@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/26 13:29:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,8 @@ int	main(void)
 			printf("parse_tokens error\n");
 			continue ;
 		}
-		gc_free_context(TOKENIZER);
 		print_ast(ast, 0);
+		gc_free_context(TOKENIZER);
 		// TODO: execute ast
 		gc_free_context(AST);
 	}
