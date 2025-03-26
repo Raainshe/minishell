@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gc_free_context.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:31:32 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/03/25 13:43:52 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/03/26 13:37:04 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,10 @@ void	gc_free_context(t_gc_context context)
 	{
 		next = current->next;
 		if (current->content)
+		{
 			free(current->content);
+			current->content = NULL;
+		}
 		free(current);
 		current = next;
 	}

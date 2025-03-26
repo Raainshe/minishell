@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gc_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:43:32 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/25 13:43:48 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/03/26 13:37:28 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	free_gc(void)
 			{
 				next = current->next;
 				free(current->content);
+				current->content = NULL;
 				free(current);
 				current = next;
 			}
