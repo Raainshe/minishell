@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/26 13:29:59 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/26 15:40:45 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,9 @@ int	main(void)
 	t_token	*tokens;
 	char	**token_strings;
 	t_node	*ast;
+	int		status;
 
+	status = 0;
 	while (1)
 	{
 		input = readline("minishell> ");
@@ -93,10 +95,11 @@ int	main(void)
 			printf("parse_tokens error\n");
 			continue ;
 		}
-		print_ast(ast, 0);
+		print_ast(ast, 0); // Uncomment for debugging
+		status = execute_node(ast, environ);
 		gc_free_context(TOKENIZER);
-		// TODO: execute ast
 		gc_free_context(AST);
+		gc_free_context(EXECUTOR);
 	}
-	return (0);
+	return (status);
 }

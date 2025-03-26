@@ -24,7 +24,8 @@ STRING_SRCS =		ft_atoi.c			\
 					ft_strtrim.c		\
 					ft_substr.c			\
 					ft_tolower.c		\
-					ft_toupper.c
+					ft_toupper.c		\
+					ft_strlower.c
 
 MEM_SRCS =			ft_bzero.c			\
 					ft_calloc.c			\
@@ -63,7 +64,7 @@ GNL_SRCS =	get_next_line.c				\
 SRCS = $(STRING_SRCS) $(MEM_SRCS) $(PUT_UTILS_SRCS) $(LST_SRCS) $(PRINTF_SRCS) $(GNL_SRCS)
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iincludes
+CFLAGS = -Wall -Wextra -Werror -Iincludes -I../includes
 
 OBJS = $(addprefix $(OUT_DIR)/, $(SRCS:.c=.o))
 

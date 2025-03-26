@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:45:18 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/18 13:43:14 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/26 14:50:43 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 
 # include "libft.h"
 # include <stdlib.h>
-# define GC_ARR_SIZE 2
+# define GC_ARR_SIZE 3
 
 typedef enum e_gc_context
 {
 	TOKENIZER,
-	AST
+	AST,
+	EXECUTOR
 }		t_gc_context;
 
 // gc_malloc.c
