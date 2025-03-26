@@ -3,19 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 13:17:07 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 15:11:20 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/*
-** This function should only be used for manual cleanup when needed
-** In most cases, use gc_free_context(TOKENIZER) instead
-*/
+/**
+ * @brief Manually frees an array of tokens
+ * @param tokens The array of tokens to free
+ * @param j The number of tokens to free
+ * @return None
+ *
+ * This function should only be used for manual cleanup when needed.
+ * In most cases, use gc_free_context(TOKENIZER) instead.
+ */
 void	ft_free_tokens(char **tokens, int j)
 {
 	if (!tokens)
@@ -29,6 +34,11 @@ void	ft_free_tokens(char **tokens, int j)
 	free(tokens);
 }
 
+/**
+ * @brief Creates a token structure from a string content
+ * @param content The string content to create a token from
+ * @return A t_token structure with the appropriate token type
+ */
 static t_token	create_token(char *content)
 {
 	t_token	token;
@@ -56,6 +66,11 @@ static t_token	create_token(char *content)
 	return (token);
 }
 
+/**
+ * @brief Converts an array of string tokens to an array of t_token structures
+ * @param tokens The array of string tokens to convert
+ * @return A pointer to the array of t_token structures, NULL if error
+ */
 t_token	*ft_tokenize(char **tokens)
 {
 	t_token	*token_arr;

@@ -3,16 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/24 16:23:51 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/03/25 15:28:05 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Process a single redirection
+/**
+ * @brief Processes a single redirection token and creates a redirection node
+ * @param ctx The parser context
+ * @param cmd_node The command node to attach the redirection to
+ * @return A new redirection node with the command as its child,
+	or NULL on error
+ *
+ * This function handles a single redirection operator (<, >, <<, >>)
+ * and creates the appropriate redirection node with the filename that follows.
+ */
 static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 {
 	t_token		current;
@@ -31,22 +40,25 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 		redirect_type = NODE_APPEND;
 	else
 		return (cmd_node);
-	// Consume the redirection token
 	next_token(ctx);
-	// Get the filename token
 	next_tok = current_token(ctx);
 	if (next_tok.type != TOKEN_WORD)
-	{
-		parser_error(ctx, "Expected filename after redirection");
-		return (NULL);
-	}
+		return (parser_error(ctx, "Expected filename after redirection"), NULL);
 	filename = next_tok.content;
-	// Consume the filename token
 	next_token(ctx);
 	return (create_redirect_node(redirect_type, filename, cmd_node));
 }
 
-// Handle all redirections for a command
+/**
+ * @brief Handles all redirections associated with a command
+ * @param ctx The parser context
+ * @param cmd_node The command node to attach redirections to
+ * @return The modified command node with redirections, or NULL on error
+ *
+ * This function processes all redirections that follow a command,
+ * creating a chain of redirection nodes until it encounters a pipe
+ * or the end of input.
+ */
 t_node	*handle_redirection(t_parser_context *ctx, t_node *cmd_node)
 {
 	t_token	token;
@@ -55,7 +67,6 @@ t_node	*handle_redirection(t_parser_context *ctx, t_node *cmd_node)
 	if (!cmd_node)
 		return (NULL);
 	result = cmd_node;
-	// Process tokens until we hit a pipe or the end
 	while (1)
 	{
 		token = current_token(ctx);
