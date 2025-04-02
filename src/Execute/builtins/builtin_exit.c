@@ -6,13 +6,58 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 12:51:08 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/02 14:51:20 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Check if a string represents a valid number
+ * @param str String to check
+ * @return 1 if valid number, 0 otherwise
+ */
+static int	is_numeric_arg(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	builtin_exit(char **args)
 {
-	return (-1);
+	int	exit_code;
+
+	ft_putendl_fd("exit", STDOUT_FILENO);
+	exit_code = 0;
+	if (args[1])
+	{
+		if (!is_numeric_arg(args[1]))
+		{
+			ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+			ft_putstr_fd(args[1], STDERR_FILENO);
+			ft_putendl_fd(": numeric argument required", STDERR_FILENO);
+			free_gc();
+			exit(255);
+		}
+		if (args[2])
+		{
+			ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
+			return (1);
+		}
+		exit_code = ft_atoi(args[1]) % 256;
+	}
+	free_gc();
+	exit(exit_code);
 }

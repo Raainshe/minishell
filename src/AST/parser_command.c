@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_command.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:01:26 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/25 15:31:28 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/02 15:25:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ t_node	*parse_command(t_parser_context *ctx)
 	token = current_token(ctx);
 	if (token.type != TOKEN_WORD)
 	{
-		parser_error(ctx, "Expected command");
+		parser_error(ctx, "syntax error");
 		return (NULL);
 	}
 	arg_count = count_command_args(ctx);
