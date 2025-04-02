@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/26 15:39:35 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/02 13:21:11 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <unistd.h>
+# define PATH_MAX 4096
 
 /* ms_split_helper_helper_helper.c */
 int			ft_isspace(char c);
@@ -88,7 +89,7 @@ int			execute_pipe(t_node *node, char **env);
 /*execute_redirect.c*/
 int			execute_redirect(t_node *node, char **env);
 
-/* These are placeholders for builtin commands, to be implemented later */
+/*./Execute/builtins/*/
 int			builtin_echo(char **args);
 int			builtin_cd(char **args);
 int			builtin_pwd(char **args);

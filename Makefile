@@ -10,7 +10,8 @@ SRC_SUBDIRS =	$(SRC_DIR) \
 				$(SRC_DIR)/Tokenizer \
 				$(SRC_DIR)/GarbageCollector \
 				$(SRC_DIR)/AST \
-				$(SRC_DIR)/Execute
+				$(SRC_DIR)/Execute \
+				$(SRC_DIR)/Execute/builtins
 
 VPATH = $(SRC_SUBDIRS)
 
@@ -33,7 +34,9 @@ SRCS =	minishell.c \
 		executor.c \
 		execute_command.c \
 		execute_pipe.c \
-		execute_redirect.c
+		execute_redirect.c \
+		builtin_pwd.c \
+		builtin_echo.c
 
 # Compiler
 CC = cc

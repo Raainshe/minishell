@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/26 15:43:12 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/02 13:55:41 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,13 +96,26 @@ static char	*find_command_path(char *cmd, char **env)
  */
 static int	execute_builtin(char **args, char **env)
 {
+	char	*lower_cmd;
+
 	if (!args || !args[0])
 		return (1);
 	// For now, we'll just print a message that the builtin is not implemented
 	// Later each builtin will be implemented separately
 	(void)env;
-	ft_putstr_fd("minishell: builtin command not implemented: ", STDERR_FILENO);
-	ft_putendl_fd(args[0], STDERR_FILENO);
+	lower_cmd = ft_strlower(args[0]);
+	if (!lower_cmd)
+		return (0);
+	if (ft_strncmp(lower_cmd, "pwd", 4) == 0)
+		return (builtin_pwd(args));
+	else if (ft_strncmp(lower_cmd, "echo", 5) == 0)
+		return (builtin_echo(args));
+	else
+	{
+		ft_putstr_fd("minishell: builtin command not implemented: ",
+			STDERR_FILENO);
+		ft_putendl_fd(args[0], STDERR_FILENO);
+	}
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/26 15:40:45 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/02 14:02:01 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ static void	print_ast(t_node *node, int depth)
 	print_ast(node->right, depth + 1);
 }
 
+// TODO: Pressing enter should just add a new line
 int	main(void)
 {
 	char	*input;
@@ -64,11 +65,14 @@ int	main(void)
 	char	**token_strings;
 	t_node	*ast;
 	int		status;
+	char	pwd[PATH_MAX + 3];
 
 	status = 0;
 	while (1)
 	{
-		input = readline("minishell> ");
+		getcwd(pwd, PATH_MAX);
+		ft_strlcat(pwd, "> ", PATH_MAX + 3);
+		input = readline((const char *)pwd);
 		if (!input)
 		{
 			printf("exit\n");
