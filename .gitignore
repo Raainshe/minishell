@@ -3,6 +3,9 @@ minishell
 .cursor
 *.txt
 .vscode
+"
+"  "
+""
 # Prerequisites
 *.d
 

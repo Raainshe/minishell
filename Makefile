@@ -37,7 +37,9 @@ SRCS =	minishell.c \
 		execute_redirect.c \
 		builtin_pwd.c \
 		builtin_echo.c \
-		builtin_exit.c
+		builtin_exit.c \
+		builtin_cd.c
+
 # Compiler
 CC = cc
 CFLAGS = -Wall -Wextra -Werror

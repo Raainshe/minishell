@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 15:30:36 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/04 13:08:35 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,8 @@ static int	execute_builtin(char **args, char **env)
 		return (builtin_echo(args));
 	else if (ft_strncmp(lower_cmd, "exit", 5) == 0)
 		return (builtin_exit(args));
+	else if (ft_strncmp(lower_cmd, "cd", 3) == 0)
+		return (builtin_cd(args));
 	else
 	{
 		ft_putstr_fd("minishell: builtin command not implemented: ",
