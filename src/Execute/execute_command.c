@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/04 13:08:35 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:22:39 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	is_builtin(char *cmd)
  * @param env The environment variables
  * @return The full path to the command or NULL if not found
  */
-static char	*find_command_path(char *cmd, char **env)
+static char	*find_command_path(char *cmd, t_list *env)
 {
 	char	*path_var;
 	char	**paths;
@@ -55,14 +55,14 @@ static char	*find_command_path(char *cmd, char **env)
 		return (ft_strdup(cmd));
 	i = 0;
 	path_var = NULL;
-	while (env[i])
+	while (env)
 	{
-		if (ft_strncmp(env[i], "PATH=", 5) == 0)
+		if (ft_strncmp((char *)env->content, "PATH=", 5) == 0)
 		{
-			path_var = env[i] + 5;
+			path_var = (char *)env->content + 5;
 			break ;
 		}
-		i++;
+		env = env->next;
 	}
 	if (!path_var)
 		return (NULL);
@@ -94,7 +94,7 @@ static char	*find_command_path(char *cmd, char **env)
  * @param env The environment variables
  * @return Exit status of the built-in command
  */
-static int	execute_builtin(char **args, char **env)
+static int	execute_builtin(char **args, t_list *env)
 {
 	char	*lower_cmd;
 
@@ -114,6 +114,12 @@ static int	execute_builtin(char **args, char **env)
 		return (builtin_exit(args));
 	else if (ft_strncmp(lower_cmd, "cd", 3) == 0)
 		return (builtin_cd(args));
+	else if (ft_strncmp(lower_cmd, "env", 4) == 0)
+		return (builtin_env(env));
+	else if (ft_strncmp(lower_cmd, "export", 7) == 0)
+		return (builtin_export(args, env));
+	else if (ft_strncmp(lower_cmd, "unset", 6) == 0)
+		return (builtin_unset(args, env));
 	else
 	{
 		ft_putstr_fd("minishell: builtin command not implemented: ",
@@ -123,12 +129,13 @@ static int	execute_builtin(char **args, char **env)
 	return (0);
 }
 
-int	execute_command(t_node *node, char **env)
+int	execute_command(t_node *node, t_list *env)
 {
 	t_command	*command;
 	pid_t		pid;
 	int			status;
 	char		*path;
+	char		**env_array;
 
 	if (!node || !node->data)
 		return (1);
@@ -153,7 +160,13 @@ int	execute_command(t_node *node, char **env)
 			ft_putendl_fd(": command not found", STDERR_FILENO);
 			exit(127);
 		}
-		execve(path, command->args, env);
+		env_array = convert_env_to_array(env);
+		if (!env_array)
+		{
+			perror("minishell: malloc");
+			exit(1);
+		}
+		execve(path, command->args, env_array);
 		perror("minishell: execve");
 		exit(126);
 	}

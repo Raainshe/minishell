@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 15:26:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/07 17:28:21 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,9 @@ int	main(void)
 	int		status;
 	char	pwd[PATH_MAX + 3];
 	char	*line;
+	t_list	*env;
 
+	env = copy_environ(environ);
 	status = 0;
 	while (42)
 	{
@@ -110,10 +112,11 @@ int	main(void)
 			continue ;
 		}
 		// print_ast(ast, 0); // Uncomment for debugging
-		status = execute_node(ast, environ);
+		status = execute_node(ast, env);
 		gc_free_context(TOKENIZER);
 		gc_free_context(AST);
 		gc_free_context(EXECUTOR);
 	}
+	// gc_free_context(ENVIRON);
 	return (status);
 }

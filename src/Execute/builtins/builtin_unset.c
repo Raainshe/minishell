@@ -6,13 +6,15 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:20 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 13:03:31 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/07 17:32:07 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	builtin_unset(char **args, char **env)
+int	builtin_unset(char **args, t_list *env)
 {
+	(void)args;
+	(void)env;
 	return (-1);
 }

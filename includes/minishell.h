@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 13:21:11 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:22:46 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,22 +81,26 @@ t_node		*parse_command(t_parser_context *context);
 t_node		*handle_redirection(t_parser_context *context, t_node *command);
 
 /*executor.c*/
-int			execute_node(t_node *node, char **env);
+int			execute_node(t_node *node, t_list *env);
 /*execute_command.c*/
-int			execute_command(t_node *node, char **env);
+int			execute_command(t_node *node, t_list *env);
 /*execute_pipe.c*/
-int			execute_pipe(t_node *node, char **env);
+int			execute_pipe(t_node *node, t_list *env);
 /*execute_redirect.c*/
-int			execute_redirect(t_node *node, char **env);
+int			execute_redirect(t_node *node, t_list *env);
 
 /*./Execute/builtins/*/
 int			builtin_echo(char **args);
 int			builtin_cd(char **args);
 int			builtin_pwd(char **args);
-int			builtin_export(char **args, char **env);
-int			builtin_unset(char **args, char **env);
-int			builtin_env(char **env);
+int			builtin_export(char **args, t_list *env);
+int			builtin_unset(char **args, t_list *env);
+int			builtin_env(t_list *env);
 int			builtin_exit(char **args);
+
+/* environ.c */
+t_list		*copy_environ(char **environ);
+char		**convert_env_to_array(t_list *env);
 
 extern char	**environ;
 

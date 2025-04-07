@@ -38,7 +38,11 @@ SRCS =	minishell.c \
 		builtin_pwd.c \
 		builtin_echo.c \
 		builtin_exit.c \
-		builtin_cd.c
+		builtin_cd.c \
+		builtin_env.c \
+		builtin_export.c \
+		builtin_unset.c \
+		environ.c
 
 # Compiler
 CC = cc

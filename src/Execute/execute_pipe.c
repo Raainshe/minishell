@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/26 15:39:21 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/07 15:11:26 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param env The environment variables
  * @return The exit status of the last command in the pipeline
  */
-int	execute_pipe(t_node *node, char **env)
+int	execute_pipe(t_node *node, t_list *env)
 {
 	int		pipefd[2];
 	int		status;
