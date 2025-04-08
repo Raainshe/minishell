@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:33:33 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/17 12:55:21 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 13:34:30 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ char	*ft_strndup(const char *s, size_t n)
 	result = (char *)gc_malloc(len + 1);
 	if (!result)
 		return (NULL);
-	gc_add_context(TOKENIZER, result);
 	i = 0;
 	while (i < len)
 	{

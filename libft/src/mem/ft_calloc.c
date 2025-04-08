@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 10:35:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 14:17:55 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 13:32:00 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	*ft_calloc(size_t count, size_t size)
 	obj = gc_malloc(count * size * sizeof(char));
 	if (!obj)
 		return (NULL);
-	gc_add_context(EXECUTOR, obj);
 	ft_bzero(obj, size * count);
 	return (obj);
 }

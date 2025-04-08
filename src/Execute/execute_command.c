@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 15:22:39 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 13:34:19 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	is_builtin(char *cmd)
  * @param env The environment variables
  * @return The full path to the command or NULL if not found
  */
+// TODO: Check return ft_strdup
 static char	*find_command_path(char *cmd, t_list *env)
 {
 	char	*path_var;

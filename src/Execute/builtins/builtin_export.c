@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 17:31:54 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 14:20:32 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,66 @@ static bool	is_valid(char *str)
 	return (true);
 }
 
-int	builtin_export(char **args, t_list *env)
+static int	var_len(char *arg)
 {
 	int	i;
 
+	i = 0;
+	while (arg[i] && arg[i] != '=')
+		i++;
+	return (++i);
+}
+
+static t_list	*find_duplicate(char *arg, t_list *env)
+{
+	while (env)
+	{
+		if (ft_strncmp(env->content, arg, var_len(arg)) == 0)
+			return (env);
+		env = env->next;
+	}
+	return (NULL);
+}
+
+static void	print_export(t_list *env)
+{
+	int	len;
+	int	variable_len;
+
+	while (env)
+	{
+		len = strlen(env->content);
+		variable_len = var_len(env->content);
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		write(STDOUT_FILENO, env->content, variable_len);
+		write(STDOUT_FILENO, "\"", 1);
+		write(STDOUT_FILENO, &(env->content[variable_len]), len - variable_len);
+		write(STDOUT_FILENO, "\"\n", 2);
+		env = env->next;
+	}
+}
+
+int	builtin_export(char **args, t_list *env)
+{
+	int		i;
+	char	*arg;
+	t_list	*duplicate;
+
 	i = 1;
+	if (!args[1])
+		return (print_export(env), 0);
 	while (args[i])
 	{
 		if (is_valid(args[i]))
-			ft_lstadd_back(&env, ft_lstnew(args[i]));
+		{
+			arg = ft_strdup(args[i]);
+			gc_add_context(ENVIRON, arg);
+			duplicate = find_duplicate(args[i], env);
+			if (duplicate)
+				duplicate->content = arg;
+			else
+				ft_lstadd_back(&env, ft_lstnew(arg));
+		}
 		else
 		{
 			ft_putstr_fd("export: ", STDERR_FILENO);

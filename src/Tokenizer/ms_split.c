@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ms_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:00:02 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/25 15:11:20 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/08 13:35:14 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ bool	ft_add_token(t_token_info *info, int start, int end)
 	token = ft_strndup(&info->input[start], end - start);
 	if (!token)
 		return (false);
+	gc_add_context(TOKENIZER, token);
 	info->tokens[info->j] = token;
 	info->j++;
 	return (true);
@@ -67,6 +68,7 @@ static bool	ft_process_final_token(t_token_info *info)
 				- info->token_start);
 		if (!token)
 			return (false);
+		gc_add_context(TOKENIZER, token);
 		info->tokens[info->j] = token;
 		info->j++;
 	}
