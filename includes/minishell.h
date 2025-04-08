@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 15:28:20 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 15:40:56 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,9 @@ int			execute_redirect(t_node *node, t_list **env);
 
 /*./Execute/builtins/*/
 int			builtin_echo(char **args);
-int			builtin_cd(char **args);
+int			builtin_cd(char **args, t_list **env);
 int			builtin_pwd(char **args);
-int			builtin_export(char **args, t_list *env);
+int			builtin_export(char **args, t_list **env);
 int			builtin_unset(char **args, t_list **env);
 int			builtin_env(t_list *env);
 int			builtin_exit(char **args);

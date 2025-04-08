@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 15:26:06 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 15:42:46 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,11 +114,11 @@ static int	execute_builtin(char **args, t_list **env)
 	else if (ft_strncmp(lower_cmd, "exit", 5) == 0)
 		return (builtin_exit(args));
 	else if (ft_strncmp(lower_cmd, "cd", 3) == 0)
-		return (builtin_cd(args));
+		return (builtin_cd(args, env));
 	else if (ft_strncmp(lower_cmd, "env", 4) == 0)
 		return (builtin_env(*env));
 	else if (ft_strncmp(lower_cmd, "export", 7) == 0)
-		return (builtin_export(args, *env));
+		return (builtin_export(args, env));
 	else if (ft_strncmp(lower_cmd, "unset", 6) == 0)
 		return (builtin_unset(args, env));
 	else
