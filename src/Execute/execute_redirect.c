@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 15:11:35 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 15:27:31 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param env The environment variables
  * @return The exit status of the command
  */
-int	execute_redirect(t_node *node, t_list *env)
+int	execute_redirect(t_node *node, t_list **env)
 {
 	int			fd;
 	int			saved_fd;

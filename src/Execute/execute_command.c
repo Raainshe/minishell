@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 13:34:19 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 15:26:06 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ static char	*find_command_path(char *cmd, t_list *env)
  * @param env The environment variables
  * @return Exit status of the built-in command
  */
-static int	execute_builtin(char **args, t_list *env)
+static int	execute_builtin(char **args, t_list **env)
 {
 	char	*lower_cmd;
 
@@ -116,9 +116,9 @@ static int	execute_builtin(char **args, t_list *env)
 	else if (ft_strncmp(lower_cmd, "cd", 3) == 0)
 		return (builtin_cd(args));
 	else if (ft_strncmp(lower_cmd, "env", 4) == 0)
-		return (builtin_env(env));
+		return (builtin_env(*env));
 	else if (ft_strncmp(lower_cmd, "export", 7) == 0)
-		return (builtin_export(args, env));
+		return (builtin_export(args, *env));
 	else if (ft_strncmp(lower_cmd, "unset", 6) == 0)
 		return (builtin_unset(args, env));
 	else
@@ -130,7 +130,7 @@ static int	execute_builtin(char **args, t_list *env)
 	return (0);
 }
 
-int	execute_command(t_node *node, t_list *env)
+int	execute_command(t_node *node, t_list **env)
 {
 	t_command	*command;
 	pid_t		pid;
@@ -153,7 +153,7 @@ int	execute_command(t_node *node, t_list *env)
 	}
 	if (pid == 0)
 	{
-		path = find_command_path(command->args[0], env);
+		path = find_command_path(command->args[0], *env);
 		if (!path)
 		{
 			ft_putstr_fd("minishell: ", STDERR_FILENO);
@@ -161,7 +161,7 @@ int	execute_command(t_node *node, t_list *env)
 			ft_putendl_fd(": command not found", STDERR_FILENO);
 			exit(127);
 		}
-		env_array = convert_env_to_array(env);
+		env_array = convert_env_to_array(*env);
 		if (!env_array)
 		{
 			perror("minishell: malloc");

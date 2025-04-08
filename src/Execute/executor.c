@@ -6,13 +6,13 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:12 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 15:11:02 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/08 15:28:46 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	execute_node(t_node *node, t_list *env)
+int	execute_node(t_node *node, t_list **env)
 {
 	int	status;
 
