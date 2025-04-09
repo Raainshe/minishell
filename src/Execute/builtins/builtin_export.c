@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 16:07:05 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/09 13:14:21 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static void	print_export(t_list **env)
 		ft_putstr_fd("declare -x ", STDOUT_FILENO);
 		write(STDOUT_FILENO, current->content, variable_len);
 		write(STDOUT_FILENO, "\"", 1);
-		write(STDOUT_FILENO, &(current->content[variable_len]), len
+		write(STDOUT_FILENO, ((char *)(current->content)) + variable_len, len
 			- variable_len);
 		write(STDOUT_FILENO, "\"\n", 2);
 		current = current->next;

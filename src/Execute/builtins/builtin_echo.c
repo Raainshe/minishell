@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:43:31 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 14:39:20 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/09 13:24:58 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static int	print_args(char **args, int start_idx)
 			gc_free_context(EXECUTOR);
 			return (1);
 		}
+		gc_add_context(EXECUTOR, trimmed);
 		if (ft_putstr_fd(trimmed, STDOUT_FILENO) == -1)
 			return (1);
 		if (args[i + 1])

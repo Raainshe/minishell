@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/25 15:11:20 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/09 15:01:27 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	ft_free_tokens(char **tokens, int j)
  * @param content The string content to create a token from
  * @return A t_token structure with the appropriate token type
  */
+// TODO: handle quotes and expansions
 static t_token	create_token(char *content)
 {
 	t_token	token;
