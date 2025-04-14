@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/09 15:01:27 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/14 13:24:29 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,12 @@ void	ft_free_tokens(char **tokens, int j)
  * @return A t_token structure with the appropriate token type
  */
 // TODO: handle quotes and expansions
-static t_token	create_token(char *content)
+static t_token	create_token(char *content, t_list *env)
 {
 	t_token	token;
 	size_t	len;
 
+	content = expand(content, env);
 	token.content = content;
 	token.type = TOKEN_WORD;
 	len = ft_strlen(content);
@@ -72,7 +73,7 @@ static t_token	create_token(char *content)
  * @param tokens The array of string tokens to convert
  * @return A pointer to the array of t_token structures, NULL if error
  */
-t_token	*ft_tokenize(char **tokens)
+t_token	*ft_tokenize(char **tokens, t_list *env)
 {
 	t_token	*token_arr;
 	int		token_count;
@@ -90,7 +91,7 @@ t_token	*ft_tokenize(char **tokens)
 	i = 0;
 	while (i < token_count && tokens[i])
 	{
-		token_arr[i] = create_token(tokens[i]);
+		token_arr[i] = create_token(tokens[i], env);
 		i++;
 	}
 	token_arr[i].content = NULL;

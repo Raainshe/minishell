@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/09 13:21:14 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/14 13:24:44 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	main(void)
 			continue ;
 		}
 		free(input);
-		tokens = ft_tokenize(token_strings);
+		tokens = ft_tokenize(token_strings, env);
 		if (!tokens)
 		{
 			printf("ft_tokenize error\n");

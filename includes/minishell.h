@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 15:40:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/14 13:26:34 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ bool		ft_add_token(t_token_info *info, int start, int end);
 char		*ft_strndup(const char *s, size_t n);
 /* tokenize.c */
 void		ft_free_tokens(char **tokens, int j);
-t_token		*ft_tokenize(char **tokens);
+t_token		*ft_tokenize(char **tokens, t_list *env);
 
 /* parser_utils.c */
 void		init_parser_context(t_parser_context *context, t_token *tokens);
@@ -101,6 +101,10 @@ int			builtin_exit(char **args);
 /* environ.c */
 t_list		*copy_environ(char **environ);
 char		**convert_env_to_array(t_list *env);
+
+/* expansion.c */
+char		*expand(char *str, t_list *env);
+char		*ft_strjoin_char(char *str, char c);
 
 extern char	**environ;
 
