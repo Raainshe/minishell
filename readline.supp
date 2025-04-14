@@ -1,0 +1,41 @@
+{
+   Readline lib suppression
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   ...
+   obj:*/libreadline.so.*
+}
+
+{
+   Readline history suppression
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   ...
+   obj:*/libhistory.so.*
+}
+
+{
+   Readline history function suppression
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:add_history
+}
+
+{
+   Readline function suppression
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:readline
+}
+
+{
+   Readline initialization suppression
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:rl_initialize
+}

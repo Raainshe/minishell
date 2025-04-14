@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/09 13:14:21 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/14 13:44:15 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ int	builtin_export(char **args, t_list **env)
 	int		i;
 	char	*arg;
 	t_list	*duplicate;
+	t_list	*tmp;
 
 	i = 1;
 	if (!args[1])
@@ -103,7 +104,11 @@ int	builtin_export(char **args, t_list **env)
 			if (duplicate)
 				duplicate->content = arg;
 			else
-				ft_lstadd_back(env, ft_lstnew(arg));
+			{
+				tmp = ft_lstnew(arg);
+				gc_add_context(ENVIRON, tmp);
+				ft_lstadd_back(env, tmp);
+			}
 		}
 		else
 		{

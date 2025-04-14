@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 14:36:51 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/09 13:20:13 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/14 13:42:56 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,18 @@ t_list	*copy_environ(char **environ)
 {
 	int		i;
 	t_list	*env;
+	t_list	*tmp;
 
 	if (!environ || !environ[0])
 		return (NULL);
 	env = ft_lstnew(environ[0]);
+	gc_add_context(ENVIRON, env);
 	i = 1;
 	while (environ[i])
 	{
-		ft_lstadd_back(&env, ft_lstnew(environ[i]));
+		tmp = ft_lstnew(environ[i]);
+		gc_add_context(ENVIRON, tmp);
+		ft_lstadd_back(&env, tmp);
 		i++;
 	}
 	return (env);
