@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 15:27:00 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 12:50:40 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	execute_pipe(t_node *node, t_list **env)
 	}
 	if (pid1 == 0)
 	{
+		reset_signals();
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
@@ -58,6 +59,7 @@ int	execute_pipe(t_node *node, t_list **env)
 	}
 	if (pid2 == 0)
 	{
+		reset_signals();
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
@@ -70,6 +72,12 @@ int	execute_pipe(t_node *node, t_list **env)
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+			g_signal_received = SIGINT;
+		else if (WTERMSIG(status) == SIGQUIT)
+			g_signal_received = SIGQUIT;
 		return (128 + WTERMSIG(status));
+	}
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 14:36:51 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/14 13:42:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 13:17:12 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,24 @@ t_list	*copy_environ(char **environ)
 	int		i;
 	t_list	*env;
 	t_list	*tmp;
+	char	*env_copy;
 
 	if (!environ || !environ[0])
 		return (NULL);
-	env = ft_lstnew(environ[0]);
+	env_copy = ft_strdup(environ[0]);
+	if (!env_copy)
+		return (NULL);
+	gc_add_context(ENVIRON, env_copy);
+	env = ft_lstnew(env_copy);
 	gc_add_context(ENVIRON, env);
 	i = 1;
 	while (environ[i])
 	{
-		tmp = ft_lstnew(environ[i]);
+		env_copy = ft_strdup(environ[i]);
+		if (!env_copy)
+			return (env);
+		gc_add_context(ENVIRON, env_copy);
+		tmp = ft_lstnew(env_copy);
 		gc_add_context(ENVIRON, tmp);
 		ft_lstadd_back(&env, tmp);
 		i++;

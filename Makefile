@@ -11,7 +11,8 @@ SRC_SUBDIRS =	$(SRC_DIR) \
 				$(SRC_DIR)/GarbageCollector \
 				$(SRC_DIR)/AST \
 				$(SRC_DIR)/Execute \
-				$(SRC_DIR)/Execute/builtins
+				$(SRC_DIR)/Execute/builtins \
+				$(SRC_DIR)/Signals
 
 VPATH = $(SRC_SUBDIRS)
 
@@ -43,11 +44,13 @@ SRCS =	minishell.c \
 		builtin_env.c \
 		builtin_export.c \
 		builtin_unset.c \
-		environ.c
+		environ.c \
+		signals.c
 
 # Compiler
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
+DEBUG_FLAGS = -g -fsanitize=address -fsanitize=undefined
 INCLUDES = -I./includes -I./libft/includes
 LDFLAGS = -lreadline
 
@@ -56,6 +59,11 @@ LIBFT = libft/libft.a
 LIBFT_DIR = libft
 
 all: $(NAME)
+
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: LDFLAGS += $(DEBUG_FLAGS)
+debug: $(NAME)
+	@echo "$(GREEN)$(NAME) built with debug flags!$(NC)"
 
 $(OUT_DIR):
 	@mkdir -p $(OUT_DIR)
@@ -88,7 +96,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug
 # Colours
 GREEN = \033[0;32m
 YELLOW = \033[0;33m

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/14 13:26:34 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 12:49:57 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,77 +35,91 @@
 # define PATH_MAX 4096
 
 /* ms_split_helper_helper_helper.c */
-int			ft_isspace(char c);
-bool		ft_is_operator(char c);
-bool		ft_is_multi_char_op(char *str, int i);
+int								ft_isspace(char c);
+bool							ft_is_operator(char c);
+bool							ft_is_multi_char_op(char *str, int i);
 /* ms_split_helper_helper.c */
-bool		ft_handle_token_start(t_token_info *info);
-bool		ft_handle_token_end(t_token_info *info);
-bool		ft_handle_operator(t_token_info *info, char current, char next);
-bool		ft_handle_next_operator(t_token_info *info, char next);
-bool		ft_handle_multi_char_op(t_token_info *info, char current,
-				char next);
+bool							ft_handle_token_start(t_token_info *info);
+bool							ft_handle_token_end(t_token_info *info);
+bool							ft_handle_operator(t_token_info *info,
+									char current, char next);
+bool							ft_handle_next_operator(t_token_info *info,
+									char next);
+bool							ft_handle_multi_char_op(t_token_info *info,
+									char current, char next);
 /* ms_split_helper.c */
-void		ft_update_quote_state(char c, bool *in_quote,
-				bool *in_double_quote);
-int			ft_count_tokens(char *str);
-void		ft_init_token_info(t_token_info *info, char *str, int token_count);
+void							ft_update_quote_state(char c, bool *in_quote,
+									bool *in_double_quote);
+int								ft_count_tokens(char *str);
+void							ft_init_token_info(t_token_info *info,
+									char *str, int token_count);
 /* ms_split.c */
-char		**ft_split_tokens(char *str);
-bool		ft_add_token(t_token_info *info, int start, int end);
+char							**ft_split_tokens(char *str);
+bool							ft_add_token(t_token_info *info, int start,
+									int end);
 /* ft_strndup.c */
-char		*ft_strndup(const char *s, size_t n);
+char							*ft_strndup(const char *s, size_t n);
 /* tokenize.c */
-void		ft_free_tokens(char **tokens, int j);
-t_token		*ft_tokenize(char **tokens, t_list *env);
+void							ft_free_tokens(char **tokens, int j);
+t_token							*ft_tokenize(char **tokens, t_list *env);
 
 /* parser_utils.c */
-void		init_parser_context(t_parser_context *context, t_token *tokens);
-t_token		current_token(t_parser_context *context);
-t_token		peek_next_token(t_parser_context *context);
-t_token		next_token(t_parser_context *context);
-void		parser_error(t_parser_context *context, char *msg);
+void							init_parser_context(t_parser_context *context,
+									t_token *tokens);
+t_token							current_token(t_parser_context *context);
+t_token							peek_next_token(t_parser_context *context);
+t_token							next_token(t_parser_context *context);
+void							parser_error(t_parser_context *context,
+									char *msg);
 /* nodes.c */
-t_node		*create_node(t_node_type type, void *data, t_node *left,
-				t_node *right);
-t_node		*create_command_node(char **args);
-t_node		*create_redirect_node(t_node_type type, char *filename,
-				t_node *command);
-t_node		*create_pipe_node(t_node *left, t_node *right);
+t_node							*create_node(t_node_type type, void *data,
+									t_node *left, t_node *right);
+t_node							*create_command_node(char **args);
+t_node							*create_redirect_node(t_node_type type,
+									char *filename, t_node *command);
+t_node							*create_pipe_node(t_node *left, t_node *right);
 /* parser.c */
-t_node		*parse_tokens(t_token *tokens);
-t_node		*parse_pipeline(t_parser_context *context);
+t_node							*parse_tokens(t_token *tokens);
+t_node							*parse_pipeline(t_parser_context *context);
 /*parser_command.c*/
-t_node		*parse_command(t_parser_context *context);
+t_node							*parse_command(t_parser_context *context);
 /*parser_redirect.c*/
-t_node		*handle_redirection(t_parser_context *context, t_node *command);
+t_node							*handle_redirection(t_parser_context *context,
+									t_node *command);
 
 /*executor.c*/
-int			execute_node(t_node *node, t_list **env);
+int								execute_node(t_node *node, t_list **env);
 /*execute_command.c*/
-int			execute_command(t_node *node, t_list **env);
+int								execute_command(t_node *node, t_list **env);
 /*execute_pipe.c*/
-int			execute_pipe(t_node *node, t_list **env);
+int								execute_pipe(t_node *node, t_list **env);
 /*execute_redirect.c*/
-int			execute_redirect(t_node *node, t_list **env);
+int								execute_redirect(t_node *node, t_list **env);
 
 /*./Execute/builtins/*/
-int			builtin_echo(char **args);
-int			builtin_cd(char **args, t_list **env);
-int			builtin_pwd(char **args);
-int			builtin_export(char **args, t_list **env);
-int			builtin_unset(char **args, t_list **env);
-int			builtin_env(t_list *env);
-int			builtin_exit(char **args);
+int								builtin_echo(char **args);
+int								builtin_cd(char **args, t_list **env);
+int								builtin_pwd(char **args);
+int								builtin_export(char **args, t_list **env);
+int								builtin_unset(char **args, t_list **env);
+int								builtin_env(t_list *env);
+int								builtin_exit(char **args);
 
 /* environ.c */
-t_list		*copy_environ(char **environ);
-char		**convert_env_to_array(t_list *env);
+t_list							*copy_environ(char **environ);
+char							**convert_env_to_array(t_list *env);
 
 /* expansion.c */
-char		*expand(char *str, t_list *env);
-char		*ft_strjoin_char(char *str, char c);
+char							*expand(char *str, t_list *env);
+char							*ft_strjoin_char(char *str, char c);
 
-extern char	**environ;
+/* Signals/signals.c */
+void							setup_interactive_signals(void);
+void							setup_noninteractive_signals(void);
+void							reset_signals(void);
+int								get_signal_status(void);
+
+extern char						**environ;
+extern volatile sig_atomic_t	g_signal_received;
 
 #endif

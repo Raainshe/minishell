@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/15 12:24:23 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 13:15:35 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ int	main(void)
 
 	env = copy_environ(environ);
 	status = 0;
+	setup_interactive_signals();
 	while (42)
 	{
 		getcwd(pwd, PATH_MAX);
@@ -128,13 +129,16 @@ int	main(void)
 			continue ;
 		}
 		// print_ast(ast, 0); // Uncomment for debugging
+		setup_noninteractive_signals();
 		status = execute_node(ast, &env);
+		if (g_signal_received)
+			status = get_signal_status();
+		setup_interactive_signals();
 		gc_free_context(TOKENIZER);
 		gc_free_context(AST);
 		gc_free_context(EXECUTOR);
 	}
 	gc_free_context(ENVIRON);
-	ft_lstclear(&env, free);
 	free_gc();
 	return (status);
 }

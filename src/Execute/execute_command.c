@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 15:42:46 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 12:50:18 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,7 @@ int	execute_command(t_node *node, t_list **env)
 	}
 	if (pid == 0)
 	{
+		reset_signals();
 		path = find_command_path(command->args[0], *env);
 		if (!path)
 		{
@@ -175,6 +176,12 @@ int	execute_command(t_node *node, t_list **env)
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+			g_signal_received = SIGINT;
+		else if (WTERMSIG(status) == SIGQUIT)
+			g_signal_received = SIGQUIT;
 		return (128 + WTERMSIG(status));
+	}
 	return (1);
 }
