@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/14 13:24:44 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 12:24:23 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,21 @@
 // 	print_ast(node->right, depth + 1);
 // }
 
-// TODO: Pressing enter should just add a new line
+static bool	is_only_spaces(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_isspace(str[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+// TODO: only isspace should prompt new line
 int	main(void)
 {
 	char	*input;
@@ -90,7 +104,7 @@ int	main(void)
 			printf("exit\n");
 			break ;
 		}
-		if (input[0] == '\0')
+		if (input[0] == '\0' || is_only_spaces(input))
 			continue ;
 		add_history(input);
 		token_strings = ft_split_tokens(input);
