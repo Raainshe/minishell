@@ -3,15 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/09 13:06:19 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/18 16:37:15 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Main entry point for parsing tokens into an abstract syntax tree
+ * @param tokens Array of tokens to parse
+ * @return Root node of the abstract syntax tree, or NULL on error
+ *
+ * This function initializes the parser context and starts the parsing process
+ * by calling parse_pipeline. It handles any errors that occur during parsing.
+ */
 t_node	*parse_tokens(t_token *tokens)
 {
 	t_parser_context	context;
@@ -30,7 +38,15 @@ t_node	*parse_tokens(t_token *tokens)
 	return (ast);
 }
 
-// TODO: Check correct error message
+/**
+ * @brief Parses a pipeline of one or more commands connected with pipes
+ * @param context The parser context containing the tokens and state
+ * @return Root node of the pipeline, or NULL on error
+ *
+ * This function parses a sequence of commands connected by pipe symbols (|).
+ * It builds a binary tree where each pipe node has the left command as its
+ * left child and the right command (or pipeline) as its right child.
+ */
 t_node	*parse_pipeline(t_parser_context *context)
 {
 	t_node	*left;
