@@ -3,14 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_helper.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 12:04:13 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/22 12:26:47 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/22 14:10:04 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/**
+ * @brief Process the exit code expansion
+ * @param result Current result string
+ * @param i Pointer to current position in string
+ * @return Updated result string or NULL on failure
+ */
+char	*process_exit_code(char *result, int *i)
+{
+	char	*temp;
+	int		*exit_code;
+
+	exit_code = ft_exit_code_holder();
+	temp = ft_itoa(*exit_code);
+	if (!temp)
+		return (NULL);
+	gc_add_context(TOKENIZER, temp);
+	temp = ft_strjoin(result, temp);
+	if (!temp)
+		return (NULL);
+	gc_add_context(TOKENIZER, temp);
+	(*i) += 2;
+	return (temp);
+}
 
 /**
  * @brief Get the value of an environment variable from the environment list

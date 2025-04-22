@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/22 13:13:12 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/22 13:50:53 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ int	main(void)
 		gc_free_context(EXECUTOR);
 	}
 	gc_free_context(ENVIRON);
-	ft_lstclear(&env, free); 
+	ft_lstclear(&env, free);
 	free_gc();
 	return (status);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/22 13:15:50 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/22 14:09:55 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,10 @@ static char	*process_expansion_char(char *str, t_list *env, char *result,
 {
 	char	*temp;
 
+	if (str[*i] == '$' && str[*i + 1] == '?')
+		return (process_exit_code(result, i));
 	if (str[*i] == '$' && str[*i + 1] && (ft_isalnum(str[*i + 1]) || str[*i
-				+ 1] == '_'))
+			+ 1] == '_'))
 	{
 		temp = process_variable(str, env, result, i);
 		if (!temp)

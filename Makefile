@@ -12,7 +12,8 @@ SRC_SUBDIRS =	$(SRC_DIR) \
 				$(SRC_DIR)/AST \
 				$(SRC_DIR)/Execute \
 				$(SRC_DIR)/Execute/builtins \
-				$(SRC_DIR)/Signals
+				$(SRC_DIR)/Signals \
+				$(SRC_DIR)/Exit
 
 VPATH = $(SRC_SUBDIRS)
 
@@ -46,7 +47,9 @@ SRCS =	minishell.c \
 		builtin_export.c \
 		builtin_unset.c \
 		environ.c \
-		signals.c
+		signals.c \
+		signals_helper.c \
+		exit.c
 
 # Compiler
 CC = cc
