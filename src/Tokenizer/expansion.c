@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/22 12:45:25 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/22 13:15:50 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static char	*process_expansion_char(char *str, t_list *env, char *result,
 	char	*temp;
 
 	if (str[*i] == '$' && str[*i + 1] && (ft_isalnum(str[*i + 1]) || str[*i
-			+ 1] == '_'))
+				+ 1] == '_'))
 	{
 		temp = process_variable(str, env, result, i);
 		if (!temp)
@@ -136,16 +136,8 @@ char	*expand(char *str, t_list *env)
 		return (gc_add_context(TOKENIZER, trimmed), trimmed);
 	}
 	else if (str[0] == '\"')
-	{
 		expanded = expand_double_quotes(str, env);
-		// TODO: not checking here anymore because it is redundant?
-		return (expanded);
-	}
 	else
-	{
 		expanded = expand_variables(str, env);
-		if (!expanded)
-			return (NULL);
-		return (expanded);
-	}
+	return (expanded);
 }
