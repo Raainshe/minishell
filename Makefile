@@ -23,6 +23,7 @@ SRCS =	minishell.c \
 		ms_split_helper_helper.c \
 		ms_split_helper_helper_helper.c \
 		expansion.c \
+		expansion_helper.c \
 		ft_strndup.c \
 		tokenize.c \
 		gc_free_context.c \

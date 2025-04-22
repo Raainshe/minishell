@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/21 15:56:17 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/22 12:11:48 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param env Environment list
  * @return Value of the variable or NULL if not found
  */
-static char	*get_env_value(char *var_name, t_list *env)
+char	*get_env_value(char *var_name, t_list *env)
 {
 	int		name_len;
 	t_list	*current;
@@ -44,7 +44,7 @@ static char	*get_env_value(char *var_name, t_list *env)
  * @param str String starting with $
  * @return Allocated string with variable name
  */
-static char	*extract_var_name(char *str)
+char	*extract_var_name(char *str)
 {
 	int		i;
 	char	*var_name;
@@ -65,12 +65,10 @@ static char	*extract_var_name(char *str)
  * @param env Environment list
  * @return Expanded string or NULL on failure
  */
-static char	*expand_variables(char *str, t_list *env)
+char	*expand_variables(char *str, t_list *env)
 {
 	int		i;
 	char	*result;
-	char	*var_name;
-	char	*var_value;
 	char	*temp;
 
 	result = ft_strdup("");
@@ -83,18 +81,10 @@ static char	*expand_variables(char *str, t_list *env)
 		if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
 				+ 1] == '_'))
 		{
-			var_name = extract_var_name(str + i);
-			if (!var_name)
-				return (NULL);
-			var_value = get_env_value(var_name, env);
-			if (!var_value)
-				var_value = "";
-			temp = ft_strjoin(result, var_value);
+			temp = process_variable(str, env, result, &i);
 			if (!temp)
 				return (NULL);
-			gc_add_context(TOKENIZER, temp);
 			result = temp;
-			i += ft_strlen(var_name) + 1;
 		}
 		else
 		{
