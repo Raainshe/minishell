@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 14:51:20 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/22 14:27:58 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ static int	is_numeric_arg(char *str)
 
 int	builtin_exit(char **args)
 {
-	int	exit_code;
+	int	*exit_code;
 
 	ft_putendl_fd("exit", STDOUT_FILENO);
-	exit_code = 0;
+	exit_code = ft_exit_code_holder();
 	if (args[1])
 	{
 		if (!is_numeric_arg(args[1]))
@@ -54,10 +54,11 @@ int	builtin_exit(char **args)
 		if (args[2])
 		{
 			ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
-			return (1);
+			*exit_code = 1;
 		}
-		exit_code = ft_atoi(args[1]) % 256;
+		else
+			*exit_code = ft_atoi(args[1]) % 256;
 	}
 	free_gc();
-	exit(exit_code);
+	exit(*exit_code);
 }

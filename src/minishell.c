@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/22 13:50:53 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/22 14:38:47 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,13 @@ int	main(void)
 	t_token	*tokens;
 	char	**token_strings;
 	t_node	*ast;
-	int		status;
+	int		*exit_code;
 	char	pwd[PATH_MAX + 3];
 	char	*line;
 	t_list	*env;
 
 	env = copy_environ(environ);
-	status = 0;
+	exit_code = ft_exit_code_holder();
 	setup_interactive_signals();
 	while (42)
 	{
@@ -130,9 +130,9 @@ int	main(void)
 		}
 		// print_ast(ast, 0); // Uncomment for debugging
 		setup_noninteractive_signals();
-		status = execute_node(ast, &env);
+		*exit_code = execute_node(ast, &env);
 		if (g_signal_received)
-			status = get_signal_status();
+			*exit_code = get_signal_status();
 		setup_interactive_signals();
 		gc_free_context(TOKENIZER);
 		gc_free_context(AST);
@@ -141,5 +141,5 @@ int	main(void)
 	gc_free_context(ENVIRON);
 	ft_lstclear(&env, free);
 	free_gc();
-	return (status);
+	return (*exit_code);
 }
