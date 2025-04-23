@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 15:54:20 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/23 16:37:16 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,32 @@
 // 	print_ast(node->right, depth + 1);
 // }
 
+static void	print_banner(void)
+{
+	ft_putstr_fd("\033[0;34m", 1);
+	ft_putendl_fd(" _________________________________________________________",
+		1);
+	ft_putendl_fd("|  _____            _           _                 _       |",
+		1);
+	ft_putendl_fd("| |_   _|          | |         | |               | |      |",
+		1);
+	ft_putendl_fd("|   | |  __ _  ___ | |__   ___ | | ___  _ __   __| | ___  |",
+		1);
+	ft_putstr_fd("|   | | / _` |/ _ \\| '_ \\ / _ \\| ", 1);
+	ft_putendl_fd("|/ _ \\| '_ \\ / _` |/ _ \\ |", 1);
+	ft_putendl_fd("|  _| || (_| | (_) | |_) | (_) | | (_) | | | | (_| | (_) ||",
+		1);
+	ft_putstr_fd("| |_____\\__, |\\___/|_.__/ ", 1);
+	ft_putendl_fd("\\___/|_|\\___/|_| |_|\\__,_|\\___/ |", 1);
+	ft_putendl_fd("|        __/ |                                            |",
+		1);
+	ft_putendl_fd("|       |___/                                             |",
+		1);
+	ft_putendl_fd("|_________________________________________________________|",
+		1);
+	ft_putendl_fd("by rmakoni & ksinn\n\n \033[0m", 1);
+}
+
 static bool	is_only_spaces(char *str)
 {
 	int	i;
@@ -84,6 +110,7 @@ int	main(void)
 	char	*line;
 	t_list	*env;
 
+	print_banner();
 	env = copy_environ(environ);
 	exit_code = ft_exit_code_holder();
 	setup_interactive_signals();
