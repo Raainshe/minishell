@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:43:31 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/09 13:24:58 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/23 14:03:03 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,12 @@
  */
 static int	print_args(char **args, int start_idx)
 {
-	int		i;
-	char	*trimmed;
+	int	i;
 
 	i = start_idx;
 	while (args[i])
 	{
-		trimmed = ft_strtrim(args[i], "\"\'");
-		if (!trimmed)
-		{
-			gc_free_context(EXECUTOR);
-			return (1);
-		}
-		gc_add_context(EXECUTOR, trimmed);
-		if (ft_putstr_fd(trimmed, STDOUT_FILENO) == -1)
+		if (ft_putstr_fd(args[i], STDOUT_FILENO) == -1)
 			return (1);
 		if (args[i + 1])
 		{
@@ -45,8 +37,6 @@ static int	print_args(char **args, int start_idx)
 	return (0);
 }
 
-// TODO: \n and I guess other \ do not work as in bash,
-// TODO: For now just trimming " and ', need to check if correct (expansion)
 /**
  * @brief Print argument strings to standard output
  * @param args Command arguments (args[0] is "echo")

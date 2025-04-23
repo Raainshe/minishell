@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/22 14:38:47 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/23 14:01:41 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,47 +99,70 @@ char	*ft_strjoin_char(char *str, char c)
 }
 
 /**
- * @brief Handle expansion of strings inside double quotes
- * @param str String to expand (with double quotes)
- * @param env Environment list
- * @return Expanded string or NULL on failure
- */
-static char	*expand_double_quotes(char *str, t_list *env)
-{
-	char	*trimmed;
-	char	*result;
-
-	trimmed = ft_strtrim(str, "\"");
-	if (!trimmed)
-		return (NULL);
-	gc_add_context(TOKENIZER, trimmed);
-	result = expand_variables(trimmed, env);
-	return (result);
-}
-
-/**
- * @brief Expand a token string, handling quotes and environment variables
+ * @brief Expand a token string, handling mixed quotes and environment variables
  * @param str String to expand
  * @param env Environment list
  * @return Expanded string or NULL on failure
  */
 char	*expand(char *str, t_list *env)
 {
-	char	*trimmed;
-	char	*expanded;
+	int		i;
+	char	*result;
+	char	*temp;
+	char	quote_type;
+	int		in_quotes;
 
 	if (!str || !str[0])
 		return (NULL);
-	if (str[0] == '\'')
+	result = ft_strdup("");
+	if (!result)
+		return (NULL);
+	gc_add_context(TOKENIZER, result);
+	i = 0;
+	in_quotes = 0;
+	quote_type = '\0';
+	while (str[i])
 	{
-		trimmed = ft_strtrim(str, "'");
-		if (!trimmed)
-			return (NULL);
-		return (gc_add_context(TOKENIZER, trimmed), trimmed);
+		if (!in_quotes && (str[i] == '\'' || str[i] == '\"'))
+		{
+			in_quotes = 1;
+			quote_type = str[i];
+			i++;
+		}
+		else if (in_quotes && str[i] == quote_type)
+		{
+			in_quotes = 0;
+			quote_type = '\0';
+			i++;
+		}
+		else if ((quote_type == '\"' || !in_quotes) && str[i] == '$' && str[i
+			+ 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i
+				+ 1] == '?'))
+		{
+			if (str[i + 1] == '?')
+			{
+				temp = process_exit_code(result, &i);
+				if (!temp)
+					return (NULL);
+				result = temp;
+			}
+			else
+			{
+				temp = process_variable(str, env, result, &i);
+				if (!temp)
+					return (NULL);
+				result = temp;
+			}
+		}
+		else
+		{
+			temp = ft_strjoin_char(result, str[i]);
+			if (!temp)
+				return (NULL);
+			gc_add_context(TOKENIZER, temp);
+			result = temp;
+			i++;
+		}
 	}
-	else if (str[0] == '\"')
-		expanded = expand_double_quotes(str, env);
-	else
-		expanded = expand_variables(str, env);
-	return (expanded);
+	return (result);
 }
