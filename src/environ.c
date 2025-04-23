@@ -6,35 +6,31 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 14:36:51 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 14:42:03 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/23 15:37:03 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	ft_increment_shlvl(t_list **env, char *shlvl_str)
+static char	*ft_increment_shlvl(char *shlvl_str)
 {
-	t_list	*tmp;
 	char	*old_shlvl;
 	int		shlvl;
 	char	*new_shlvl;
 
 	old_shlvl = ft_strchr(shlvl_str, '=') + 1;
 	if (!old_shlvl)
-		return ;
+		return (NULL);
 	shlvl = ft_atoi(old_shlvl) % 999;
 	shlvl++;
 	old_shlvl = ft_itoa(shlvl);
 	if (!old_shlvl)
-		return ;
-	gc_add_context(ENVIRON, old_shlvl);
+		return (NULL);
 	new_shlvl = ft_strjoin("SHLVL=", old_shlvl);
+	free(old_shlvl);
 	if (!new_shlvl)
-		return ;
-	gc_add_context(ENVIRON, new_shlvl);
-	tmp = ft_lstnew(new_shlvl);
-	gc_add_context(ENVIRON, tmp);
-	ft_lstadd_back(env, tmp);
+		return (NULL);
+	return (new_shlvl);
 }
 
 t_list	*copy_environ(char **environ)
@@ -56,12 +52,9 @@ t_list	*copy_environ(char **environ)
 	while (environ[i])
 	{
 		if (strncmp(environ[i], "SHLVL=", 6) == 0)
-		{
-			ft_increment_shlvl(&env, environ[i]);
-			i++;
-			continue ;
-		}
-		env_copy = ft_strdup(environ[i]);
+			env_copy = ft_increment_shlvl(environ[i]);
+		else
+			env_copy = ft_strdup(environ[i]);
 		if (!env_copy)
 			return (env);
 		gc_add_context(ENVIRON, env_copy);

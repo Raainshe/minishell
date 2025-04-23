@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:43:32 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 17:14:08 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/23 15:56:09 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,11 @@ void	free_gc(void)
 			while (current)
 			{
 				next = current->next;
-				free(current->content);
-				current->content = NULL;
+				if (current->content)
+				{
+					free(current->content);
+					current->content = NULL;
+				}
 				free(current);
 				current = next;
 			}

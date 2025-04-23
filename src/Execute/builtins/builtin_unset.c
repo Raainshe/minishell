@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:20 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 15:21:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/23 15:55:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,9 @@ static void	find_and_remove(char *arg, t_list **env)
 			&& ((char *)current->content)[ft_strlen(arg)] == '=')
 		{
 			if (!prev)
-			{
 				*env = current->next;
-				free(current);
-			}
 			else
-			{
 				prev->next = current->next;
-				free(current);
-			}
 			return ;
 		}
 		prev = current;
