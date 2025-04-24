@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 15:13:28 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 16:49:08 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ char							*ft_strndup(const char *s, size_t n);
 /* tokenize.c */
 void							ft_free_tokens(char **tokens, int j);
 t_token							*ft_tokenize(char **tokens, t_list *env);
+bool							has_quotes(char *str);
 
 /* parser_utils.c */
 void							init_parser_context(t_parser_context *context,

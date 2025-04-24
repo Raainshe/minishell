@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 14:42:18 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 16:54:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_token
 {
 	char			*content;
 	t_token_type	type;
+	bool			was_quoted;
 }					t_token;
 
 typedef enum e_node_type
@@ -72,6 +73,7 @@ typedef struct s_command
 typedef struct s_redirect
 {
 	char			*filename;
+	bool			expand_vars;
 }					t_redirect;
 
 typedef struct s_parser_context

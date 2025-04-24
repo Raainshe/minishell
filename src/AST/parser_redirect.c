@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/03/25 15:28:05 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/24 16:55:16 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 	t_token		next_tok;
 	t_node_type	redirect_type;
 	char		*filename;
+	t_node		*redirect_node;
+	t_redirect	*redirect_data;
 
 	current = current_token(ctx);
 	if (current.type == TOKEN_REDIRECT_IN)
@@ -46,7 +48,14 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 		return (parser_error(ctx, "Expected filename after redirection"), NULL);
 	filename = next_tok.content;
 	next_token(ctx);
-	return (create_redirect_node(redirect_type, filename, cmd_node));
+	redirect_node = create_redirect_node(redirect_type, filename, cmd_node);
+	// For heredocs, set expand_vars based on whether the delimiter was quoted
+	if (redirect_type == NODE_HERE_DOC && redirect_node)
+	{
+		redirect_data = (t_redirect *)redirect_node->data;
+		redirect_data->expand_vars = !next_tok.was_quoted;
+	}
+	return (redirect_node);
 }
 
 /**

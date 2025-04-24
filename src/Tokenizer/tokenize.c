@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/14 13:24:29 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 16:54:53 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,38 @@ void	ft_free_tokens(char **tokens, int j)
 }
 
 /**
+ * @brief Checks if a string contains quotes
+ * @param str The string to check
+ * @return true if the string contains single or double quotes, false otherwise
+ */
+bool	has_quotes(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+/**
  * @brief Creates a token structure from a string content
  * @param content The string content to create a token from
+ * @param env The environment variables list
  * @return A t_token structure with the appropriate token type
  */
-// TODO: handle quotes and expansions
 static t_token	create_token(char *content, t_list *env)
 {
 	t_token	token;
 	size_t	len;
+	bool	was_quoted;
 
+	was_quoted = has_quotes(content);
+	token.was_quoted = was_quoted;
 	content = expand(content, env);
 	token.content = content;
 	token.type = TOKEN_WORD;

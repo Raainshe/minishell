@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 15:15:22 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 17:06:07 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@
  * @brief Handles the heredoc input, reading until the delimiter is encountered
  * @param delimiter The delimiter string that ends the heredoc
  * @param env The environment variables list for expansion
+ * @param expand_vars Whether to expand variables in the heredoc content
  * @return The file descriptor to read from, or -1 on error
  */
-static int	handle_heredoc(char *delimiter, t_list *env)
+static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 {
 	int		pipe_fd[2];
 	pid_t	pid;
@@ -47,8 +48,8 @@ static int	handle_heredoc(char *delimiter, t_list *env)
 				close(pipe_fd[1]);
 				exit(0);
 			}
-			// Expand variables in the heredoc content
-			if (ft_strchr(line, '$'))
+			// Expand variables in the heredoc content only if expand_vars is true
+			if (expand_vars && ft_strchr(line, '$'))
 				line = expand_variables(line, env);
 			ft_putendl_fd(line, pipe_fd[1]);
 			free(line);
@@ -140,7 +141,7 @@ int	execute_redirect(t_node *node, t_list **env)
 	}
 	else if (node->type == NODE_HERE_DOC)
 	{
-		fd = handle_heredoc(redirect->filename, *env);
+		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
 		if (fd == -1)
 		{
 			ft_putstr_fd("minishell: error in heredoc\n", STDERR_FILENO);

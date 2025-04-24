@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nodes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:29:16 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/18 16:37:15 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/24 16:35:07 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
  * @param left The left child node
  * @param right The right child node
  * @return A new node with the specified attributes, or NULL if allocation fails
- * 
+ *
  * This function allocates and initializes a new abstract syntax tree node
  * with the given type, data, and child nodes.
  */
@@ -45,7 +45,7 @@ t_node	*create_node(t_node_type type, void *data, t_node *left, t_node *right)
  * @brief Creates a command node with arguments
  * @param args The NULL-terminated array of command arguments
  * @return A new command node, or NULL if allocation fails
- * 
+ *
  * This function creates a node of type NODE_COMMAND with the specified
  * command arguments. The first argument is treated as the command name.
  */
@@ -70,7 +70,7 @@ t_node	*create_command_node(char **args)
  * @param filename The filename or delimiter for the redirection
  * @param command The command node to which this redirection applies
  * @return A new redirection node, or NULL if allocation fails
- * 
+ *
  * This function creates a redirection node of the specified type
  * with the given filename, and sets the command as its left child.
  */
@@ -84,6 +84,7 @@ t_node	*create_redirect_node(t_node_type type, char *filename, t_node *command)
 		return (NULL);
 	gc_add_context(AST, redirect);
 	redirect->filename = filename;
+	redirect->expand_vars = true;
 	node = create_node(type, redirect, command, NULL);
 	return (node);
 }
@@ -93,7 +94,7 @@ t_node	*create_redirect_node(t_node_type type, char *filename, t_node *command)
  * @param left The command node on the left side of the pipe
  * @param right The command node on the right side of the pipe
  * @return A new pipe node, or NULL if allocation fails
- * 
+ *
  * This function creates a node of type NODE_PIPE with the left command
  * as its left child and the right command as its right child.
  */
