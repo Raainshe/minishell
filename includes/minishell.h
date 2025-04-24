@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 15:46:18 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 13:34:03 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,21 @@ bool							ft_is_multi_char_op(char *str, int i);
 /* ms_split_helper_helper.c */
 bool							ft_handle_token_start(t_token_info *info);
 bool							ft_handle_token_end(t_token_info *info);
-bool							ft_handle_operator(t_token_info *info,
-									char current, char next);
-bool							ft_handle_next_operator(t_token_info *info,
-									char next);
-bool							ft_handle_multi_char_op(t_token_info *info,
-									char current, char next);
+bool	ft_handle_operator(t_token_info *info,
+						char current,
+						char next);
+bool	ft_handle_next_operator(t_token_info *info,
+								char next);
+bool	ft_handle_multi_char_op(t_token_info *info,
+								char current,
+								char next);
 /* ms_split_helper.c */
 void							ft_update_quote_state(char c, bool *in_quote,
 									bool *in_double_quote);
 int								ft_count_tokens(char *str);
-void							ft_init_token_info(t_token_info *info,
-									char *str, int token_count);
+void	ft_init_token_info(t_token_info *info,
+						char *str,
+						int token_count);
 /* ms_split.c */
 char							**ft_split_tokens(char *str);
 bool							ft_add_token(t_token_info *info, int start,
@@ -64,19 +67,20 @@ void							ft_free_tokens(char **tokens, int j);
 t_token							*ft_tokenize(char **tokens, t_list *env);
 
 /* parser_utils.c */
-void							init_parser_context(t_parser_context *context,
-									t_token *tokens);
+void	init_parser_context(t_parser_context *context,
+							t_token *tokens);
 t_token							current_token(t_parser_context *context);
 t_token							peek_next_token(t_parser_context *context);
 t_token							next_token(t_parser_context *context);
-void							parser_error(t_parser_context *context,
-									char *msg);
+void	parser_error(t_parser_context *context,
+					char *msg);
 /* nodes.c */
 t_node							*create_node(t_node_type type, void *data,
 									t_node *left, t_node *right);
 t_node							*create_command_node(char **args);
-t_node							*create_redirect_node(t_node_type type,
-									char *filename, t_node *command);
+t_node	*create_redirect_node(t_node_type type,
+								char *filename,
+								t_node *command);
 t_node							*create_pipe_node(t_node *left, t_node *right);
 /* parser.c */
 t_node							*parse_tokens(t_token *tokens);
@@ -84,8 +88,8 @@ t_node							*parse_pipeline(t_parser_context *context);
 /*parser_command.c*/
 t_node							*parse_command(t_parser_context *context);
 /*parser_redirect.c*/
-t_node							*handle_redirection(t_parser_context *context,
-									t_node *command);
+t_node	*handle_redirection(t_parser_context *context,
+							t_node *command);
 
 /*executor.c*/
 int								execute_node(t_node *node, t_list **env);
