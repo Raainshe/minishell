@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:49:00 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 16:02:34 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 15:47:56 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ static int	update_env(char *pwd, char *old_pwd, t_list **env)
 	return (0);
 }
 
+// TODO: add ~ functionality
+// TODO: change getenv to own function
 int	builtin_cd(char **args, t_list **env)
 {
 	char	*path;
@@ -56,7 +58,12 @@ int	builtin_cd(char **args, t_list **env)
 	if (!args[1])
 		path = getenv("HOME");
 	else if (ft_strncmp(args[1], "-", 1) == 0)
+	{
 		path = getenv("OLDPWD");
+		if (!path)
+			return (ft_putendl_fd("minishell: cd: OLDPWD not set",
+					STDERR_FILENO), 1);
+	}
 	else
 		path = args[1];
 	if (!path)
