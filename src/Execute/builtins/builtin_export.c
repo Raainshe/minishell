@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/14 13:44:15 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 14:28:49 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ int	builtin_export(char **args, t_list **env)
 	int		i;
 	char	*arg;
 	t_list	*duplicate;
-	t_list	*tmp;
 
 	i = 1;
 	if (!args[1])
@@ -104,19 +103,10 @@ int	builtin_export(char **args, t_list **env)
 			if (duplicate)
 				duplicate->content = arg;
 			else
-			{
-				tmp = ft_lstnew(arg);
-				gc_add_context(ENVIRON, tmp);
-				ft_lstadd_back(env, tmp);
-			}
+				add_arg(env, arg);
 		}
 		else
-		{
-			ft_putstr_fd("export: ", STDERR_FILENO);
-			ft_putstr_fd(args[i], STDERR_FILENO);
-			ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
-			return (1);
-		}
+			return (print_error(args[i]));
 		i++;
 	}
 	return (0);
