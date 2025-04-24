@@ -3,20 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/15 12:50:40 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 13:44:15 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Execute a pipe node in the AST
- * @param node The pipe node to execute
- * @param env The environment variables
- * @return The exit status of the last command in the pipeline
+ * @brief Executes a pipeline of two commands connected by a pipe.
+ *
+ * This function takes a pipe node from the Abstract Syntax Tree (AST) and
+ * executes the commands represented by its left and right child nodes.
+ * The left node's output is piped as input to the right node. The function
+ * handles the creation of the pipe, forking of child processes, and signal
+ * management. It waits for both child processes to complete and returns
+ * the exit status of the last command in the pipeline.
+ *
+ * @param node The pipe node containing the commands to execute. Must have
+ *             both left and right child nodes.
+ * @param env A pointer to the environment variables list.
+ * @return The exit status of the last command in the pipeline, or an error
+ *         code if the execution fails.
  */
 int	execute_pipe(t_node *node, t_list **env)
 {
