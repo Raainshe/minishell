@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:20 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 15:55:59 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 15:23:40 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,5 @@ int	builtin_unset(char **args, t_list **env)
 		find_and_remove(args[i], env);
 		i++;
 	}
-	return (-1);
+	return (0);
 }
