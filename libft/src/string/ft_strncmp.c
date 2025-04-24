@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/09 13:19:52 by ksinn             #+#    #+#             */
-/*   Updated: 2024/10/11 14:39:40 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/24 15:01:49 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	size_t			i;
 
 	i = 0;
-	while (i < n && s1[i])
+	while (i < n && s1[i] && s2[i])
 	{
 		c1 = (unsigned char)s1[i];
 		c2 = (unsigned char)s2[i];
