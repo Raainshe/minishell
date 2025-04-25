@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 13:30:52 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 14:12:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,9 +157,19 @@ int	main(void)
 		// print_ast(ast, 0); // Uncomment for debugging
 		setup_noninteractive_signals();
 		*exit_code = execute_node(ast, &env);
+		// Handle any received signals
 		if (g_signal_received)
+		{
 			*exit_code = get_signal_status();
-		setup_interactive_signals();
+			// Always reset the terminal state after a signal
+			// This will also set up interactive signals
+			reset_term_after_signal();
+		}
+		else
+		{
+			setup_interactive_signals();
+		}
+		// Cleanup for this iteration
 		gc_free_context(TOKENIZER);
 		gc_free_context(AST);
 		gc_free_context(EXECUTOR);

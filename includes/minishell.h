@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 13:05:16 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 14:06:09 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void							setup_interactive_signals(void);
 void							setup_noninteractive_signals(void);
 void							setup_heredoc_signals(void);
 void							reset_signals(void);
+void							reset_term_after_signal(void);
 int								get_signal_status(void);
 
 /* exit.c */

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 13:49:59 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 14:13:22 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,10 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 				&& WEXITSTATUS(status) != 0))
 		{
 			close(pipe_fd[0]);
+			if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+			{
+				g_signal_received = SIGINT;
+			}
 			return (-1);
 		}
 	}
