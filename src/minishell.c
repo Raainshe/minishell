@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 16:37:16 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 13:30:52 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ static bool	is_only_spaces(char *str)
 	return (true);
 }
 
-// TODO: only isspace should prompt new line
 int	main(void)
 {
 	char	*input;

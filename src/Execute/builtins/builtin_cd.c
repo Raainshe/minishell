@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:49:00 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 13:05:08 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 13:30:48 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ static int	update_env(char *pwd, char *old_pwd, t_list **env)
 	return (0);
 }
 
-// TODO: add ~ functionality
 int	builtin_cd(char **args, t_list **env)
 {
 	char	*path;
@@ -56,6 +55,12 @@ int	builtin_cd(char **args, t_list **env)
 		return (1);
 	if (!args[1])
 		path = ft_getenv("HOME", *env);
+	else if (args[1][0] == '~')
+	{
+		path = ft_getenv("HOME", *env);
+		path = ft_strjoin(path, args[1] + 1);
+		gc_add_context(ENVIRON, path);
+	}
 	else if (ft_strncmp(args[1], "-", 1) == 0)
 	{
 		path = ft_getenv("OLDPWD", *env);
