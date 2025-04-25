@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:26:06 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 17:06:07 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 13:48:21 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ static void	handle_sigint_noninteractive(int signum)
 static void	handle_sigint_heredoc(int signum)
 {
 	g_signal_received = signum;
-	write(STDERR_FILENO, "\n", 1);
 	exit(1);
 }
 

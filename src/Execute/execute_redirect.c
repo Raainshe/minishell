@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 17:06:07 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 13:49:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 				close(pipe_fd[1]);
 				exit(0);
 			}
-			// Expand variables in the heredoc content only if expand_vars is true
 			if (expand_vars && ft_strchr(line, '$'))
 				line = expand_variables(line, env);
 			ft_putendl_fd(line, pipe_fd[1]);
@@ -143,10 +142,7 @@ int	execute_redirect(t_node *node, t_list **env)
 	{
 		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
 		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: error in heredoc\n", STDERR_FILENO);
 			return (1);
-		}
 		saved_fd = dup(STDIN_FILENO);
 		dup2(fd, STDIN_FILENO);
 		close(fd);
