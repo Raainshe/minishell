@@ -6,11 +6,37 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 12:53:14 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/25 14:13:53 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 14:25:57 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/**
+ * @brief Handles SIGINT signal in heredoc mode
+ * @param signum The signal number (always SIGINT)
+ *
+ * This function sets the global signal flag, writes a newline to stderr,
+ * and exits the heredoc process with status 1.
+ */
+void	handle_sigint_heredoc(int signum)
+{
+	g_signal_received = signum;
+	exit(1);
+}
+
+/**
+ * @brief Handles SIGQUIT signal in non-interactive mode
+ * @param signum The signal number (always SIGQUIT)
+ *
+ * This function sets the global signal flag and writes a message to stderr
+ * indicating a core dump.
+ */
+void	handle_sigquit_noninteractive(int signum)
+{
+	g_signal_received = signum;
+	write(STDERR_FILENO, "Quit (core dumped)\n", 19);
+}
 
 /**
  * @brief Resets signal handlers to their default behavior
@@ -33,16 +59,11 @@ void	reset_term_after_signal(void)
 {
 	struct termios	term;
 
-	// Create a clean break to avoid duplicate prompts
 	rl_free_line_state();
 	rl_cleanup_after_signal();
-	// Reset terminal mode completely
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag |= (ECHOCTL | ECHO | ICANON);
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-	// Write a proper newline directly to ensure we're on a fresh line
-	// write(STDERR_FILENO, "\n", 1);
-	// Reset signal handlers
 	setup_interactive_signals();
 }
 

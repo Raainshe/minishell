@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:26:06 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 14:12:49 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 14:25:41 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,32 +40,6 @@ static void	handle_sigint_noninteractive(int signum)
 {
 	g_signal_received = signum;
 	write(STDERR_FILENO, "\n", 1);
-}
-
-/**
- * @brief Handles SIGINT signal in heredoc mode
- * @param signum The signal number (always SIGINT)
- *
- * This function sets the global signal flag, writes a newline to stderr,
- * and exits the heredoc process with status 1.
- */
-static void	handle_sigint_heredoc(int signum)
-{
-	g_signal_received = signum;
-	exit(1);
-}
-
-/**
- * @brief Handles SIGQUIT signal in non-interactive mode
- * @param signum The signal number (always SIGQUIT)
- *
- * This function sets the global signal flag and writes a message to stderr
- * indicating a core dump.
- */
-static void	handle_sigquit_noninteractive(int signum)
-{
-	g_signal_received = signum;
-	write(STDERR_FILENO, "Quit (core dumped)\n", 19);
 }
 
 /**
