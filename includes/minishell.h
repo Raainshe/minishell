@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 16:49:08 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 13:05:16 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ int								builtin_exit(char **args);
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
+char							*ft_getenv(const char *name, t_list *env);
 
 /* expansion.c */
 char							*expand(char *str, t_list *env);

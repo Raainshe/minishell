@@ -6,11 +6,38 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 14:36:51 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 15:37:03 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/25 13:05:11 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/**
+ * @brief Get the value of an environment variable from the environment list
+ * @param name Name of the variable to get
+ * @param env Environment list
+ * @return Value of the variable or NULL if not found
+ */
+char	*ft_getenv(const char *name, t_list *env)
+{
+	int		name_len;
+	t_list	*current;
+	char	*env_entry;
+
+	if (!name || !env)
+		return (NULL);
+	name_len = ft_strlen(name);
+	current = env;
+	while (current)
+	{
+		env_entry = (char *)current->content;
+		if (ft_strncmp(env_entry, name, name_len) == 0
+			&& env_entry[name_len] == '=')
+			return (env_entry + name_len + 1);
+		current = current->next;
+	}
+	return (NULL);
+}
 
 static char	*ft_increment_shlvl(char *shlvl_str)
 {
