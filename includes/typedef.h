@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   typedef.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 16:54:59 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/26 14:24:38 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,5 +83,13 @@ typedef struct s_parser_context
 	int				error;
 	char			*error_msg;
 }					t_parser_context;
+
+typedef struct s_expansion_info
+{
+	int				i;
+	char			quote_type;
+	int				in_quotes;
+	char			*result;
+}					t_expansion_info;
 
 #endif

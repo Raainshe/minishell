@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/26 12:39:09 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/26 14:42:17 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,29 @@ char							*get_env_value(char *var_name, t_list *env);
 char							*extract_var_name(char *str);
 char							*process_variable(char *str, t_list *env,
 									char *result, int *i_ptr);
+
+/*expansion_utlis.c*/
+void							initialise_expand_var(int *i, int *in_quotes,
+									char *quote_type);
+void	update_quote_type(int *in_quotes,
+						char *quote_type,
+						char character,
+						int *i);
+void	update_quote_type_neg(int *in_quotes,
+							char *quote_type,
+							int *i);
+char							*process_expansion_loop(char *str, t_list *env,
+									char *result);
+void	init_expansion_info(t_expansion_info *info,
+							char *result);
+char							*process_var_expansion(char *str, t_list *env,
+									char *result, int *i);
+char							*append_char_to_result(char *result, char *str,
+									int *i);
+
+/*expansion_utlis_two.c*/
+bool							is_expandable_variable(char *str, int i,
+									char quote_type, int in_quotes);
 
 /* signals.c */
 void							setup_interactive_signals(void);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 14:01:41 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/26 14:05:16 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static char	*process_expansion_char(char *str, t_list *env, char *result,
 	if (str[*i] == '$' && str[*i + 1] == '?')
 		return (process_exit_code(result, i));
 	if (str[*i] == '$' && str[*i + 1] && (ft_isalnum(str[*i + 1]) || str[*i
-			+ 1] == '_'))
+		+ 1] == '_'))
 	{
 		temp = process_variable(str, env, result, i);
 		if (!temp)
@@ -106,11 +106,7 @@ char	*ft_strjoin_char(char *str, char c)
  */
 char	*expand(char *str, t_list *env)
 {
-	int		i;
 	char	*result;
-	char	*temp;
-	char	quote_type;
-	int		in_quotes;
 
 	if (!str || !str[0])
 		return (NULL);
@@ -118,51 +114,5 @@ char	*expand(char *str, t_list *env)
 	if (!result)
 		return (NULL);
 	gc_add_context(TOKENIZER, result);
-	i = 0;
-	in_quotes = 0;
-	quote_type = '\0';
-	while (str[i])
-	{
-		if (!in_quotes && (str[i] == '\'' || str[i] == '\"'))
-		{
-			in_quotes = 1;
-			quote_type = str[i];
-			i++;
-		}
-		else if (in_quotes && str[i] == quote_type)
-		{
-			in_quotes = 0;
-			quote_type = '\0';
-			i++;
-		}
-		else if ((quote_type == '\"' || !in_quotes) && str[i] == '$' && str[i
-			+ 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i
-				+ 1] == '?'))
-		{
-			if (str[i + 1] == '?')
-			{
-				temp = process_exit_code(result, &i);
-				if (!temp)
-					return (NULL);
-				result = temp;
-			}
-			else
-			{
-				temp = process_variable(str, env, result, &i);
-				if (!temp)
-					return (NULL);
-				result = temp;
-			}
-		}
-		else
-		{
-			temp = ft_strjoin_char(result, str[i]);
-			if (!temp)
-				return (NULL);
-			gc_add_context(TOKENIZER, temp);
-			result = temp;
-			i++;
-		}
-	}
-	return (result);
+	return (process_expansion_loop(str, env, result));
 }
