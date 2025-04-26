@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_redirect.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 14:13:22 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/26 12:35:55 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 {
 	int		pipe_fd[2];
 	pid_t	pid;
-	char	*line;
-	int		status;
 
 	if (pipe(pipe_fd) == -1)
 		return (-1);
@@ -36,125 +34,177 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 		return (-1);
 	}
 	if (pid == 0)
-	{
-		setup_heredoc_signals();
-		close(pipe_fd[0]);
-		while (1)
-		{
-			line = readline("> ");
-			if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
-			{
-				free(line);
-				close(pipe_fd[1]);
-				exit(0);
-			}
-			if (expand_vars && ft_strchr(line, '$'))
-				line = expand_variables(line, env);
-			ft_putendl_fd(line, pipe_fd[1]);
-			free(line);
-		}
-	}
+		handle_heredoc_child(pipe_fd, delimiter, env, expand_vars);
 	else
+		return (handle_heredoc_parent(pipe_fd, pid));
+	return (-1);
+}
+
+/**
+ * @brief Handles input redirection from a file
+ *
+ * This function implements the input redirection operation (<),
+	opening the specified
+
+	* file for reading and redirecting STDIN to read from this file. It saves
+	the original
+
+	* STDIN file descriptor to restore it after executing the command. If the
+	file cannot
+ * be opened, an appropriate error message is displayed.
+ *
+ * @param node The redirection node containing the filename to read from
+ * @param env A pointer to the environment variables list
+ * @return The exit status of the command after redirection,
+	or 1 if the file cannot be opened
+ */
+static int	handle_redirect_in(t_node *node, t_list **env)
+{
+	t_redirect	*redirect;
+	int			fd;
+	int			saved_fd;
+	int			status;
+
+	redirect = (t_redirect *)node->data;
+	fd = open(redirect->filename, O_RDONLY);
+	if (fd == -1)
 	{
-		close(pipe_fd[1]);
-		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status) || (WIFEXITED(status)
-				&& WEXITSTATUS(status) != 0))
-		{
-			close(pipe_fd[0]);
-			if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-			{
-				g_signal_received = SIGINT;
-			}
-			return (-1);
-		}
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(redirect->filename, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+		ft_putendl_fd(strerror(errno), STDERR_FILENO);
+		return (1);
 	}
-	return (pipe_fd[0]);
+	saved_fd = dup(STDIN_FILENO);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	status = execute_node(node->left, env);
+	dup2(saved_fd, STDIN_FILENO);
+	close(saved_fd);
+	return (status);
+}
+
+/**
+ * @brief Handles output redirection to a file
+ *
+ * This function implements output redirection (> and >>),
+	creating or opening the
+
+	* specified file for writing. It supports both truncating the file (>) and
+	appending
+
+	* to it (>>). The function saves the original STDOUT to restore it after
+	executing
+ * the command. If the file cannot be opened or created,
+	an error message is displayed.
+ *
+ * @param node The redirection node containing the filename to write to
+ * @param env A pointer to the environment variables list
+
+	* @param append Boolean flag indicating whether to append to the file (true)
+		or truncate it (false)
+ * @return The exit status of the command after redirection,
+	or 1 if an error occurs
+ */
+static int	handle_redirect_out(t_node *node, t_list **env, bool append)
+{
+	t_redirect	*redirect;
+	int			fd;
+	int			saved_fd;
+	int			status;
+	int			flags;
+
+	redirect = (t_redirect *)node->data;
+	flags = O_WRONLY | O_CREAT;
+	if (append)
+		flags |= O_APPEND;
+	else
+		flags |= O_TRUNC;
+	fd = open(redirect->filename, flags, 0644);
+	if (fd == -1)
+		return (print_redirect_error(redirect));
+	saved_fd = dup(STDOUT_FILENO);
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	status = execute_node(node->left, env);
+	dup2(saved_fd, STDOUT_FILENO);
+	close(saved_fd);
+	return (status);
+}
+
+/**
+ * @brief Handles heredoc input redirection
+ *
+ * This function processes heredoc redirection (<<),
+	reading input until the specified
+ * delimiter is encountered. The collected content is stored in a pipe,
+	which is then
+
+	* connected to the STDIN of the command. It supports variable expansion
+	within the
+
+	* heredoc content based on the expand_vars flag. The function saves the
+	original
+ * STDIN to restore it after executing the command.
+ *
+ * @param node The heredoc redirection node containing the delimiter string
+
+	* @param env A pointer to the environment variables list used for variable
+	expansion
+ * @return The exit status of the command after redirection,
+	or 1 if an error occurs
+ */
+static int	handle_here_doc(t_node *node, t_list **env)
+{
+	t_redirect	*redirect;
+	int			fd;
+	int			saved_fd;
+	int			status;
+
+	redirect = (t_redirect *)node->data;
+	fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
+	if (fd == -1)
+		return (1);
+	saved_fd = dup(STDIN_FILENO);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	status = execute_node(node->left, env);
+	dup2(saved_fd, STDIN_FILENO);
+	close(saved_fd);
+	return (status);
 }
 
 /**
  * @brief Execute a redirection node in the AST
- * @param node The redirection node to execute
- * @param env The environment variables
- * @return The exit status of the command
+ *
+
+	* This function processes a redirection node from the Abstract Syntax Tree
+	(AST)
+ * and executes the appropriate redirection operation based on the node type.
+ * It supports input redirection (<), output redirection (>),
+	output appending (>>),
+ * and heredoc (<<) operations. The function delegates to specialized handlers
+ * for each type of redirection.
+ *
+ * @param node The redirection node to execute, containing the type and data for
+ *             the redirection operation
+
+	* @param env A pointer to the environment variables list used for variable
+				expansion
+ * @return The exit status of the command after redirection, or an error code if
+ *         the redirection fails
  */
 int	execute_redirect(t_node *node, t_list **env)
 {
-	int			fd;
-	int			saved_fd;
-	int			status;
-	t_redirect	*redirect;
-
 	if (!node || !node->data || !node->left)
 		return (1);
-	redirect = (t_redirect *)node->data;
 	if (node->type == NODE_REDIRECT_IN)
-	{
-		fd = open(redirect->filename, O_RDONLY);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(redirect->filename, STDERR_FILENO);
-			ft_putstr_fd(": ", STDERR_FILENO);
-			ft_putendl_fd(strerror(errno), STDERR_FILENO);
-			return (1);
-		}
-		saved_fd = dup(STDIN_FILENO);
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-		status = execute_node(node->left, env);
-		dup2(saved_fd, STDIN_FILENO);
-		close(saved_fd);
-	}
+		return (handle_redirect_in(node, env));
 	else if (node->type == NODE_REDIRECT_OUT)
-	{
-		fd = open(redirect->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(redirect->filename, STDERR_FILENO);
-			ft_putstr_fd(": ", STDERR_FILENO);
-			ft_putendl_fd(strerror(errno), STDERR_FILENO);
-			return (1);
-		}
-		saved_fd = dup(STDOUT_FILENO);
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
-		status = execute_node(node->left, env);
-		dup2(saved_fd, STDOUT_FILENO);
-		close(saved_fd);
-	}
+		return (handle_redirect_out(node, env, false));
 	else if (node->type == NODE_APPEND)
-	{
-		fd = open(redirect->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(redirect->filename, STDERR_FILENO);
-			ft_putstr_fd(": ", STDERR_FILENO);
-			ft_putendl_fd(strerror(errno), STDERR_FILENO);
-			return (1);
-		}
-		saved_fd = dup(STDOUT_FILENO);
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
-		status = execute_node(node->left, env);
-		dup2(saved_fd, STDOUT_FILENO);
-		close(saved_fd);
-	}
+		return (handle_redirect_out(node, env, true));
 	else if (node->type == NODE_HERE_DOC)
-	{
-		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
-		if (fd == -1)
-			return (1);
-		saved_fd = dup(STDIN_FILENO);
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-		status = execute_node(node->left, env);
-		dup2(saved_fd, STDIN_FILENO);
-		close(saved_fd);
-	}
-	else
-		status = 1;
-	return (status);
+		return (handle_here_doc(node, env));
+	return (1);
 }
