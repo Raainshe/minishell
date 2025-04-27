@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:49:00 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 13:30:48 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/27 10:36:40 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,17 @@ static int	update_env(char *pwd, char *old_pwd, t_list **env)
 	return (0);
 }
 
-int	builtin_cd(char **args, t_list **env)
+/**
+ * @brief Determines the target path for cd based on arguments
+ *
+ * @param args Command arguments
+ * @param env Environment variables list
+ * @return Target path or NULL if an error occurred
+ */
+static char	*get_cd_path(char **args, t_list **env)
 {
 	char	*path;
-	char	current_dir[PATH_MAX];
-	char	*old_pwd;
 
-	if (!getcwd(current_dir, PATH_MAX))
-		return (1);
 	if (!args[1])
 		path = ft_getenv("HOME", *env);
 	else if (args[1][0] == '~')
@@ -65,11 +68,35 @@ int	builtin_cd(char **args, t_list **env)
 	{
 		path = ft_getenv("OLDPWD", *env);
 		if (!path)
-			return (ft_putendl_fd("minishell: cd: OLDPWD not set",
-					STDERR_FILENO), 1);
+		{
+			ft_putendl_fd("minishell: cd: OLDPWD not set", STDERR_FILENO);
+			return (NULL);
+		}
 	}
 	else
 		path = args[1];
+	return (path);
+}
+
+/**
+ * @brief Built-in cd command implementation
+ *
+ * Changes the current working directory and updates PWD and OLDPWD
+ * environment variables.
+ *
+ * @param args Command arguments
+ * @param env Environment variables list
+ * @return 0 on success, 1 on failure
+ */
+int	builtin_cd(char **args, t_list **env)
+{
+	char	*path;
+	char	current_dir[PATH_MAX];
+	char	*old_pwd;
+
+	if (!getcwd(current_dir, PATH_MAX))
+		return (1);
+	path = get_cd_path(args, env);
 	if (!path)
 		return (1);
 	if (chdir(path) != 0)

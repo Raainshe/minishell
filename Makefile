@@ -85,6 +85,7 @@ $(NAME): $(OUT_DIR) $(LIBFT) $(OBJS)
 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
 	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME)
 	@echo "$(GREEN)$(NAME) built successfully!$(NC)"
+	@echo "$(GREEN)Run with ./minishell :)$(NC)"
 
 $(OUT_DIR)/%.o: %.c
 	@echo "$(CYAN)Compiling $<...$(NC)"

@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:43:32 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/26 16:48:54 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/27 10:40:19 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ static void	free_collection(t_list **collections, int index)
 void	free_gc(void)
 {
 	t_list	**collections;
-	t_list	*current;
-	t_list	*next;
 	int		i;
 
 	collections = gc_holder();
