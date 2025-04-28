@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 16:54:53 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/28 14:16:52 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,16 @@ bool	has_quotes(char *str)
 	return (false);
 }
 
+static void	initialise_token_variables(bool *was_quoted, t_token *token,
+		char **content, t_list *env)
+{
+	*was_quoted = has_quotes(*content);
+	token->was_quoted = *was_quoted;
+	*content = expand(*content, env);
+	token->content = *content;
+	token->type = TOKEN_WORD;
+}
+
 /**
  * @brief Creates a token structure from a string content
  * @param content The string content to create a token from
@@ -65,11 +75,7 @@ static t_token	create_token(char *content, t_list *env)
 	size_t	len;
 	bool	was_quoted;
 
-	was_quoted = has_quotes(content);
-	token.was_quoted = was_quoted;
-	content = expand(content, env);
-	token.content = content;
-	token.type = TOKEN_WORD;
+	initialise_token_variables(&was_quoted, &token, &content, env);
 	len = ft_strlen(content);
 	if (len == 1)
 	{

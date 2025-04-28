@@ -3,14 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   gc_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:43:32 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 15:56:09 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/27 10:40:19 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "garbage_collector.h"
+
+/**
+ * @brief Frees all memory in a specific collection
+ *
+ * Iterates through the linked list of a collection and frees
+ * each node and its content, then sets the collection pointer to NULL.
+ *
+ * @param collections Array of collections
+ * @param index Index of the collection to free
+ * @return None (void function)
+ */
+static void	free_collection(t_list **collections, int index)
+{
+	t_list	*current;
+	t_list	*next;
+
+	if (!collections || index < 0 || index >= GC_ARR_SIZE
+		|| !collections[index])
+		return ;
+	current = collections[index];
+	while (current)
+	{
+		next = current->next;
+		if (current->content)
+		{
+			free(current->content);
+			current->content = NULL;
+		}
+		free(current);
+		current = next;
+	}
+	collections[index] = NULL;
+}
 
 /**
  * @brief Frees all memory tracked by the garbage collector
@@ -24,8 +57,6 @@
 void	free_gc(void)
 {
 	t_list	**collections;
-	t_list	*current;
-	t_list	*next;
 	int		i;
 
 	collections = gc_holder();
@@ -36,19 +67,7 @@ void	free_gc(void)
 	{
 		if (collections[i])
 		{
-			current = collections[i];
-			while (current)
-			{
-				next = current->next;
-				if (current->content)
-				{
-					free(current->content);
-					current->content = NULL;
-				}
-				free(current);
-				current = next;
-			}
-			collections[i] = NULL;
+			free_collection(collections, i);
 		}
 		i++;
 	}

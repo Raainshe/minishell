@@ -3,14 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 16:55:16 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/28 14:28:04 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static t_node_type	set_redirect_type(t_token current)
+{
+	if (current.type == TOKEN_REDIRECT_IN)
+		return (NODE_REDIRECT_IN);
+	else if (current.type == TOKEN_REDIRECT_OUT)
+		return (NODE_REDIRECT_OUT);
+	else if (current.type == TOKEN_HERE_DOC)
+		return (NODE_HERE_DOC);
+	else if (current.type == TOKEN_APPEND)
+		return (NODE_APPEND);
+	else
+		return (NODE_NULL);
+}
 
 /**
  * @brief Processes a single redirection token and creates a redirection node
@@ -32,15 +46,8 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 	t_redirect	*redirect_data;
 
 	current = current_token(ctx);
-	if (current.type == TOKEN_REDIRECT_IN)
-		redirect_type = NODE_REDIRECT_IN;
-	else if (current.type == TOKEN_REDIRECT_OUT)
-		redirect_type = NODE_REDIRECT_OUT;
-	else if (current.type == TOKEN_HERE_DOC)
-		redirect_type = NODE_HERE_DOC;
-	else if (current.type == TOKEN_APPEND)
-		redirect_type = NODE_APPEND;
-	else
+	redirect_type = set_redirect_type(current);
+	if (redirect_type == NODE_NULL)
 		return (cmd_node);
 	next_token(ctx);
 	next_tok = current_token(ctx);
@@ -49,7 +56,6 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 	filename = next_tok.content;
 	next_token(ctx);
 	redirect_node = create_redirect_node(redirect_type, filename, cmd_node);
-	// For heredocs, set expand_vars based on whether the delimiter was quoted
 	if (redirect_type == NODE_HERE_DOC && redirect_node)
 	{
 		redirect_data = (t_redirect *)redirect_node->data;

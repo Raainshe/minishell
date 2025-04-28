@@ -25,6 +25,8 @@ SRCS =	minishell.c \
 		ms_split_helper_helper_helper.c \
 		expansion.c \
 		expansion_helper.c \
+		expansion_utils.c \
+		expansion_utlis_two.c \
 		ft_strndup.c \
 		tokenize.c \
 		gc_free_context.c \
@@ -37,8 +39,10 @@ SRCS =	minishell.c \
 		parser.c \
 		executor.c \
 		execute_command.c \
+		execute_command_helper.c \
 		execute_pipe.c \
 		execute_redirect.c \
+		execute_redirect_helper.c \
 		builtin_pwd.c \
 		builtin_echo.c \
 		builtin_exit.c \
@@ -82,6 +86,7 @@ $(NAME): $(OUT_DIR) $(LIBFT) $(OBJS)
 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
 	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME)
 	@echo "$(GREEN)$(NAME) built successfully!$(NC)"
+	@echo "$(GREEN)Run with ./minishell :)$(NC)"
 
 $(OUT_DIR)/%.o: %.c
 	@echo "$(CYAN)Compiling $<...$(NC)"
