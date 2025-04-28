@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/25 14:12:59 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/28 15:58:26 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,31 +58,31 @@
 // 	print_ast(node->right, depth + 1);
 // }
 
-static void	print_banner(void)
-{
-	ft_putstr_fd("\033[0;34m", 1);
-	ft_putendl_fd(" _________________________________________________________",
-		1);
-	ft_putendl_fd("|  _____            _           _                 _       |",
-		1);
-	ft_putendl_fd("| |_   _|          | |         | |               | |      |",
-		1);
-	ft_putendl_fd("|   | |  __ _  ___ | |__   ___ | | ___  _ __   __| | ___  |",
-		1);
-	ft_putstr_fd("|   | | / _` |/ _ \\| '_ \\ / _ \\| ", 1);
-	ft_putendl_fd("|/ _ \\| '_ \\ / _` |/ _ \\ |", 1);
-	ft_putendl_fd("|  _| || (_| | (_) | |_) | (_) | | (_) | | | | (_| | (_) ||",
-		1);
-	ft_putstr_fd("| |_____\\__, |\\___/|_.__/ ", 1);
-	ft_putendl_fd("\\___/|_|\\___/|_| |_|\\__,_|\\___/ |", 1);
-	ft_putendl_fd("|        __/ |                                            |",
-		1);
-	ft_putendl_fd("|       |___/                                             |",
-		1);
-	ft_putendl_fd("|_________________________________________________________|",
-		1);
-	ft_putendl_fd("by rmakoni & ksinn\n\n \033[0m", 1);
-}
+// static void	print_banner(void)
+// {
+// 	ft_putstr_fd("\033[0;34m", 1);
+// 	ft_putendl_fd(" _________________________________________________________",
+// 		1);
+// 	ft_putendl_fd("|  _____            _           _                 _       |",
+// 		1);
+// 	ft_putendl_fd("| |_   _|          | |         | |               | |      |",
+// 		1);
+// 	ft_putendl_fd("|   | |  __ _  ___ | |__   ___ | | ___  _ __   __| | ___  |",
+// 		1);
+// 	ft_putstr_fd("|   | | / _` |/ _ \\| '_ \\ / _ \\| ", 1);
+// 	ft_putendl_fd("|/ _ \\| '_ \\ / _` |/ _ \\ |", 1);
+// 	ft_putendl_fd("|  _| || (_| | (_) | |_) | (_) | | (_) | | | | (_| | (_) ||",
+// 		1);
+// 	ft_putstr_fd("| |_____\\__, |\\___/|_.__/ ", 1);
+// 	ft_putendl_fd("\\___/|_|\\___/|_| |_|\\__,_|\\___/ |", 1);
+// 	ft_putendl_fd("|        __/ |                                            |",
+// 		1);
+// 	ft_putendl_fd("|       |___/                                             |",
+// 		1);
+// 	ft_putendl_fd("|_________________________________________________________|",
+// 		1);
+// 	ft_putendl_fd("by rmakoni & ksinn\n\n \033[0m", 1);
+// }
 
 static bool	is_only_spaces(char *str)
 {
@@ -108,8 +108,9 @@ int	main(void)
 	char	pwd[PATH_MAX + 3];
 	char	*line;
 	t_list	*env;
+	bool	is_from_pipe;
 
-	print_banner();
+	// print_banner();
 	env = copy_environ(environ);
 	exit_code = ft_exit_code_holder();
 	setup_interactive_signals();
@@ -117,12 +118,14 @@ int	main(void)
 	{
 		getcwd(pwd, PATH_MAX);
 		ft_strlcat(pwd, "> ", PATH_MAX + 3);
-		// input = readline((const char *)pwd);
-		if (isatty(fileno(stdin)))
+		is_from_pipe = !isatty(fileno(stdin));
+		if (!is_from_pipe)
 			input = readline(pwd);
 		else
 		{
 			line = get_next_line(fileno(stdin));
+			if (!line) // EOF reached from pipe
+				break ;
 			input = ft_strtrim(line, "\n");
 			free(line);
 		}
@@ -131,13 +134,19 @@ int	main(void)
 			printf("exit\n");
 			break ;
 		}
-		if (input[0] == '\0' || is_only_spaces(input))
+		// Skip empty inputs only in interactive mode
+		if ((input[0] == '\0' || is_only_spaces(input)) && !is_from_pipe)
+		{
+			free(input);
 			continue ;
-		add_history(input);
+		}
+		// Only add to history in interactive mode
+		if (!is_from_pipe)
+			add_history(input);
 		token_strings = ft_split_tokens(input);
 		if (!token_strings)
 		{
-			printf("ft_split_tokens error\n");
+			write(2, "ft_split_tokens error\n", 22);
 			free(input);
 			continue ;
 		}
@@ -145,13 +154,13 @@ int	main(void)
 		tokens = ft_tokenize(token_strings, env);
 		if (!tokens)
 		{
-			printf("ft_tokenize error\n");
+			write(2, "ft_tokenize error\n", 18);
 			continue ;
 		}
 		ast = parse_tokens(tokens);
 		if (!ast)
 		{
-			printf("parse_tokens error\n");
+			write(2, "parse_tokens error\n", 18);
 			continue ;
 		}
 		// print_ast(ast, 0); // Uncomment for debugging
