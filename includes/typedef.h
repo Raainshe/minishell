@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/26 14:24:38 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/28 14:27:36 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ typedef enum e_node_type
 	NODE_REDIRECT_IN,
 	NODE_REDIRECT_OUT,
 	NODE_HERE_DOC,
-	NODE_APPEND
+	NODE_APPEND,
+	NODE_NULL
 }					t_node_type;
 
 typedef struct s_node
