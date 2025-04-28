@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/26 14:42:17 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/27 11:25:18 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ t_node	*handle_redirection(t_parser_context *context,
 int								execute_node(t_node *node, t_list **env);
 /*execute_command.c*/
 int								execute_command(t_node *node, t_list **env);
+/*execute_command_helper.c*/
+void							print_builtin_error(char *str);
 /*execute_pipe.c*/
 int								execute_pipe(t_node *node, t_list **env);
 /*execute_redirect.c*/

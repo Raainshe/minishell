@@ -39,6 +39,7 @@ SRCS =	minishell.c \
 		parser.c \
 		executor.c \
 		execute_command.c \
+		execute_command_helper.c \
 		execute_pipe.c \
 		execute_redirect.c \
 		execute_redirect_helper.c \

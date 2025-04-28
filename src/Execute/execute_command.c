@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 15:46:11 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/27 11:26:20 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,6 @@ static int	execute_builtin(char **args, t_list **env)
 
 	if (!args || !args[0])
 		return (1);
-	// For now, we'll just print a message that the builtin is not implemented
-	// Later each builtin will be implemented separately
 	(void)env;
 	lower_cmd = ft_strlower(args[0]);
 	if (!lower_cmd)
@@ -122,11 +120,7 @@ static int	execute_builtin(char **args, t_list **env)
 	else if (ft_strncmp(lower_cmd, "unset", 6) == 0)
 		return (builtin_unset(args, env));
 	else
-	{
-		ft_putstr_fd("minishell: builtin command not implemented: ",
-			STDERR_FILENO);
-		ft_putendl_fd(args[0], STDERR_FILENO);
-	}
+		print_builtin_error(args[0]);
 	return (0);
 }
 
@@ -147,10 +141,7 @@ int	execute_command(t_node *node, t_list **env)
 		return (execute_builtin(command->args, env));
 	pid = fork();
 	if (pid < 0)
-	{
-		perror("minishell: fork");
-		return (1);
-	}
+		return (perror("minishell: fork"), 1);
 	if (pid == 0)
 	{
 		reset_signals();
