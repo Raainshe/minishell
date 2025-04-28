@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 15:58:26 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/28 17:18:35 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,23 +146,16 @@ int	main(void)
 		token_strings = ft_split_tokens(input);
 		if (!token_strings)
 		{
-			write(2, "ft_split_tokens error\n", 22);
 			free(input);
 			continue ;
 		}
 		free(input);
 		tokens = ft_tokenize(token_strings, env);
 		if (!tokens)
-		{
-			write(2, "ft_tokenize error\n", 18);
 			continue ;
-		}
 		ast = parse_tokens(tokens);
 		if (!ast)
-		{
-			write(2, "parse_tokens error\n", 18);
 			continue ;
-		}
 		// print_ast(ast, 0); // Uncomment for debugging
 		setup_noninteractive_signals();
 		*exit_code = execute_node(ast, &env);

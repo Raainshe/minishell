@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/18 16:37:15 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/28 17:28:15 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,18 @@ t_node	*parse_tokens(t_token *tokens)
 {
 	t_parser_context	context;
 	t_node				*ast;
+	int					*exit_code;
 
 	if (!tokens)
 		return (NULL);
 	init_parser_context(&context, tokens);
 	ast = parse_pipeline(&context);
+	exit_code = ft_exit_code_holder();
 	if (context.error)
 	{
 		if (context.error_msg)
 			ft_putendl_fd(context.error_msg, STDERR_FILENO);
+		*exit_code = 127;
 		return (NULL);
 	}
 	return (ast);
