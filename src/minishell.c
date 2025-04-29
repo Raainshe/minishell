@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 17:18:35 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/29 12:47:12 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,8 @@ static bool	is_only_spaces(char *str)
 	}
 	return (true);
 }
-
+// TODO: handle multiple heredeocs
+// TODO: handle chained redirects
 int	main(void)
 {
 	char	*input;

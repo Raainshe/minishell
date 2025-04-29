@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 12:45:17 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/29 12:46:18 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,6 @@ static int	execute_builtin(char **args, t_list **env)
  * @param command The command to execute
  * @param env The environment variables
  */
-// TODO: if "" or '' should go into !path condition
 static void	execute_child_process(t_command *command, t_list *env)
 {
 	char	*path;

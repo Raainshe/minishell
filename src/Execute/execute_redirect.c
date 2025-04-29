@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_redirect.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/26 12:35:55 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/29 13:19:04 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,10 @@ static int	handle_redirect_out(t_node *node, t_list **env, bool append)
 	original
  * STDIN to restore it after executing the command.
  *
+ * For multiple chained heredocs, they are processed in the order they appear
+ * in the command line,
+	and only the last heredoc's content is connected to STDIN.
+ *
  * @param node The heredoc redirection node containing the delimiter string
 
 	* @param env A pointer to the environment variables list used for variable
@@ -157,18 +161,41 @@ static int	handle_redirect_out(t_node *node, t_list **env, bool append)
 static int	handle_here_doc(t_node *node, t_list **env)
 {
 	t_redirect	*redirect;
+	t_node		*cmd_node;
 	int			fd;
 	int			saved_fd;
 	int			status;
+	int			heredoc_count;
+	int			i;
 
-	redirect = (t_redirect *)node->data;
-	fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
-	if (fd == -1)
-		return (1);
+	t_node *heredoc_nodes[100];
+	heredoc_count = 0;
+	cmd_node = node;
+	while (cmd_node && cmd_node->type == NODE_HERE_DOC)
+	{
+		heredoc_nodes[heredoc_count++] = cmd_node;
+		cmd_node = cmd_node->left;
+	}
+	for (i = heredoc_count - 1; i >= 0; i--)
+	{
+		redirect = (t_redirect *)heredoc_nodes[i]->data;
+		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
+		if (i != 0)
+		{
+			if (fd != -1)
+				close(fd);
+		}
+		else
+		{
+			if (fd == -1)
+				return (1);
+		}
+	}
 	saved_fd = dup(STDIN_FILENO);
 	dup2(fd, STDIN_FILENO);
 	close(fd);
-	status = execute_node(node->left, env);
+	// TODO: change ternary
+	status = cmd_node ? execute_node(cmd_node, env) : 0;
 	dup2(saved_fd, STDIN_FILENO);
 	close(saved_fd);
 	return (status);
