@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:01:26 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 15:25:59 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/29 14:15:29 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,7 @@ t_node	*parse_command(t_parser_context *ctx)
 	if (token.type != TOKEN_WORD)
 	{
 		parser_error(ctx, "syntax error");
+		// Exit code 2 is set in parser_error
 		return (NULL);
 	}
 	arg_count = count_command_args(ctx);

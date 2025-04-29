@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:43:31 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/23 14:03:03 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/29 14:34:48 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	builtin_echo(char **args)
 		return (1);
 	newline = true;
 	i = 1;
-	if (args[i] && ft_strncmp(args[i], "-n", 3) == 0)
+	if (args[i] && (ft_strncmp("-n", args[i], 3) == 0))
 	{
 		newline = false;
 		i++;

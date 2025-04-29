@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:49:00 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/27 10:36:40 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/29 14:33:32 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static char	*get_cd_path(char **args, t_list **env)
 		path = ft_strjoin(path, args[1] + 1);
 		gc_add_context(ENVIRON, path);
 	}
-	else if (ft_strncmp(args[1], "-", 1) == 0)
+	else if (ft_strncmp("-", args[1], 1) == 0)
 	{
 		path = ft_getenv("OLDPWD", *env);
 		if (!path)

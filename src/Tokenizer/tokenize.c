@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 14:16:52 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/29 14:34:15 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,9 @@ static t_token	create_token(char *content, t_list *env)
 	}
 	else if (len == 2)
 	{
-		if (ft_strncmp(content, "<<", 2) == 0)
+		if (ft_strncmp("<<", content, 2) == 0)
 			token.type = TOKEN_HERE_DOC;
-		else if (ft_strncmp(content, ">>", 2) == 0)
+		else if (ft_strncmp(">>", content, 2) == 0)
 			token.type = TOKEN_APPEND;
 	}
 	return (token);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 14:28:04 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/29 14:15:09 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,11 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 	next_token(ctx);
 	next_tok = current_token(ctx);
 	if (next_tok.type != TOKEN_WORD)
-		return (parser_error(ctx, "Expected filename after redirection"), NULL);
+	{
+		parser_error(ctx, "Expected filename after redirection");
+		// Exit code 2 is set in parser_error
+		return (NULL);
+	}
 	filename = next_tok.content;
 	next_token(ctx);
 	redirect_node = create_redirect_node(redirect_type, filename, cmd_node);

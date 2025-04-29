@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 17:28:15 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/29 14:15:44 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
  * This function initializes the parser context and starts the parsing process
  * by calling parse_pipeline. It handles any errors that occur during parsing.
  */
+// TODO: set error code in subfunctions
 t_node	*parse_tokens(t_token *tokens)
 {
 	t_parser_context	context;
@@ -29,13 +30,13 @@ t_node	*parse_tokens(t_token *tokens)
 	if (!tokens)
 		return (NULL);
 	init_parser_context(&context, tokens);
-	ast = parse_pipeline(&context);
 	exit_code = ft_exit_code_holder();
+	context.exit_code = exit_code;
+	ast = parse_pipeline(&context);
 	if (context.error)
 	{
 		if (context.error_msg)
 			ft_putendl_fd(context.error_msg, STDERR_FILENO);
-		*exit_code = 127;
 		return (NULL);
 	}
 	return (ast);
@@ -67,6 +68,7 @@ t_node	*parse_pipeline(t_parser_context *context)
 		if (!right)
 		{
 			parser_error(context, "Expected command after pipe");
+			// Exit code 2 is set in parser_error
 			return (NULL);
 		}
 		left = create_pipe_node(left, right);

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 12:46:18 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/29 14:33:05 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ static int	is_builtin(char *cmd)
 	lower_cmd = ft_strlower(cmd);
 	if (!lower_cmd)
 		return (0);
-	if (ft_strncmp(lower_cmd, "echo", 5) == 0 || ft_strncmp(lower_cmd, "cd",
-			3) == 0 || ft_strncmp(lower_cmd, "pwd", 4) == 0
-		|| ft_strncmp(lower_cmd, "export", 7) == 0 || ft_strncmp(lower_cmd,
-			"unset", 6) == 0 || ft_strncmp(lower_cmd, "env", 4) == 0
-		|| ft_strncmp(lower_cmd, "exit", 5) == 0)
+	if (ft_strncmp("echo", lower_cmd, 5) == 0 || ft_strncmp("cd", lower_cmd,
+			3) == 0 || ft_strncmp("pwd", lower_cmd, 4) == 0
+		|| ft_strncmp("export", lower_cmd, 7) == 0 || ft_strncmp("unset",
+			lower_cmd, 6) == 0 || ft_strncmp("env", lower_cmd, 4) == 0
+		|| ft_strncmp("exit", lower_cmd, 5) == 0)
 		return (1);
 	return (0);
 }
@@ -58,7 +58,7 @@ static char	*find_command_path(char *cmd, t_list *env)
 	path_var = NULL;
 	while (env)
 	{
-		if (ft_strncmp((char *)env->content, "PATH=", 5) == 0)
+		if (ft_strncmp("PATH=", (char *)env->content, 5) == 0)
 		{
 			path_var = (char *)env->content + 5;
 			break ;
@@ -105,19 +105,19 @@ static int	execute_builtin(char **args, t_list **env)
 	lower_cmd = ft_strlower(args[0]);
 	if (!lower_cmd)
 		return (0);
-	if (ft_strncmp(lower_cmd, "pwd", 4) == 0)
+	if (ft_strncmp("pwd", lower_cmd, 4) == 0)
 		return (builtin_pwd(args));
-	else if (ft_strncmp(lower_cmd, "echo", 5) == 0)
+	else if (ft_strncmp("echo", lower_cmd, 5) == 0)
 		return (builtin_echo(args));
-	else if (ft_strncmp(lower_cmd, "exit", 5) == 0)
+	else if (ft_strncmp("exit", lower_cmd, 5) == 0)
 		return (builtin_exit(args));
-	else if (ft_strncmp(lower_cmd, "cd", 3) == 0)
+	else if (ft_strncmp("cd", lower_cmd, 3) == 0)
 		return (builtin_cd(args, env));
-	else if (ft_strncmp(lower_cmd, "env", 4) == 0)
+	else if (ft_strncmp("env", lower_cmd, 4) == 0)
 		return (builtin_env(*env));
-	else if (ft_strncmp(lower_cmd, "export", 7) == 0)
+	else if (ft_strncmp("export", lower_cmd, 7) == 0)
 		return (builtin_export(args, env));
-	else if (ft_strncmp(lower_cmd, "unset", 6) == 0)
+	else if (ft_strncmp("unset", lower_cmd, 6) == 0)
 		return (builtin_unset(args, env));
 	else
 		print_builtin_error(args[0]);
