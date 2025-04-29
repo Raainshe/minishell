@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 14:05:42 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/04/29 12:45:17 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static char	*find_command_path(char *cmd, t_list *env)
 	int		i;
 	char	*dir_with_slash;
 
-	if (!cmd || !env)
+	if (!cmd || !env || !cmd[0])
 		return (NULL);
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
@@ -129,6 +129,7 @@ static int	execute_builtin(char **args, t_list **env)
  * @param command The command to execute
  * @param env The environment variables
  */
+// TODO: if "" or '' should go into !path condition
 static void	execute_child_process(t_command *command, t_list *env)
 {
 	char	*path;
