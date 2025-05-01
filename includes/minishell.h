@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/01 12:37:40 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 15:05:47 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # include "garbage_collector.h"
+# include "get_next_line.h"
 # include "libft.h"
 # include "typedef.h"
 # include <curses.h>
@@ -63,7 +64,6 @@ char							*ft_strndup(const char *s, size_t n);
 void							ft_free_tokens(char **tokens, int j);
 t_token							*ft_tokenize(char **tokens, t_list *env);
 bool							has_quotes(char *str);
-
 /* parser_utils.c */
 void							init_parser_context(t_parser_context *context,
 									t_token *tokens);
@@ -87,7 +87,6 @@ t_node							*parse_command(t_parser_context *context);
 /*parser_redirect.c*/
 t_node							*handle_redirection(t_parser_context *context,
 									t_node *command);
-
 /*executor.c*/
 int								execute_node(t_node *node, t_list **env);
 /*execute_command.c*/
@@ -124,24 +123,20 @@ int								builtin_export(char **args, t_list **env);
 int								builtin_unset(char **args, t_list **env);
 int								builtin_env(t_list *env);
 int								builtin_exit(char **args);
-
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
 char							*ft_getenv(const char *name, t_list *env);
-
 /* expansion.c */
 char							*expand(char *str, t_list *env);
 char							*ft_strjoin_char(char *str, char c);
 char							*expand_variables(char *str, t_list *env);
-
 /* expansion_helper.c */
 char							*process_exit_code(char *result, int *i);
 char							*get_env_value(char *var_name, t_list *env);
 char							*extract_var_name(char *str);
 char							*process_variable(char *str, t_list *env,
 									char *result, int *i_ptr);
-
 /*expansion_utlis.c*/
 void							initialise_expand_var(int *i, int *in_quotes,
 									char *quote_type);
@@ -157,11 +152,9 @@ char							*process_var_expansion(char *str, t_list *env,
 									char *result, int *i);
 char							*append_char_to_result(char *result, char *str,
 									int *i);
-
 /*expansion_utlis_two.c*/
 bool							is_expandable_variable(char *str, int i,
 									char quote_type, int in_quotes);
-
 /* signals.c */
 void							setup_interactive_signals(void);
 void							setup_noninteractive_signals(void);
@@ -174,6 +167,15 @@ void							reset_term_after_signal(void);
 int								get_signal_status(void);
 /* exit.c */
 int								*ft_exit_code_holder(void);
+/* minishell_helper.c */
+bool							is_only_spaces(char *str);
+t_list							*init_shell_environment(int **exit_code);
+char							*read_input(char *pwd, bool *is_from_pipe);
+int								process_input(char *input, t_list **env,
+									int *exit_code);
+void							handle_signals_and_cleanup(int *exit_code);
+bool							shell_iteration(t_list **env, int *exit_code,
+									char *pwd);
 
 extern char						**environ;
 extern volatile sig_atomic_t	g_signal_received;

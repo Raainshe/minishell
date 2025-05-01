@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_redirect_helper.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/26 12:34:55 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/01 15:11:40 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 {
 	int	status;
 
+	status = 0;
 	close(pipe_fd[1]);
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
