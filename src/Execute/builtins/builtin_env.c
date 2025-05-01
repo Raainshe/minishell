@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/07 17:28:52 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:05:22 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ int	builtin_env(t_list *env)
 	current = env;
 	while (current)
 	{
-		ft_putendl_fd((char *)current->content, STDOUT_FILENO);
+		if (ft_strchr((char *)current->content, '='))
+			ft_putendl_fd((char *)current->content, STDOUT_FILENO);
 		current = current->next;
 	}
 	return (0);
