@@ -43,6 +43,7 @@ SRCS =	minishell.c \
 		execute_pipe.c \
 		execute_redirect.c \
 		execute_redirect_helper.c \
+		heredoc.c \
 		builtin_pwd.c \
 		builtin_echo.c \
 		builtin_exit.c \

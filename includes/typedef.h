@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:12:26 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:37:02 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,24 @@ typedef struct s_expansion_info
 	int				in_quotes;
 	char			*result;
 }					t_expansion_info;
+
+typedef struct s_process_redirection
+{
+	t_token			current;
+	t_token			next_tok;
+	t_node_type		redirect_type;
+	char			*filename;
+	t_node			*redirect_node;
+	t_redirect		*redirect_data;
+}					t_process_redirection;
+
+typedef struct s_find_command_path
+{
+	char			*path_var;
+	char			**paths;
+	char			*full_path;
+	int				i;
+	char			*direct_path;
+}					t_find_command_path;
 
 #endif

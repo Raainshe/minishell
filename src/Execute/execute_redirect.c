@@ -6,39 +6,11 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/01 11:19:20 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:53:18 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/**
- * @brief Handles the heredoc input, reading until the delimiter is encountered
- * @param delimiter The delimiter string that ends the heredoc
- * @param env The environment variables list for expansion
- * @param expand_vars Whether to expand variables in the heredoc content
- * @return The file descriptor to read from, or -1 on error
- */
-static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
-{
-	int		pipe_fd[2];
-	pid_t	pid;
-
-	if (pipe(pipe_fd) == -1)
-		return (-1);
-	pid = fork();
-	if (pid == -1)
-	{
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		return (-1);
-	}
-	if (pid == 0)
-		handle_heredoc_child(pipe_fd, delimiter, env, expand_vars);
-	else
-		return (handle_heredoc_parent(pipe_fd, pid));
-	return (-1);
-}
 
 /**
  * @brief Handles input redirection from a file
@@ -128,74 +100,6 @@ static int	handle_redirect_out(t_node *node, t_list **env, bool append)
 	close(fd);
 	status = execute_node(node->left, env);
 	dup2(saved_fd, STDOUT_FILENO);
-	close(saved_fd);
-	return (status);
-}
-
-/**
- * @brief Handles heredoc input redirection
- *
- * This function processes heredoc redirection (<<),
-	reading input until the specified
- * delimiter is encountered. The collected content is stored in a pipe,
-	which is then
-
-	* connected to the STDIN of the command. It supports variable expansion
-	within the
-
-	* heredoc content based on the expand_vars flag. The function saves the
-	original
- * STDIN to restore it after executing the command.
- *
- * For multiple chained heredocs, they are processed in the order they appear
- * in the command line,
-	and only the last heredoc's content is connected to STDIN.
- *
- * @param node The heredoc redirection node containing the delimiter string
-
-	* @param env A pointer to the environment variables list used for variable
-	expansion
- * @return The exit status of the command after redirection,
-	or 1 if an error occurs
- */
-static int	handle_here_doc(t_node *node, t_list **env)
-{
-	t_redirect	*redirect;
-	t_node		*cmd_node;
-	int			fd;
-	int			saved_fd;
-	int			status;
-	int			heredoc_count;
-	int			i;
-	t_node		*heredoc_nodes[100];
-
-	heredoc_count = 0;
-	cmd_node = node;
-	while (cmd_node && cmd_node->type == NODE_HERE_DOC)
-	{
-		heredoc_nodes[heredoc_count++] = cmd_node;
-		cmd_node = cmd_node->left;
-	}
-	for (i = heredoc_count - 1; i >= 0; i--)
-	{
-		redirect = (t_redirect *)heredoc_nodes[i]->data;
-		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
-		if (i != 0)
-		{
-			if (fd != -1)
-				close(fd);
-		}
-		else
-		{
-			if (fd == -1)
-				return (1);
-		}
-	}
-	saved_fd = dup(STDIN_FILENO);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
-	status = cmd_node ? execute_node(cmd_node, env) : 0;
-	dup2(saved_fd, STDIN_FILENO);
 	close(saved_fd);
 	return (status);
 }
