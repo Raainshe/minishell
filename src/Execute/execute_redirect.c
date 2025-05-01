@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 13:19:04 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:19:20 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,8 +167,8 @@ static int	handle_here_doc(t_node *node, t_list **env)
 	int			status;
 	int			heredoc_count;
 	int			i;
+	t_node		*heredoc_nodes[100];
 
-	t_node *heredoc_nodes[100];
 	heredoc_count = 0;
 	cmd_node = node;
 	while (cmd_node && cmd_node->type == NODE_HERE_DOC)
@@ -194,7 +194,6 @@ static int	handle_here_doc(t_node *node, t_list **env)
 	saved_fd = dup(STDIN_FILENO);
 	dup2(fd, STDIN_FILENO);
 	close(fd);
-	// TODO: change ternary
 	status = cmd_node ? execute_node(cmd_node, env) : 0;
 	dup2(saved_fd, STDIN_FILENO);
 	close(saved_fd);

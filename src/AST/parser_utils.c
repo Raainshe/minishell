@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:44:43 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:14:36 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:22:01 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,6 @@ void	parser_error(t_parser_context *context, char *msg)
 	int		*exit_code;
 
 	context->error = 1;
-	// Set exit code to 2 for syntax errors (bash standard)
 	if (context->exit_code)
 		*(context->exit_code) = 2;
 	else

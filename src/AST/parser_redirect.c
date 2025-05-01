@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:15:09 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:21:47 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 	if (next_tok.type != TOKEN_WORD)
 	{
 		parser_error(ctx, "Expected filename after redirection");
-		// Exit code 2 is set in parser_error
 		return (NULL);
 	}
 	filename = next_tok.content;

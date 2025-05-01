@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 15:15:20 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:19:36 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	builtin_exit(char **args)
 {
 	int	*exit_code;
 
-	// ft_putendl_fd("exit", STDOUT_FILENO);
+	ft_putendl_fd("exit", STDOUT_FILENO);
 	exit_code = ft_exit_code_holder();
 	if (args[1])
 	{

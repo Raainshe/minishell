@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/01 11:01:40 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:20:11 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ static bool	is_valid(char *str)
 				found_equals = true;
 				i++;
 			}
-			else if (str[i] != '_' && !ft_isalpha(str[i]) && !ft_isdigit(str[i]))
+			else if (str[i] != '_' && !ft_isalpha(str[i])
+				&& !ft_isdigit(str[i]))
 				return (false);
 		}
 		else if (str[i] == '=')
@@ -96,17 +97,16 @@ static char	*create_appended_value(char *existing, char *new_value)
 		existing_value = existing + existing_var_len + 1;
 	else
 		existing_value = "";
-
-	new_arg_value = new_value + var_len(new_value) + 2;  // +2 for '+='
-
-	result = ft_calloc(strlen(existing_value) + strlen(new_arg_value) + var_len(existing) + 2, sizeof(char));
+	new_arg_value = new_value + var_len(new_value) + 2;
+	result = ft_calloc(strlen(existing_value) + strlen(new_arg_value)
+			+ var_len(existing) + 2, sizeof(char));
 	gc_add_context(ENVIRON, result);
-
 	ft_strlcpy(result, existing, existing_var_len + 1);
 	ft_strlcat(result, "=", strlen(result) + 2);
-	ft_strlcat(result, existing_value, strlen(result) + strlen(existing_value) + 1);
-	ft_strlcat(result, new_arg_value, strlen(result) + strlen(new_arg_value) + 1);
-
+	ft_strlcat(result, existing_value, strlen(result) + strlen(existing_value)
+		+ 1);
+	ft_strlcat(result, new_arg_value, strlen(result) + strlen(new_arg_value)
+		+ 1);
 	return (result);
 }
 
@@ -124,20 +124,18 @@ static void	print_export(t_list **env)
 		content = (char *)current->content;
 		len = strlen(content);
 		variable_len = var_len(content);
-
 		equals_pos = variable_len;
 		while (content[equals_pos] && content[equals_pos] != '=')
 			equals_pos++;
-
 		ft_putstr_fd("declare -x ", STDOUT_FILENO);
 		write(STDOUT_FILENO, content, variable_len);
-
 		if (content[equals_pos] == '=')
 		{
 			write(STDOUT_FILENO, "=", 1);
 			write(STDOUT_FILENO, "\"", 1);
 			if (content[equals_pos + 1])
-				write(STDOUT_FILENO, content + equals_pos + 1, len - equals_pos - 1);
+				write(STDOUT_FILENO, content + equals_pos + 1, len - equals_pos
+					- 1);
 			write(STDOUT_FILENO, "\"", 1);
 		}
 		write(STDOUT_FILENO, "\n", 1);
@@ -145,22 +143,20 @@ static void	print_export(t_list **env)
 	}
 }
 
-static char *prepare_export_arg(char *orig_arg)
+static char	*prepare_export_arg(char *orig_arg)
 {
 	int		var_length;
 	char	*new_arg;
 
 	if (!has_append_operator(orig_arg))
 		return (ft_strdup(orig_arg));
-
 	var_length = var_len(orig_arg);
 	new_arg = ft_calloc(strlen(orig_arg), sizeof(char));
 	gc_add_context(ENVIRON, new_arg);
-
 	ft_strlcpy(new_arg, orig_arg, var_length + 1);
 	ft_strlcat(new_arg, "=", strlen(new_arg) + 2);
-	ft_strlcat(new_arg, orig_arg + var_length + 2, strlen(new_arg) + strlen(orig_arg + var_length + 2) + 1);
-
+	ft_strlcat(new_arg, orig_arg + var_length + 2, strlen(new_arg)
+		+ strlen(orig_arg + var_length + 2) + 1);
 	return (new_arg);
 }
 
@@ -180,7 +176,6 @@ int	builtin_export(char **args, t_list **env)
 		{
 			is_append = has_append_operator(args[i]);
 			duplicate = find_duplicate(args[i], env);
-
 			if (is_append && duplicate)
 			{
 				arg = create_appended_value(duplicate->content, args[i]);
