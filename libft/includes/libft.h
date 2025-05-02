@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/07 17:28:00 by ksinn             #+#    #+#             */
-/*   Updated: 2024/10/16 14:38:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 15:15:22 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,6 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-/*
-TODO: look if catching NULL inputs makes sense for certain functions(ft_split)
-*/
 typedef struct s_list
 {
 	void			*content;
@@ -70,5 +67,6 @@ void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstiter(t_list *lst, void (*f)(void *));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
+char				*ft_strlower(char *str);
 
 #endif

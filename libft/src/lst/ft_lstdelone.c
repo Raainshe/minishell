@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 13:39:39 by ksinn             #+#    #+#             */
-/*   Updated: 2024/10/11 15:02:21 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/04/15 13:12:01 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
 	if (lst)
 	{
-		(*del)(lst->content);
+		if (lst->content)
+			(*del)(lst->content);
 		free(lst);
 	}
 }

@@ -1,30 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   builtin_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/08 10:11:47 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 15:27:59 by ksinn            ###   ########.fr       */
+/*   Created: 2025/04/02 12:49:43 by ksinn             #+#    #+#             */
+/*   Updated: 2025/05/01 15:14:21 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-/*
-Returns length of string s (excluding '\0' character)
-*/
-size_t	ft_strlen(const char *s)
+int	builtin_pwd(char **args)
 {
-	size_t	len;
+	char	current_dir[PATH_MAX];
 
-	len = 0;
-	if (!s)
-		return (0);
-	while (s[len])
+	(void)args;
+	if (getcwd(current_dir, PATH_MAX) != NULL)
+		return (ft_putendl_fd(current_dir, STDOUT_FILENO), 0);
+	else
 	{
-		len++;
+		ft_putstr_fd("pwd: error retrieving current directory: ",
+			STDERR_FILENO);
+		ft_putendl_fd(strerror(errno), STDERR_FILENO);
+		return (1);
 	}
-	return (len);
 }

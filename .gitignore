@@ -1,6 +1,11 @@
 .DS_Store
 minishell
-
+.cursor
+*.txt
+.vscode
+"
+"  "
+""
 # Prerequisites
 *.d
 
