@@ -3,15 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:50:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/01 12:37:23 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:17:57 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Checks if a string contains the append operator (+=)
+ *
+ * Scans through the string to find the += operator sequence that
+ * indicates value appending rather than replacement.
+ *
+ * @param str The string to check
+ * @return true if the string contains +=, false otherwise
+ */
 static bool	has_append_operator(char *str)
 {
 	int	i;
@@ -22,6 +31,16 @@ static bool	has_append_operator(char *str)
 	return (str[i] == '+' && str[i + 1] == '=');
 }
 
+/**
+ * @brief Creates a new environment variable value by appending
+ *
+ * Takes an existing environment variable and appends a new value to it.
+ * Used for handling the += operator in export commands.
+ *
+ * @param existing The existing environment variable string
+ * @param new_value The new value string to append
+ * @return A newly allocated string with the combined values
+ */
 static char	*create_appended_value(char *existing, char *new_value)
 {
 	char	*result;
@@ -47,6 +66,15 @@ static char	*create_appended_value(char *existing, char *new_value)
 	return (result);
 }
 
+/**
+ * @brief Prepares an export argument by handling special cases
+ *
+ * Processes the original argument, handling the append operator (+=)
+ * by converting it to a standard format.
+ *
+ * @param orig_arg The original argument string
+ * @return A processed version of the argument
+ */
 static char	*prepare_export_arg(char *orig_arg)
 {
 	int		var_length;

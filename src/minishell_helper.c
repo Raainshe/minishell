@@ -3,18 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_helper.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 14:45:09 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/01 15:01:28 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:17:07 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * Initialize the shell environment
- * Returns the environment list and sets the exit_code pointer
+ * @brief Initialize the shell environment and setup signals
+ *
+ * Copies the environment variables into a linked list, sets up the
+ * exit code holder, and configures interactive signal handling.
+ *
+ * @param exit_code Pointer to store the address of exit code holder
+ * @return Linked list containing the shell environment variables
  */
 t_list	*init_shell_environment(int **exit_code)
 {
@@ -27,8 +32,15 @@ t_list	*init_shell_environment(int **exit_code)
 }
 
 /**
- * Read user input from terminal or pipe
- * Returns the input string or NULL if EOF was reached
+ * @brief Read user input from terminal or pipe
+ *
+ * Formats and displays the prompt with current working directory when
+ * reading from terminal. Handles input from both terminal and pipes,
+ * adjusting behavior accordingly.
+ *
+ * @param pwd Buffer to store the prompt string
+ * @param is_from_pipe Pointer to store whether input is from pipe
+ * @return User input string or NULL if EOF was reached
  */
 char	*read_input(char *pwd, bool *is_from_pipe)
 {
@@ -52,8 +64,16 @@ char	*read_input(char *pwd, bool *is_from_pipe)
 }
 
 /**
- * Process input: tokenize, parse and execute
- * Returns 0 on success, 1 on failure
+ * @brief Process user input through the shell's execution pipeline
+ *
+ * Takes raw user input, tokenizes it, creates an abstract syntax tree,
+ * and executes the commands. Handles signal setup for command execution
+ * and tracks the exit status of commands.
+ *
+ * @param input The raw input string from the user
+ * @param env Pointer to the environment variables list
+ * @param exit_code Pointer to store the command exit status
+ * @return 0 on successful processing, 1 on failure
  */
 int	process_input(char *input, t_list **env, int *exit_code)
 {
@@ -77,7 +97,13 @@ int	process_input(char *input, t_list **env, int *exit_code)
 }
 
 /**
- * Handle signals and cleanup resources after command execution
+ * @brief Handle signals and cleanup resources after command execution
+ *
+ * Updates the exit code based on received signals, resets the terminal
+ * state if needed, and frees allocated memory for tokenizer, AST, and
+ * executor contexts.
+ *
+ * @param exit_code Pointer to store the exit status
  */
 void	handle_signals_and_cleanup(int *exit_code)
 {
@@ -96,8 +122,16 @@ void	handle_signals_and_cleanup(int *exit_code)
 }
 
 /**
- * Run one iteration of the shell loop
- * Returns false if the shell should exit, true otherwise
+ * @brief Run one iteration of the shell loop
+ *
+ * Reads and processes user input, adding non-empty commands to history.
+ * Handles signals, terminal states, and resource cleanup. Determines
+ * whether the shell should exit or continue based on input.
+ *
+ * @param env Pointer to the environment variables list
+ * @param exit_code Pointer to store the command exit status
+ * @param pwd Buffer to store the prompt string
+ * @return false if the shell should exit, true otherwise
  */
 bool	shell_iteration(t_list **env, int *exit_code, char *pwd)
 {

@@ -3,15 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export_helper_helper.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 12:35:20 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/01 12:37:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:22:17 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Prints the value part of an environment variable
+ * 
+ * Formats the variable value for export display, adding quotes around
+ * the value part and handling edge cases properly.
+ *
+ * @param content The environment variable string
+ * @param equals_pos The position of the equals sign in the string
+ * @param len The total length of the string
+ */
 static void	print_value(char *content, int equals_pos, int len)
 {
 	write(STDOUT_FILENO, "=", 1);
@@ -21,6 +31,14 @@ static void	print_value(char *content, int equals_pos, int len)
 	write(STDOUT_FILENO, "\"", 1);
 }
 
+/**
+ * @brief Prints the environment variables in export format
+ *
+ * Formats and displays all environment variables in the format used
+ * by the 'export' command (declare -x NAME="VALUE").
+ * 
+ * @param env Pointer to the environment variables list
+ */
 void	print_export(t_list **env)
 {
 	int		len;
@@ -47,6 +65,15 @@ void	print_export(t_list **env)
 	}
 }
 
+/**
+ * @brief Gets the length of the variable name in an environment string
+ * 
+ * Calculates the length of the variable name part before any equals sign
+ * or append operator (+=).
+ *
+ * @param arg The environment variable string
+ * @return The length of the variable name
+ */
 int	var_len(char *arg)
 {
 	int	i;
@@ -59,6 +86,17 @@ int	var_len(char *arg)
 	return (i);
 }
 
+/**
+ * @brief Finds a duplicate variable in the environment
+ *
+ * Searches the environment for a variable with the same name as the
+ * argument. The comparison is based on the variable name only, ignoring
+ * any value part.
+ *
+ * @param arg The variable to find
+ * @param env Pointer to the environment variables list
+ * @return Pointer to the found list node or NULL if not found
+ */
 t_list	*find_duplicate(char *arg, t_list **env)
 {
 	t_list	*current;

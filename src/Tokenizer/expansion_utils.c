@@ -3,15 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:19:20 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/01 11:24:18 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:22:17 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Updates quote type when opening a quoted section
+ * 
+ * Sets the quote state to indicate the start of a quoted section,
+ * storing the quote character and advancing the index.
+ *
+ * @param in_quotes Pointer to the in_quotes state
+ * @param quote_type Pointer to the quote_type character
+ * @param character The current quote character (' or ")
+ * @param i Pointer to the current position in string
+ */
 void	update_quote_type(int *in_quotes, char *quote_type, char character,
 		int *i)
 {
@@ -20,6 +31,16 @@ void	update_quote_type(int *in_quotes, char *quote_type, char character,
 	(*i)++;
 }
 
+/**
+ * @brief Updates quote type when closing a quoted section
+ * 
+ * Resets the quote state to indicate the end of a quoted section
+ * and advances the index.
+ *
+ * @param in_quotes Pointer to the in_quotes state
+ * @param quote_type Pointer to the quote_type character
+ * @param i Pointer to the current position in string
+ */
 void	update_quote_type_neg(int *in_quotes, char *quote_type, int *i)
 {
 	*in_quotes = 0;
