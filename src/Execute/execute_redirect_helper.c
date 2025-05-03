@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/03 13:55:07 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 15:38:14 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 		}
 		else if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
 		{
-			// Handle Ctrl+D the same way as Ctrl+C
 			g_signal_received = SIGINT;
 		}
 		return (-1);

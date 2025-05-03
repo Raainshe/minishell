@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 14:13:16 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 15:38:00 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ static int	handle_redirect_in(t_node *node, t_list **env)
 	}
 	if (stack_size > 0)
 	{
-		// Use the first node in stack (deepest in AST, last in command line)
 		redirect = (t_redirect *)redirect_stack[0]->data;
 		fd = open(redirect->filename, O_RDONLY);
 		if (fd == -1)
@@ -125,7 +124,6 @@ static int	handle_redirect_out(t_node *node, t_list **env)
 	t_node		*redirect_stack[100];
 	int			stack_size;
 
-	// Push all redirections onto a stack to reverse their order
 	stack_size = 0;
 	cmd_node = node;
 	while (cmd_node && (cmd_node->type == NODE_REDIRECT_OUT
@@ -134,8 +132,6 @@ static int	handle_redirect_out(t_node *node, t_list **env)
 		redirect_stack[stack_size++] = cmd_node;
 		cmd_node = cmd_node->left;
 	}
-	// Process files in reverse order (last specified redirection first)
-	// Create empty files for all redirections except the last one
 	while (stack_size > 1)
 	{
 		stack_size--;
@@ -146,7 +142,6 @@ static int	handle_redirect_out(t_node *node, t_list **env)
 			return (print_redirect_error(redirect));
 		close(fd);
 	}
-	// For the last file (the first in command syntax), redirect STDOUT
 	if (stack_size > 0)
 	{
 		stack_size--;
@@ -232,7 +227,6 @@ static int	handle_here_doc(t_node *node, t_list **env)
 	saved_fd = dup(STDIN_FILENO);
 	dup2(fd, STDIN_FILENO);
 	close(fd);
-	// TODO: change ternary
 	status = cmd_node ? execute_node(cmd_node, env) : 0;
 	dup2(saved_fd, STDIN_FILENO);
 	close(saved_fd);

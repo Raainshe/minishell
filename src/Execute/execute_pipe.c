@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 15:33:01 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 15:36:54 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,12 +126,10 @@ int	execute_pipe(t_node *node, t_list **env)
 		execute_right_pipe(node, pipefd, env);
 	close(pipefd[0]);
 	close(pipefd[1]);
-	// Ignore signals while waiting for children
 	old_sigint_handler = signal(SIGINT, SIG_IGN);
 	old_sigquit_handler = signal(SIGQUIT, SIG_IGN);
 	waitpid(pid1, NULL, 0);
 	waitpid(pid2, &status, 0);
-	// Restore original signal handlers
 	signal(SIGINT, old_sigint_handler);
 	signal(SIGQUIT, old_sigquit_handler);
 	return (process_exit_status(status));

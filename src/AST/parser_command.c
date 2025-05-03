@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:01:26 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:15:29 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 15:35:58 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int	count_commands_loop(t_token token, t_parser_context *ctx,
 					|| token.type == TOKEN_REDIRECT_OUT
 					|| token.type == TOKEN_HERE_DOC
 					|| token.type == TOKEN_APPEND) && ctx->tokens[i
-				+ 1].type == TOKEN_WORD)
+					+ 1].type == TOKEN_WORD)
 			{
 				i += 2;
 				token = ctx->tokens[i];
@@ -137,7 +137,6 @@ t_node	*parse_command(t_parser_context *ctx)
 	if (token.type != TOKEN_WORD)
 	{
 		parser_error(ctx, "syntax error");
-		// Exit code 2 is set in parser_error
 		return (NULL);
 	}
 	arg_count = count_command_args(ctx);

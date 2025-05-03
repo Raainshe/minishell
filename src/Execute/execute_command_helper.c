@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command_helper.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/27 11:15:42 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/27 11:23:19 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/03 15:36:41 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

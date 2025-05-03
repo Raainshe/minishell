@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:19:20 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/26 14:30:27 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/03 15:40:46 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,11 +90,11 @@ char	*process_expansion_loop(char *str, t_list *env, char *result)
 	{
 		if (!info.in_quotes && (str[info.i] == '\'' || str[info.i] == '\"'))
 			update_quote_type(&info.in_quotes, &info.quote_type, str[info.i],
-					&info.i);
+				&info.i);
 		else if (info.in_quotes && str[info.i] == info.quote_type)
 			update_quote_type_neg(&info.in_quotes, &info.quote_type, &info.i);
 		else if (is_expandable_variable(str, info.i, info.quote_type,
-					info.in_quotes))
+				info.in_quotes))
 		{
 			info.result = process_var_expansion(str, env, info.result, &info.i);
 			if (!info.result)
