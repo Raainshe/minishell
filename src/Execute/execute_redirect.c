@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 14:04:34 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 14:13:16 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,8 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
  *
  * This function implements the input redirection operation (<),
 	opening the specified
-
 	* file for reading and redirecting STDIN to read from this file. It saves
 	the original
-
 	* STDIN file descriptor to restore it after executing the command. If the
 	file cannot
  * be opened, an appropriate error message is displayed.
@@ -61,27 +59,42 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 static int	handle_redirect_in(t_node *node, t_list **env)
 {
 	t_redirect	*redirect;
+	t_node		*cmd_node;
 	int			fd;
 	int			saved_fd;
 	int			status;
+	t_node		*redirect_stack[100];
+	int			stack_size;
 
-	redirect = (t_redirect *)node->data;
-	fd = open(redirect->filename, O_RDONLY);
-	if (fd == -1)
+	stack_size = 0;
+	cmd_node = node;
+	while (cmd_node && cmd_node->type == NODE_REDIRECT_IN)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(redirect->filename, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-		ft_putendl_fd(strerror(errno), STDERR_FILENO);
-		return (1);
+		redirect_stack[stack_size++] = cmd_node;
+		cmd_node = cmd_node->left;
 	}
-	saved_fd = dup(STDIN_FILENO);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
-	status = execute_node(node->left, env);
-	dup2(saved_fd, STDIN_FILENO);
-	close(saved_fd);
-	return (status);
+	if (stack_size > 0)
+	{
+		// Use the first node in stack (deepest in AST, last in command line)
+		redirect = (t_redirect *)redirect_stack[0]->data;
+		fd = open(redirect->filename, O_RDONLY);
+		if (fd == -1)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(redirect->filename, STDERR_FILENO);
+			ft_putstr_fd(": ", STDERR_FILENO);
+			ft_putendl_fd(strerror(errno), STDERR_FILENO);
+			return (1);
+		}
+		saved_fd = dup(STDIN_FILENO);
+		dup2(fd, STDIN_FILENO);
+		close(fd);
+		status = execute_node(cmd_node, env);
+		dup2(saved_fd, STDIN_FILENO);
+		close(saved_fd);
+		return (status);
+	}
+	return (execute_node(cmd_node, env));
 }
 
 /**
