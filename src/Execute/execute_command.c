@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:33:05 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 15:32:57 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,9 +161,17 @@ static void	execute_child_process(t_command *command, t_list *env)
  */
 static int	handle_parent_process(pid_t pid)
 {
-	int	status;
+	int		status;
+	void	*old_sigint_handler;
+	void	*old_sigquit_handler;
 
+	// Ignore signals while waiting for the child
+	old_sigint_handler = signal(SIGINT, SIG_IGN);
+	old_sigquit_handler = signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
+	// Restore original signal handlers
+	signal(SIGINT, old_sigint_handler);
+	signal(SIGQUIT, old_sigquit_handler);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
