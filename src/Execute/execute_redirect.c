@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 13:19:04 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 14:04:34 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,8 @@ static int	handle_redirect_in(t_node *node, t_list **env)
  *
  * This function implements output redirection (> and >>),
 	creating or opening the
-
 	* specified file for writing. It supports both truncating the file (>) and
 	appending
-
 	* to it (>>). The function saves the original STDOUT to restore it after
 	executing
  * the command. If the file cannot be opened or created,
@@ -100,36 +98,63 @@ static int	handle_redirect_in(t_node *node, t_list **env)
  *
  * @param node The redirection node containing the filename to write to
  * @param env A pointer to the environment variables list
-
-	* @param append Boolean flag indicating whether to append to the file (true)
-		or truncate it (false)
  * @return The exit status of the command after redirection,
 	or 1 if an error occurs
  */
-static int	handle_redirect_out(t_node *node, t_list **env, bool append)
+static int	handle_redirect_out(t_node *node, t_list **env)
 {
 	t_redirect	*redirect;
+	t_node		*cmd_node;
 	int			fd;
 	int			saved_fd;
 	int			status;
 	int			flags;
+	t_node		*redirect_stack[100];
+	int			stack_size;
 
-	redirect = (t_redirect *)node->data;
-	flags = O_WRONLY | O_CREAT;
-	if (append)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	fd = open(redirect->filename, flags, 0644);
-	if (fd == -1)
-		return (print_redirect_error(redirect));
-	saved_fd = dup(STDOUT_FILENO);
-	dup2(fd, STDOUT_FILENO);
-	close(fd);
-	status = execute_node(node->left, env);
-	dup2(saved_fd, STDOUT_FILENO);
-	close(saved_fd);
-	return (status);
+	// Push all redirections onto a stack to reverse their order
+	stack_size = 0;
+	cmd_node = node;
+	while (cmd_node && (cmd_node->type == NODE_REDIRECT_OUT
+			|| cmd_node->type == NODE_APPEND))
+	{
+		redirect_stack[stack_size++] = cmd_node;
+		cmd_node = cmd_node->left;
+	}
+	// Process files in reverse order (last specified redirection first)
+	// Create empty files for all redirections except the last one
+	while (stack_size > 1)
+	{
+		stack_size--;
+		redirect = (t_redirect *)redirect_stack[stack_size]->data;
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+		fd = open(redirect->filename, flags, 0644);
+		if (fd == -1)
+			return (print_redirect_error(redirect));
+		close(fd);
+	}
+	// For the last file (the first in command syntax), redirect STDOUT
+	if (stack_size > 0)
+	{
+		stack_size--;
+		redirect = (t_redirect *)redirect_stack[stack_size]->data;
+		flags = O_WRONLY | O_CREAT;
+		if (redirect_stack[stack_size]->type == NODE_APPEND)
+			flags |= O_APPEND;
+		else
+			flags |= O_TRUNC;
+		fd = open(redirect->filename, flags, 0644);
+		if (fd == -1)
+			return (print_redirect_error(redirect));
+		saved_fd = dup(STDOUT_FILENO);
+		dup2(fd, STDOUT_FILENO);
+		close(fd);
+		status = execute_node(cmd_node, env);
+		dup2(saved_fd, STDOUT_FILENO);
+		close(saved_fd);
+		return (status);
+	}
+	return (execute_node(cmd_node, env));
 }
 
 /**
@@ -167,8 +192,8 @@ static int	handle_here_doc(t_node *node, t_list **env)
 	int			status;
 	int			heredoc_count;
 	int			i;
+	t_node		*heredoc_nodes[100];
 
-	t_node *heredoc_nodes[100];
 	heredoc_count = 0;
 	cmd_node = node;
 	while (cmd_node && cmd_node->type == NODE_HERE_DOC)
@@ -228,9 +253,9 @@ int	execute_redirect(t_node *node, t_list **env)
 	if (node->type == NODE_REDIRECT_IN)
 		return (handle_redirect_in(node, env));
 	else if (node->type == NODE_REDIRECT_OUT)
-		return (handle_redirect_out(node, env, false));
+		return (handle_redirect_out(node, env));
 	else if (node->type == NODE_APPEND)
-		return (handle_redirect_out(node, env, true));
+		return (handle_redirect_out(node, env));
 	else if (node->type == NODE_HERE_DOC)
 		return (handle_here_doc(node, env));
 	return (1);
