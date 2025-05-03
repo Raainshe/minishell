@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_redirect_helper.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/26 12:34:55 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/03 13:55:07 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,12 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
+		if (!line)
+		{
+			close(pipe_fd[1]);
+			exit(130);
+		}
+		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
 		{
 			free(line);
 			close(pipe_fd[1]);
@@ -84,6 +89,11 @@ int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 		close(pipe_fd[0]);
 		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 		{
+			g_signal_received = SIGINT;
+		}
+		else if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
+		{
+			// Handle Ctrl+D the same way as Ctrl+C
 			g_signal_received = SIGINT;
 		}
 		return (-1);
