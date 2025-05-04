@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/03 15:38:14 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/04 15:08:08 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 			close(pipe_fd[1]);
 			exit(130);
 		}
-		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
+		if (ft_strncmp(delimiter, line, ft_strlen(delimiter) + 1) == 0)
 		{
 			free(line);
 			close(pipe_fd[1]);
