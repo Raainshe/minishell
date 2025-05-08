@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 14:57:42 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 16:12:28 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,10 @@ void							handle_heredoc_child(int pipe_fd[2],
 									bool expand_vars);
 int								handle_heredoc_parent(int pipe_fd[2],
 									pid_t pid);
+/*redirect_in.c*/
+int								handle_redirect_in(t_node *node, t_list **env);
+/*redirect_out.c*/
+int								handle_redirect_out(t_node *node, t_list **env);
 /*./Execute/builtins/*/
 int								builtin_echo(char **args);
 int								builtin_cd(char **args, t_list **env);
@@ -125,7 +129,8 @@ int								process_export_arg(char *arg, t_list **env);
 bool							is_valid(char *str);
 int								var_len(char *arg);
 t_list							*find_duplicate(char *arg, t_list **env);
-
+/* heredoc.c */
+int								handle_here_doc(t_node *node, t_list **env);
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
