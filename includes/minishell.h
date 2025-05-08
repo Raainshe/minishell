@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:52:35 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 14:57:42 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,17 +104,28 @@ void							handle_heredoc_child(int pipe_fd[2],
 									bool expand_vars);
 int								handle_heredoc_parent(int pipe_fd[2],
 									pid_t pid);
-/*execute_export_helper*/
-int								print_error(char *arg);
-void							add_arg(t_list **env, char *arg);
 /*./Execute/builtins/*/
 int								builtin_echo(char **args);
 int								builtin_cd(char **args, t_list **env);
 int								builtin_pwd(char **args);
-int								builtin_export(char **args, t_list **env);
 int								builtin_unset(char **args, t_list **env);
 int								builtin_env(t_list *env);
 int								builtin_exit(char **args);
+/*builtin_export.c*/
+int								builtin_export(char **args, t_list **env);
+char							*prepare_export_arg(char *orig_arg);
+char							*create_appended_value(char *existing,
+									char *new_value);
+bool							has_append_operator(char *str);
+/*builtin_export_helper.c*/
+int								print_error(char *arg);
+void							add_arg(t_list **env, char *arg);
+int								process_export_arg(char *arg, t_list **env);
+/*builtin_export_helper_helper.c*/
+bool							is_valid(char *str);
+int								var_len(char *arg);
+t_list							*find_duplicate(char *arg, t_list **env);
+
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 14:00:36 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 14:23:46 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,5 +122,14 @@ typedef struct s_parser_redirect
 	t_node			*redirect_node;
 	t_redirect		*redirect_data;
 }					t_parser_redirect;
+
+typedef struct s_print_export
+{
+	int				len;
+	int				variable_len;
+	int				equals_pos;
+	t_list			*current;
+	char			*content;
+}					t_print_export;
 
 #endif
