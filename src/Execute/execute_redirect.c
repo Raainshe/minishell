@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:23 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 15:38:00 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 12:48:36 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,8 @@ static int	handle_redirect_out(t_node *node, t_list **env)
  * For multiple chained heredocs, they are processed in the order they appear
  * in the command line,
 	and only the last heredoc's content is connected to STDIN.
+ * If SIGINT (Ctrl+C) is received during any heredoc,
+	all remaining heredocs are skipped.
  *
  * @param node The heredoc redirection node containing the delimiter string
 
@@ -213,16 +215,14 @@ static int	handle_here_doc(t_node *node, t_list **env)
 	{
 		redirect = (t_redirect *)heredoc_nodes[i]->data;
 		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
+		if (fd == -1)
+		{
+			if (g_signal_received == SIGINT)
+				return (130);
+			return (1);
+		}
 		if (i != 0)
-		{
-			if (fd != -1)
-				close(fd);
-		}
-		else
-		{
-			if (fd == -1)
-				return (1);
-		}
+			close(fd);
 	}
 	saved_fd = dup(STDIN_FILENO);
 	dup2(fd, STDIN_FILENO);
