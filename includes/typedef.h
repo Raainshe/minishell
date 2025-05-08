@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:26:48 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 13:55:45 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,5 +102,15 @@ typedef struct s_main_struct
 	t_list			*env;
 	bool			is_from_pipe;
 }					t_main_struct;
+
+typedef struct s_execute_pipe
+{
+	int				pipefd[2];
+	int				status;
+	pid_t			pid1;
+	pid_t			pid2;
+	void			*old_sigint_handler;
+	void			*old_sigquit_handler;
+}					t_execute_pipe;
 
 #endif
