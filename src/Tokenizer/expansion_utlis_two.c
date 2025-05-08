@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 14:22:17 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/01 11:24:40 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 15:41:12 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 bool	is_expandable_variable(char *str, int i, char quote_type, int in_quotes)
 {
 	return ((quote_type == '\"' || !in_quotes) && str[i] == '$' && str[i + 1]
-		&& (ft_isalnum(str[i + 1]) || str[i + 1] == '_'
-			|| str[i + 1] == '?'));
+		&& (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i
+				+ 1] == '?'));
 }
 
 /**

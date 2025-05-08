@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 00:22:17 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/08 14:01:45 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static t_node_type	set_redirect_type(t_token current)
  */
 static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 {
-	t_process_redirection	pr;
+	t_parser_redirect	pr;
 
 	pr.current = current_token(ctx);
 	pr.redirect_type = set_redirect_type(pr.current);

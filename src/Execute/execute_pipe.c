@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:47:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 00:01:25 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/08 13:56:40 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,28 +103,29 @@ static int	handle_fork_error(int *pipefd, pid_t pid)
  */
 int	execute_pipe(t_node *node, t_list **env)
 {
-	int		pipefd[2];
-	int		status;
-	pid_t	pid1;
-	pid_t	pid2;
+	t_execute_pipe	ep;
 
 	if (!node || !node->left || !node->right)
 		return (1);
-	if (pipe(pipefd) == -1)
+	if (pipe(ep.pipefd) == -1)
 		return (perror("minishell: pipe"), 1);
-	pid1 = fork();
-	if (pid1 < 0)
-		return (handle_fork_error(pipefd, 0));
-	if (pid1 == 0)
-		execute_left_pipe(node, pipefd, env);
-	pid2 = fork();
-	if (pid2 < 0)
-		return (handle_fork_error(pipefd, pid1));
-	if (pid2 == 0)
-		execute_right_pipe(node, pipefd, env);
-	close(pipefd[0]);
-	close(pipefd[1]);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, &status, 0);
-	return (process_exit_status(status));
+	ep.pid1 = fork();
+	if (ep.pid1 < 0)
+		return (handle_fork_error(ep.pipefd, 0));
+	if (ep.pid1 == 0)
+		execute_left_pipe(node, ep.pipefd, env);
+	ep.pid2 = fork();
+	if (ep.pid2 < 0)
+		return (handle_fork_error(ep.pipefd, ep.pid1));
+	if (ep.pid2 == 0)
+		execute_right_pipe(node, ep.pipefd, env);
+	close(ep.pipefd[0]);
+	close(ep.pipefd[1]);
+	ep.old_sigint_handler = signal(SIGINT, SIG_IGN);
+	ep.old_sigquit_handler = signal(SIGQUIT, SIG_IGN);
+	waitpid(ep.pid1, NULL, 0);
+	waitpid(ep.pid2, &ep.status, 0);
+	signal(SIGINT, ep.old_sigint_handler);
+	signal(SIGQUIT, ep.old_sigquit_handler);
+	return (process_exit_status(ep.status));
 }

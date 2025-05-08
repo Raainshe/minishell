@@ -19,7 +19,7 @@ VPATH = $(SRC_SUBDIRS)
 
 # source files
 SRCS =	minishell.c \
-		minishell_helper.c \
+		minishell_utils.c \
 		ms_split.c \
 		ms_split_helper.c \
 		ms_split_helper_helper.c \
@@ -44,6 +44,8 @@ SRCS =	minishell.c \
 		execute_pipe.c \
 		execute_redirect.c \
 		execute_redirect_helper.c \
+		redirect_in.c \
+		redirect_out.c \
 		heredoc.c \
 		builtin_pwd.c \
 		builtin_echo.c \

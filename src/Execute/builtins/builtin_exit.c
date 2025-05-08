@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 00:10:34 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/03 15:38:32 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	builtin_exit(char **args)
 {
 	int	*exit_code;
 
-	ft_putendl_fd("exit", STDOUT_FILENO);
 	exit_code = ft_exit_code_holder();
 	if (args[1])
 	{

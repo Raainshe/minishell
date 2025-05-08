@@ -3,77 +3,55 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export_helper_helper.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/01 12:35:20 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 00:22:17 by rmakoni          ###   ########.fr       */
+/*   Created: 2025/05/08 14:54:19 by ksinn             #+#    #+#             */
+/*   Updated: 2025/05/08 14:58:59 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/**
- * @brief Prints the value part of an environment variable
- * 
- * Formats the variable value for export display, adding quotes around
- * the value part and handling edge cases properly.
- *
- * @param content The environment variable string
- * @param equals_pos The position of the equals sign in the string
- * @param len The total length of the string
- */
-static void	print_value(char *content, int equals_pos, int len)
+static bool	check_char_validity(char c, char next_c, bool *found_equals,
+		int *i_ptr)
 {
-	write(STDOUT_FILENO, "=", 1);
-	write(STDOUT_FILENO, "\"", 1);
-	if (content[equals_pos + 1])
-		write(STDOUT_FILENO, content + equals_pos + 1, len - equals_pos - 1);
-	write(STDOUT_FILENO, "\"", 1);
-}
-
-/**
- * @brief Prints the environment variables in export format
- *
- * Formats and displays all environment variables in the format used
- * by the 'export' command (declare -x NAME="VALUE").
- * 
- * @param env Pointer to the environment variables list
- */
-void	print_export(t_list **env)
-{
-	int		len;
-	int		variable_len;
-	int		equals_pos;
-	t_list	*current;
-	char	*content;
-
-	current = *env;
-	while (current)
+	if (!*found_equals)
 	{
-		content = (char *)current->content;
-		len = strlen(content);
-		variable_len = var_len(content);
-		equals_pos = variable_len;
-		while (content[equals_pos] && content[equals_pos] != '=')
-			equals_pos++;
-		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		write(STDOUT_FILENO, content, variable_len);
-		if (content[equals_pos] == '=')
-			print_value(content, equals_pos, len);
-		write(STDOUT_FILENO, "\n", 1);
-		current = current->next;
+		if (c == '=')
+			*found_equals = true;
+		else if (c == '+' && next_c == '=')
+		{
+			*found_equals = true;
+			(*i_ptr)++;
+		}
+		else if (c != '_' && !ft_isalpha(c) && !ft_isdigit(c))
+			return (false);
 	}
+	else if (c == '=')
+		return (false);
+	return (true);
 }
 
-/**
- * @brief Gets the length of the variable name in an environment string
- * 
- * Calculates the length of the variable name part before any equals sign
- * or append operator (+=).
- *
- * @param arg The environment variable string
- * @return The length of the variable name
- */
+bool	is_valid(char *str)
+{
+	int		i;
+	bool	found_equals;
+
+	i = 0;
+	found_equals = false;
+	if (!str || !str[0])
+		return (false);
+	if (str[0] != '_' && !ft_isalpha(str[0]))
+		return (false);
+	while (str[i])
+	{
+		if (!check_char_validity(str[i], str[i + 1], &found_equals, &i))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 int	var_len(char *arg)
 {
 	int	i;
@@ -86,17 +64,6 @@ int	var_len(char *arg)
 	return (i);
 }
 
-/**
- * @brief Finds a duplicate variable in the environment
- *
- * Searches the environment for a variable with the same name as the
- * argument. The comparison is based on the variable name only, ignoring
- * any value part.
- *
- * @param arg The variable to find
- * @param env Pointer to the environment variables list
- * @return Pointer to the found list node or NULL if not found
- */
 t_list	*find_duplicate(char *arg, t_list **env)
 {
 	t_list	*current;
