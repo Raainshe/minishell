@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 15:36:34 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 13:51:50 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,60 +33,6 @@ static int	is_builtin(char *cmd)
 		|| ft_strncmp("exit", lower_cmd, 5) == 0)
 		return (1);
 	return (0);
-}
-
-/**
- * @brief Find the full path of a command
- * @param cmd The command to find
- * @param env The environment variables
- * @return The full path to the command or NULL if not found
- */
-// TODO: Check return ft_strdup
-static char	*find_command_path(char *cmd, t_list *env)
-{
-	char	*path_var;
-	char	**paths;
-	char	*full_path;
-	int		i;
-	char	*dir_with_slash;
-
-	if (!cmd || !env || !cmd[0])
-		return (NULL);
-	if (ft_strchr(cmd, '/'))
-		return (ft_strdup(cmd));
-	i = 0;
-	path_var = NULL;
-	while (env)
-	{
-		if (ft_strncmp("PATH=", (char *)env->content, 5) == 0)
-		{
-			path_var = (char *)env->content + 5;
-			break ;
-		}
-		env = env->next;
-	}
-	if (!path_var)
-		return (NULL);
-	paths = ft_split(path_var, ':');
-	if (!paths)
-		return (NULL);
-	gc_add_context(EXECUTOR, paths);
-	i = 0;
-	while (paths[i])
-	{
-		dir_with_slash = ft_strjoin(paths[i], "/");
-		if (!dir_with_slash)
-			return (NULL);
-		gc_add_context(EXECUTOR, dir_with_slash);
-		full_path = ft_strjoin(dir_with_slash, cmd);
-		if (!full_path)
-			return (NULL);
-		gc_add_context(EXECUTOR, full_path);
-		if (access(full_path, X_OK) == 0)
-			return (full_path);
-		i++;
-	}
-	return (NULL);
 }
 
 /**

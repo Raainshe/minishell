@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:34:13 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 13:52:35 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ int								execute_node(t_node *node, t_list **env);
 int								execute_command(t_node *node, t_list **env);
 /*execute_command_helper.c*/
 void							print_builtin_error(char *str);
+char							*find_command_path(char *cmd, t_list *env);
 /*execute_pipe.c*/
 int								execute_pipe(t_node *node, t_list **env);
 /*execute_redirect.c*/
