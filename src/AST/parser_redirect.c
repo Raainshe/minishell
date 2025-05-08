@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 15:36:10 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 14:01:45 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,33 +38,29 @@ static t_node_type	set_redirect_type(t_token current)
  */
 static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 {
-	t_token		current;
-	t_token		next_tok;
-	t_node_type	redirect_type;
-	char		*filename;
-	t_node		*redirect_node;
-	t_redirect	*redirect_data;
+	t_parser_redirect	pr;
 
-	current = current_token(ctx);
-	redirect_type = set_redirect_type(current);
-	if (redirect_type == NODE_NULL)
+	pr.current = current_token(ctx);
+	pr.redirect_type = set_redirect_type(pr.current);
+	if (pr.redirect_type == NODE_NULL)
 		return (cmd_node);
 	next_token(ctx);
-	next_tok = current_token(ctx);
-	if (next_tok.type != TOKEN_WORD)
+	pr.next_tok = current_token(ctx);
+	if (pr.next_tok.type != TOKEN_WORD)
 	{
 		parser_error(ctx, "Expected filename after redirection");
 		return (NULL);
 	}
-	filename = next_tok.content;
+	pr.filename = pr.next_tok.content;
 	next_token(ctx);
-	redirect_node = create_redirect_node(redirect_type, filename, cmd_node);
-	if (redirect_type == NODE_HERE_DOC && redirect_node)
+	pr.redirect_node = create_redirect_node(pr.redirect_type, pr.filename,
+			cmd_node);
+	if (pr.redirect_type == NODE_HERE_DOC && pr.redirect_node)
 	{
-		redirect_data = (t_redirect *)redirect_node->data;
-		redirect_data->expand_vars = !next_tok.was_quoted;
+		pr.redirect_data = (t_redirect *)pr.redirect_node->data;
+		pr.redirect_data->expand_vars = !pr.next_tok.was_quoted;
 	}
-	return (redirect_node);
+	return (pr.redirect_node);
 }
 
 /**

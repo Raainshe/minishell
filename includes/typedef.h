@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:55:45 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 14:00:36 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,5 +112,15 @@ typedef struct s_execute_pipe
 	void			*old_sigint_handler;
 	void			*old_sigquit_handler;
 }					t_execute_pipe;
+
+typedef struct s_parser_redirect
+{
+	t_token			current;
+	t_token			next_tok;
+	t_node_type		redirect_type;
+	char			*filename;
+	t_node			*redirect_node;
+	t_redirect		*redirect_data;
+}					t_parser_redirect;
 
 #endif
