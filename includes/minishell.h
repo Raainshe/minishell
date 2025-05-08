@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 16:12:28 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 15:05:47 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # include "garbage_collector.h"
+# include "get_next_line.h"
 # include "libft.h"
 # include "typedef.h"
 # include <curses.h>
@@ -104,10 +105,16 @@ void							handle_heredoc_child(int pipe_fd[2],
 									bool expand_vars);
 int								handle_heredoc_parent(int pipe_fd[2],
 									pid_t pid);
-/*redirect_in.c*/
-int								handle_redirect_in(t_node *node, t_list **env);
-/*redirect_out.c*/
-int								handle_redirect_out(t_node *node, t_list **env);
+/*execute_heredoc.c*/
+int								handle_here_doc(t_node *node, t_list **env);
+/*builtin_export_helper.c*/
+bool							is_valid(char *str);
+int								print_error(char *arg);
+void							add_arg(t_list **env, char *arg);
+/*builtin_export_helper_helper.c*/
+void							print_export(t_list **env);
+int								var_len(char *arg);
+t_list							*find_duplicate(char *arg, t_list **env);
 /*./Execute/builtins/*/
 int								builtin_echo(char **args);
 int								builtin_cd(char **args, t_list **env);
@@ -115,22 +122,6 @@ int								builtin_pwd(char **args);
 int								builtin_unset(char **args, t_list **env);
 int								builtin_env(t_list *env);
 int								builtin_exit(char **args);
-/*builtin_export.c*/
-int								builtin_export(char **args, t_list **env);
-char							*prepare_export_arg(char *orig_arg);
-char							*create_appended_value(char *existing,
-									char *new_value);
-bool							has_append_operator(char *str);
-/*builtin_export_helper.c*/
-int								print_error(char *arg);
-void							add_arg(t_list **env, char *arg);
-int								process_export_arg(char *arg, t_list **env);
-/*builtin_export_helper_helper.c*/
-bool							is_valid(char *str);
-int								var_len(char *arg);
-t_list							*find_duplicate(char *arg, t_list **env);
-/* heredoc.c */
-int								handle_here_doc(t_node *node, t_list **env);
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
@@ -175,9 +166,15 @@ void							reset_term_after_signal(void);
 int								get_signal_status(void);
 /* exit.c */
 int								*ft_exit_code_holder(void);
-/* minishell_utils.c */
-void							print_banner(void);
+/* minishell_helper.c */
 bool							is_only_spaces(char *str);
+t_list							*init_shell_environment(int **exit_code);
+char							*read_input(char *pwd, bool *is_from_pipe);
+int								process_input(char *input, t_list **env,
+									int *exit_code);
+void							handle_signals_and_cleanup(int *exit_code);
+bool							shell_iteration(t_list **env, int *exit_code,
+									char *pwd);
 
 extern char						**environ;
 extern volatile sig_atomic_t	g_signal_received;

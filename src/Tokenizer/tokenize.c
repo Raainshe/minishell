@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:51:05 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:34:15 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:17:10 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,17 @@ bool	has_quotes(char *str)
 	return (false);
 }
 
+/**
+ * @brief Initializes token structure variables
+ *
+ * Sets up the token structure with the appropriate values, including
+ * checking for quotes and expanding variables from environment.
+ *
+ * @param was_quoted Pointer to store whether content had quotes
+ * @param token The token structure being initialized
+ * @param content Pointer to the string content to process and update
+ * @param env Environment variables list for expansion
+ */
 static void	initialise_token_variables(bool *was_quoted, t_token *token,
 		char **content, t_list *env)
 {

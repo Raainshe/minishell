@@ -3,15 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:49:00 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:33:32 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:04:11 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Prints an error message for failed chdir operations
+ *
+ * Formats and displays an error message when changing directory fails,
+ * including the path that caused the error and the system error message.
+ *
+ * @param path The path that caused the chdir error
+ */
 static void	print_chdir_error(char *path)
 {
 	ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
@@ -20,6 +28,17 @@ static void	print_chdir_error(char *path)
 	ft_putendl_fd(strerror(errno), STDERR_FILENO);
 }
 
+/**
+ * @brief Updates PWD and OLDPWD environment variables
+ *
+ * Creates and exports new PWD and OLDPWD variables after a directory change.
+ * Uses the builtin_export function to update the environment.
+ *
+ * @param pwd The new current working directory path
+ * @param old_pwd The previous working directory path
+ * @param env Pointer to the environment variables list
+ * @return 0 on success, 1 on failure
+ */
 static int	update_env(char *pwd, char *old_pwd, t_list **env)
 {
 	char	*export_pwd;

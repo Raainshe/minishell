@@ -1,14 +1,28 @@
 # Minishell
 
-A simple shell implementation for 42 school.
+A robust shell implementation for 42 school that replicates many of the features found in bash.
 
 ## Features
 
-- Command execution
-- Pipes (`|`)
-- Redirections (`<`, `>`, `<<`, `>>`)
-- Support for quotes and environments
-- Built-in commands
+- Command execution with path search (`ls`, `/bin/ls`)
+- Command line history navigation
+- Pipes (`|`) to connect commands
+- Input/output redirections:
+  - Input redirection (`<`)
+  - Output redirection (`>`)
+  - Append output redirection (`>>`)
+  - Heredoc (`<<`)
+- Environment variable expansion (`$USER`, `$PWD`, `$?`)
+- Signal handling (Ctrl+C, Ctrl+D, Ctrl+\)
+- Quote handling (single quotes `'` and double quotes `"`)
+- Built-in commands:
+  - `echo` - Display a message
+  - `cd` - Change directory
+  - `pwd` - Print working directory
+  - `export` - Set environment variables
+  - `unset` - Remove environment variables
+  - `env` - Display environment variables
+  - `exit` - Exit the shell
 
 ## Building
 
@@ -18,45 +32,35 @@ make
 
 ## Usage
 
+After building the project:
+
 ```
 ./minishell
 ```
 
-## Testing
+You'll be presented with a prompt where you can enter commands.
 
-The project includes comprehensive tests for the tokenizer and garbage collector components.
-
-### Running Tests
-
-To run all tests:
+## Examples
 
 ```
-cd tests
-./run_tests.sh
+minishell> ls -la
+# Lists files in long format including hidden files
+
+minishell> echo "Hello $USER"
+# Prints Hello and your username
+
+minishell> cat file.txt | grep "pattern" | wc -l
+# Counts lines containing "pattern" in file.txt
+
+minishell> cat << EOF > output.txt
+# Start a heredoc to write multi-line content to output.txt
+
+minishell> export NAME=value
+# Set an environment variable
+
+minishell> cd ~/Documents
+# Change to Documents directory
 ```
-
-This script:
-1. Compiles all test programs
-2. Runs functionality tests
-3. Runs memory leak tests
-4. Performs Valgrind checks if available
-
-### Available Test Programs
-
-- `test_tokenizer`: Tests tokenizer functionality with various inputs
-- `test_memory_leaks`: Tests garbage collector with focus on memory management
-
-For more details about the tests, see the [tests README](tests/README.md).
-
-## Components
-
-### Tokenizer
-
-Parses input strings into tokens with appropriate types (words, pipes, redirections, etc.).
-
-### Garbage Collector
-
-Manages memory allocations with context-based tracking, allowing for controlled memory freeing.
 
 ## Authors
 

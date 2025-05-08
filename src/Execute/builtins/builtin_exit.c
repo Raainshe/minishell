@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 15:38:32 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:10:34 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,22 @@ static int	is_numeric_arg(char *str)
 	return (1);
 }
 
+/**
+ * @brief Built-in exit command implementation
+ *
+ * Terminates the shell with the specified exit code.
+ * If a numeric argument is provided, it's used as the exit code.
+ * If the argument is not numeric, exits with status 255.
+ * If too many arguments are provided, reports an error but doesn't exit.
+ *
+ * @param args Command arguments (args[0] is "exit")
+ * @return Never returns if successful; returns exit code on error
+ */
 int	builtin_exit(char **args)
 {
 	int	*exit_code;
 
+	ft_putendl_fd("exit", STDOUT_FILENO);
 	exit_code = ft_exit_code_holder();
 	if (args[1])
 	{

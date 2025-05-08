@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 14:23:46 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:37:02 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,26 +94,7 @@ typedef struct s_expansion_info
 	char			*result;
 }					t_expansion_info;
 
-typedef struct s_main_struct
-{
-	char			*input;
-	t_node			*ast;
-	int				*exit_code;
-	t_list			*env;
-	bool			is_from_pipe;
-}					t_main_struct;
-
-typedef struct s_execute_pipe
-{
-	int				pipefd[2];
-	int				status;
-	pid_t			pid1;
-	pid_t			pid2;
-	void			*old_sigint_handler;
-	void			*old_sigquit_handler;
-}					t_execute_pipe;
-
-typedef struct s_parser_redirect
+typedef struct s_process_redirection
 {
 	t_token			current;
 	t_token			next_tok;
@@ -121,15 +102,15 @@ typedef struct s_parser_redirect
 	char			*filename;
 	t_node			*redirect_node;
 	t_redirect		*redirect_data;
-}					t_parser_redirect;
+}					t_process_redirection;
 
-typedef struct s_print_export
+typedef struct s_find_command_path
 {
-	int				len;
-	int				variable_len;
-	int				equals_pos;
-	t_list			*current;
-	char			*content;
-}					t_print_export;
+	char			*path_var;
+	char			**paths;
+	char			*full_path;
+	int				i;
+	char			*direct_path;
+}					t_find_command_path;
 
 #endif

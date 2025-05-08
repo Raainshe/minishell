@@ -3,19 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:33:33 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/08 13:34:30 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:22:17 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/*
-** Duplicates at most n characters from the string s.
-** Always NUL-terminates the copied string.
-*/
+/**
+ * @brief Duplicates at most n characters from the string s
+ *
+ * Creates a new string by copying at most n characters from s.
+ * Always NUL-terminates the copied string regardless of input length.
+ * Uses garbage collection for memory management.
+ *
+ * @param s The source string to duplicate
+ * @param n Maximum number of characters to copy
+ * @return New duplicated string or NULL if allocation fails
+ */
 char	*ft_strndup(const char *s, size_t n)
 {
 	char	*result;

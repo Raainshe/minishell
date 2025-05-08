@@ -3,15 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:07:28 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 14:01:45 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:22:17 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Determines the node type for a redirection token
+ *
+ * Maps token types (TOKEN_REDIRECT_IN, TOKEN_REDIRECT_OUT, etc.)
+ * to their corresponding node types in the AST.
+ *
+ * @param current The current token being processed
+ * @return The corresponding node type or NODE_NULL if not a redirection
+ */
 static t_node_type	set_redirect_type(t_token current)
 {
 	if (current.type == TOKEN_REDIRECT_IN)
@@ -38,7 +47,7 @@ static t_node_type	set_redirect_type(t_token current)
  */
 static t_node	*process_redirection(t_parser_context *ctx, t_node *cmd_node)
 {
-	t_parser_redirect	pr;
+	t_process_redirection	pr;
 
 	pr.current = current_token(ctx);
 	pr.redirect_type = set_redirect_type(pr.current);

@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/27 11:15:42 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/08 13:53:45 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 11:39:43 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ void	print_builtin_error(char *str)
 }
 
 /**
- * @brief Get the PATH environment variable
+ * @brief Get the PATH environment variable value
  * @param env The environment variables list
- * @return The PATH string or NULL if not found
+ * @return The PATH value or NULL if not found
  */
 static char	*get_path_var(t_list *env)
 {
@@ -41,34 +41,40 @@ static char	*get_path_var(t_list *env)
 }
 
 /**
- * @brief Search for a command in the PATH directories
- * @param cmd The command to find
- * @param paths Array of directories to search in
- * @return The full path to the command or NULL if not found
+ * @brief Check if a command is a direct path
+ * @param cmd The command to check
+ * @return The duplicated command if it's a path, NULL otherwise
  */
-static char	*search_in_paths(char *cmd, char **paths)
+static char	*check_direct_path(char *cmd)
 {
-	char	*full_path;
-	char	*dir_with_slash;
-	int		i;
-
-	if (!paths)
+	if (!cmd || !cmd[0])
 		return (NULL);
-	i = 0;
-	while (paths[i])
-	{
-		dir_with_slash = ft_strjoin(paths[i], "/");
-		if (!dir_with_slash)
-			return (NULL);
-		gc_add_context(EXECUTOR, dir_with_slash);
-		full_path = ft_strjoin(dir_with_slash, cmd);
-		if (!full_path)
-			return (NULL);
-		gc_add_context(EXECUTOR, full_path);
-		if (access(full_path, X_OK) == 0)
-			return (full_path);
-		i++;
-	}
+	if (ft_strchr(cmd, '/'))
+		return (ft_strdup(cmd));
+	return (NULL);
+}
+
+/**
+ * @brief Try to find command in the specified directory
+ * @param dir Directory to search in
+ * @param cmd Command name to find
+ * @return Full path if found, NULL otherwise
+ */
+static char	*try_command_in_dir(char *dir, char *cmd)
+{
+	char	*dir_with_slash;
+	char	*full_path;
+
+	dir_with_slash = ft_strjoin(dir, "/");
+	if (!dir_with_slash)
+		return (NULL);
+	gc_add_context(EXECUTOR, dir_with_slash);
+	full_path = ft_strjoin(dir_with_slash, cmd);
+	if (!full_path)
+		return (NULL);
+	gc_add_context(EXECUTOR, full_path);
+	if (access(full_path, X_OK) == 0)
+		return (full_path);
 	return (NULL);
 }
 
@@ -80,21 +86,27 @@ static char	*search_in_paths(char *cmd, char **paths)
  */
 char	*find_command_path(char *cmd, t_list *env)
 {
-	char	*path_var;
-	char	**paths;
-	char	*full_path;
+	t_find_command_path	fcp;
 
-	if (!cmd || !env || !cmd[0])
+	if (!cmd || !env)
 		return (NULL);
-	if (ft_strchr(cmd, '/'))
-		return (ft_strdup(cmd));
-	path_var = get_path_var(env);
-	if (!path_var)
+	fcp.direct_path = check_direct_path(cmd);
+	if (fcp.direct_path)
+		return (fcp.direct_path);
+	fcp.path_var = get_path_var(env);
+	if (!fcp.path_var)
 		return (NULL);
-	paths = ft_split(path_var, ':');
-	if (!paths)
+	fcp.paths = ft_split(fcp.path_var, ':');
+	if (!fcp.paths)
 		return (NULL);
-	gc_add_context(EXECUTOR, paths);
-	full_path = search_in_paths(cmd, paths);
-	return (full_path);
+	gc_add_context(EXECUTOR, fcp.paths);
+	fcp.i = 0;
+	while (fcp.paths[fcp.i])
+	{
+		fcp.full_path = try_command_in_dir(fcp.paths[fcp.i], cmd);
+		if (fcp.full_path)
+			return (fcp.full_path);
+		fcp.i++;
+	}
+	return (NULL);
 }

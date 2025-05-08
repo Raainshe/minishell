@@ -6,13 +6,12 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:49:43 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/02 13:33:17 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/01 15:14:21 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// TODO: Error if options
 int	builtin_pwd(char **args)
 {
 	char	current_dir[PATH_MAX];

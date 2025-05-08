@@ -3,15 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:12 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/24 15:06:53 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/03 00:10:34 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/**
+ * @brief Main execution function for the AST node
+ *
+ * Executes the appropriate action based on the node type.
+ * Handles command nodes, pipe nodes, and various redirection nodes.
+ *
+ * @param node The AST node to execute
+ * @param env Pointer to the environment variables list
+ * @return Exit status of the executed command
+ */
 int	execute_node(t_node *node, t_list **env)
 {
 	int	status;

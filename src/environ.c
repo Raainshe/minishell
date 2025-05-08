@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 14:36:51 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/28 14:35:36 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/03 00:10:34 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,16 @@ char	*ft_getenv(const char *name, t_list *env)
 	return (NULL);
 }
 
+/**
+ * @brief Increments the shell level environment variable
+ * 
+ * Takes the current SHLVL environment variable string, extracts
+ * the numeric value, increments it, and creates a new SHLVL string.
+ * Shell level is capped at 999 to prevent overflow.
+ *
+ * @param shlvl_str The current SHLVL environment variable string
+ * @return New SHLVL string with incremented value or NULL on error
+ */
 static char	*ft_increment_shlvl(char *shlvl_str)
 {
 	char	*old_shlvl;
