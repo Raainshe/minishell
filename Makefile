@@ -19,6 +19,7 @@ VPATH = $(SRC_SUBDIRS)
 
 # source files
 SRCS =	minishell.c \
+		minishell_utils.c \
 		ms_split.c \
 		ms_split_helper.c \
 		ms_split_helper_helper.c \

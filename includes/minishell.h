@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:05:14 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 13:34:13 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ char							*ft_strndup(const char *s, size_t n);
 void							ft_free_tokens(char **tokens, int j);
 t_token							*ft_tokenize(char **tokens, t_list *env);
 bool							has_quotes(char *str);
-
 /* parser_utils.c */
 void							init_parser_context(t_parser_context *context,
 									t_token *tokens);
@@ -87,7 +86,6 @@ t_node							*parse_command(t_parser_context *context);
 /*parser_redirect.c*/
 t_node							*handle_redirection(t_parser_context *context,
 									t_node *command);
-
 /*executor.c*/
 int								execute_node(t_node *node, t_list **env);
 /*execute_command.c*/
@@ -108,7 +106,6 @@ int								handle_heredoc_parent(int pipe_fd[2],
 /*execute_export_helper*/
 int								print_error(char *arg);
 void							add_arg(t_list **env, char *arg);
-
 /*./Execute/builtins/*/
 int								builtin_echo(char **args);
 int								builtin_cd(char **args, t_list **env);
@@ -117,24 +114,20 @@ int								builtin_export(char **args, t_list **env);
 int								builtin_unset(char **args, t_list **env);
 int								builtin_env(t_list *env);
 int								builtin_exit(char **args);
-
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
 char							*ft_getenv(const char *name, t_list *env);
-
 /* expansion.c */
 char							*expand(char *str, t_list *env);
 char							*ft_strjoin_char(char *str, char c);
 char							*expand_variables(char *str, t_list *env);
-
 /* expansion_helper.c */
 char							*process_exit_code(char *result, int *i);
 char							*get_env_value(char *var_name, t_list *env);
 char							*extract_var_name(char *str);
 char							*process_variable(char *str, t_list *env,
 									char *result, int *i_ptr);
-
 /*expansion_utlis.c*/
 void							initialise_expand_var(int *i, int *in_quotes,
 									char *quote_type);
@@ -150,11 +143,9 @@ char							*process_var_expansion(char *str, t_list *env,
 									char *result, int *i);
 char							*append_char_to_result(char *result, char *str,
 									int *i);
-
 /*expansion_utlis_two.c*/
 bool							is_expandable_variable(char *str, int i,
 									char quote_type, int in_quotes);
-
 /* signals.c */
 void							setup_interactive_signals(void);
 void							setup_noninteractive_signals(void);
@@ -167,6 +158,9 @@ void							reset_term_after_signal(void);
 int								get_signal_status(void);
 /* exit.c */
 int								*ft_exit_code_holder(void);
+/* minishell_utils.c */
+void							print_banner(void);
+bool							is_only_spaces(char *str);
 
 extern char						**environ;
 extern volatile sig_atomic_t	g_signal_received;

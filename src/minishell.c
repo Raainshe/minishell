@@ -6,52 +6,12 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:07:07 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 13:33:25 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "minishell.h"
-
-static void	print_banner(void)
-{
-	ft_putstr_fd("\033[0;34m", 1);
-	ft_putendl_fd(" _________________________________________________________",
-		1);
-	ft_putendl_fd("|  _____            _           _                 _       |",
-		1);
-	ft_putendl_fd("| |_   _|          | |         | |               | |      |",
-		1);
-	ft_putendl_fd("|   | |  __ _  ___ | |__   ___ | | ___  _ __   __| | ___  |",
-		1);
-	ft_putstr_fd("|   | | / _` |/ _ \\| '_ \\ / _ \\| ", 1);
-	ft_putendl_fd("|/ _ \\| '_ \\ / _` |/ _ \\ |", 1);
-	ft_putendl_fd("|  _| || (_| | (_) | |_) | (_) | | (_) | | | | (_| | (_) ||",
-		1);
-	ft_putstr_fd("| |_____\\__, |\\___/|_.__/ ", 1);
-	ft_putendl_fd("\\___/|_|\\___/|_| |_|\\__,_|\\___/ |", 1);
-	ft_putendl_fd("|        __/ |                                            |",
-		1);
-	ft_putendl_fd("|       |___/                                             |",
-		1);
-	ft_putendl_fd("|_________________________________________________________|",
-		1);
-	ft_putendl_fd("by rmakoni & ksinn\n\n \033[0m", 1);
-}
-
-static bool	is_only_spaces(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (!ft_isspace(str[i]))
-			return (false);
-		i++;
-	}
-	return (true);
-}
 
 /**
  * Initialize shell environment and settings
@@ -115,48 +75,54 @@ static t_node	*parse_input(char *input, t_list *env)
 	return (ast);
 }
 
+/**
+ * Execute a command with proper signal handling
+ * Updates the exit code directly through the pointer
+ */
+static void	execute_with_signal_handling(t_node *ast, t_list **env,
+		int *exit_code)
+{
+	setup_noninteractive_signals();
+	*exit_code = execute_node(ast, env);
+	if (g_signal_received)
+	{
+		*exit_code = get_signal_status();
+		reset_term_after_signal();
+	}
+	else
+	{
+		setup_interactive_signals();
+	}
+	gc_free_context(TOKENIZER);
+	gc_free_context(AST);
+	gc_free_context(EXECUTOR);
+}
+
 int	main(void)
 {
-	char	*input;
-	t_node	*ast;
-	int		*exit_code;
-	t_list	*env;
-	bool	is_from_pipe;
+	t_main_struct	t_main;
 
-	env = init_shell(&exit_code);
+	t_main.env = init_shell(&(t_main.exit_code));
 	while (42)
 	{
-		input = get_input(&is_from_pipe);
-		if (!input)
+		t_main.input = get_input(&(t_main.is_from_pipe));
+		if (!t_main.input)
 		{
 			printf("exit\n");
 			break ;
 		}
-		if ((input[0] == '\0' || is_only_spaces(input)) && !is_from_pipe)
+		if ((t_main.input[0] == '\0' || is_only_spaces(t_main.input))
+			&& !t_main.is_from_pipe)
 		{
-			free(input);
+			free(t_main.input);
 			continue ;
 		}
-		if (!is_from_pipe)
-			add_history(input);
-		ast = parse_input(input, env);
-		if (!ast)
+		if (!t_main.is_from_pipe)
+			add_history(t_main.input);
+		t_main.ast = parse_input(t_main.input, t_main.env);
+		if (!t_main.ast)
 			continue ;
-		setup_noninteractive_signals();
-		*exit_code = execute_node(ast, &env);
-		if (g_signal_received)
-		{
-			*exit_code = get_signal_status();
-			reset_term_after_signal();
-		}
-		else
-		{
-			setup_interactive_signals();
-		}
-		gc_free_context(TOKENIZER);
-		gc_free_context(AST);
-		gc_free_context(EXECUTOR);
+		execute_with_signal_handling(t_main.ast, &t_main.env, t_main.exit_code);
 	}
-	free_gc();
-	return (*exit_code);
+	return (free_gc(), *t_main.exit_code);
 }

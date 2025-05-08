@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:12:26 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/08 13:26:48 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,14 @@ typedef struct s_expansion_info
 	int				in_quotes;
 	char			*result;
 }					t_expansion_info;
+
+typedef struct s_main_struct
+{
+	char			*input;
+	t_node			*ast;
+	int				*exit_code;
+	t_list			*env;
+	bool			is_from_pipe;
+}					t_main_struct;
 
 #endif
