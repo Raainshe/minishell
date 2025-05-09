@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/09 16:57:24 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/09 17:00:57 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	builtin_exit(char **args)
 	if (args[2] != NULL)
 	{
 		ft_putendl_fd("exit", STDOUT_FILENO);
-		ft_putstr_fd("minishell: exit: too many arguments", STDERR_FILENO);
+		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
 		*exit_code = 1;
 		return (1);
 	}
