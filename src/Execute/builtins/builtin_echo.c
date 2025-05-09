@@ -6,7 +6,7 @@
 /*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:43:31 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/09 14:49:56 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/09 19:50:09 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,16 +48,16 @@ static bool	is_n_option(char *arg)
 
 	if (arg[0] == '-' && arg[1] == 'n')
 	{
-		j = 1; 
+		j = 1;
 		while (arg[j] != '\0')
 		{
 			if (arg[j] != 'n')
-				return (false); 
+				return (false);
 			j++;
 		}
-		return (j > 1); 
+		return (j > 1);
 	}
-	return (false); 
+	return (false);
 }
 
 /**
