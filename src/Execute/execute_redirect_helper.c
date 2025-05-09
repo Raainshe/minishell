@@ -4,7 +4,7 @@
 /*   execute_redirect_helper.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                +#+#+#+#+#+   */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
 /*   Updated: 2025/05/08 12:54:24 by ksinn            ###   ########.fr       */
 /*                                                                            */
@@ -13,20 +13,14 @@
 #include "minishell.h"
 
 /**
- * @brief Prints an error message for redirection failures
+ * @brief Prints an error message for redirection failures.
  *
-
-	* This function prints a formatted error message when a redirection
-	operation fails,
-
-	* displaying the filename that caused the error along with the corresponding
-		error
- * message from the system.
+ * Displays a formatted error to `STDERR_FILENO`:
+ * "minishell: [filename]: [error_description]".
+ * Used when a file redirection operation fails.
  *
-
-	* @param redirect The redirection structure containing the filename that
-	caused the error
- * @return Always returns 1 to indicate an error occurred
+ * @param redirect Ptr to `t_redirect` with the problematic `filename`.
+ * @return Always returns 1 (error).
  */
 int	print_redirect_error(t_redirect *redirect)
 {
@@ -38,11 +32,18 @@ int	print_redirect_error(t_redirect *redirect)
 }
 
 /**
- * @brief Handles the child process for heredoc
- * @param pipe_fd The pipe file descriptors
- * @param delimiter The delimiter string that ends the heredoc
- * @param env The environment variables list for expansion
- * @param expand_vars Whether to expand variables in the heredoc
+ * @brief Handles heredoc input in the child process.
+ *
+ * Sets heredoc signal handlers. Reads lines using `readline` until `delimiter`
+ * is matched or EOF (Ctrl+D) is received. Input lines are written to `pipe_fd
+ * [1]`.
+ * Variables are expanded if `expand_vars` is true.
+ * Exits 0 on success, 130 on EOF/Ctrl+D.
+ *
+ * @param pipe_fd Pipe FDs. Child writes to `pipe_fd[1]`.
+ * @param delimiter String ending heredoc.
+ * @param env Environment variables for expansion.
+ * @param expand_vars If true, expand variables in heredoc.
  */
 void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 		bool expand_vars)
@@ -74,17 +75,31 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 }
 
 /**
- * @brief Handles the parent process for heredoc
- * @param pipe_fd The pipe file descriptors
- * @param pid The child process ID
- * @return The heredoc file descriptor, or -1 on error
+ * @brief Manages the parent process during heredoc.
+ *
+ * Ignores `SIGQUIT` while waiting for the child. Waits for child (PID `pid`)
+ * to finish heredoc input. Restores `SIGQUIT` handler.
+ * If child is signaled (esp. `SIGINT`) or exits non-zero, sets
+ * `g_signal_received` and returns -1.
+ * On successful child completion, returns read end of pipe `pipe_fd[0]`.
+ *
+ * @param pipe_fd Pipe FDs. Parent reads from `pipe_fd[0]`.
+ * @param pid PID of the child process handling heredoc.
+ * @return Read FD of pipe on success, -1 on error/signal.
  */
 int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 {
-	int	status;
+	int					status;
+	struct sigaction	sa_orig_quit;
+	struct sigaction	sa_ign_quit;
 
+	sa_ign_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_ign_quit.sa_mask);
+	sa_ign_quit.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_ign_quit, &sa_orig_quit);
 	close(pipe_fd[1]);
 	waitpid(pid, &status, 0);
+	sigaction(SIGQUIT, &sa_orig_quit, NULL);
 	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
 	{
 		close(pipe_fd[0]);
