@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:51:50 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/09 13:05:34 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,27 +43,25 @@ static int	is_builtin(char *cmd)
  */
 static int	execute_builtin(char **args, t_list **env)
 {
-	char	*lower_cmd;
+	int	len;
 
 	if (!args || !args[0])
 		return (1);
 	(void)env;
-	lower_cmd = ft_strlower(args[0]);
-	if (!lower_cmd)
-		return (0);
-	if (ft_strncmp("pwd", lower_cmd, 4) == 0)
+	len = ft_strlen(args[0]);
+	if (ft_strncmp("pwd", args[0], 4) == 0 && len == 3)
 		return (builtin_pwd(args));
-	else if (ft_strncmp("echo", lower_cmd, 5) == 0)
+	else if (ft_strncmp("echo", args[0], 5) == 0 && len == 4)
 		return (builtin_echo(args));
-	else if (ft_strncmp("exit", lower_cmd, 5) == 0)
+	else if (ft_strncmp("exit", args[0], 5) == 0 && len == 4)
 		return (builtin_exit(args));
-	else if (ft_strncmp("cd", lower_cmd, 3) == 0)
+	else if (ft_strncmp("cd", args[0], 3) == 0 && len == 2)
 		return (builtin_cd(args, env));
-	else if (ft_strncmp("env", lower_cmd, 4) == 0)
+	else if (ft_strncmp("env", args[0], 4) == 0 && len == 3)
 		return (builtin_env(*env));
-	else if (ft_strncmp("export", lower_cmd, 7) == 0)
+	else if (ft_strncmp("export", args[0], 7) == 0 && len == 6)
 		return (builtin_export(args, env));
-	else if (ft_strncmp("unset", lower_cmd, 6) == 0)
+	else if (ft_strncmp("unset", args[0], 6) == 0 && len == 5)
 		return (builtin_unset(args, env));
 	else
 		print_builtin_error(args[0]);

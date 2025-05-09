@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command_helper.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/27 11:15:42 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/08 13:53:45 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/09 13:07:19 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 void	print_builtin_error(char *str)
 {
-	ft_putstr_fd("minishell: builtin command not implemented: ", STDERR_FILENO);
-	ft_putendl_fd(str, STDERR_FILENO);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(str, STDERR_FILENO);
+	ft_putendl_fd(": command not found", STDERR_FILENO);
 }
 
 /**
