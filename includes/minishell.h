@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 16:12:28 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:06:10 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,9 @@ int								var_len(char *arg);
 t_list							*find_duplicate(char *arg, t_list **env);
 /* heredoc.c */
 int								handle_here_doc(t_node *node, t_list **env);
+void							init_heredoc_fds(t_node *node);
+int								preprocess_heredocs(t_node *node, t_list **env);
+void							close_preprocessed_heredocs(t_node *node);
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);

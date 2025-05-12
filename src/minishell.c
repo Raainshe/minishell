@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:33:25 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:06:15 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,38 @@ static t_node	*parse_input(char *input, t_list *env)
 static void	execute_with_signal_handling(t_node *ast, t_list **env,
 		int *exit_code)
 {
+	int	preprocess_result;
+
+	/* Initialize all heredoc_fd fields to -1 */
+	init_heredoc_fds(ast);
+	/* Pre-process all heredocs sequentially before executing */
 	setup_noninteractive_signals();
+	preprocess_result = preprocess_heredocs(ast, env);
+	/* Handle preprocessing errors */
+	if (preprocess_result < 0)
+	{
+		if (preprocess_result == -130)
+		{
+			/* Handle SIGINT during heredoc */
+			*exit_code = 130;
+			g_signal_received = SIGINT;
+		}
+		else
+		{
+			/* Handle other preprocessing errors */
+			*exit_code = 1;
+		}
+		/* Cleanup in case of preprocessing errors */
+		reset_term_after_signal();
+		setup_interactive_signals();
+		/* Close any preprocessed heredoc FDs */
+		close_preprocessed_heredocs(ast);
+		gc_free_context(TOKENIZER);
+		gc_free_context(AST);
+		gc_free_context(EXECUTOR);
+		return ;
+	}
+	/* Execute the command normally if preprocessing succeeded */
 	*exit_code = execute_node(ast, env);
 	if (g_signal_received)
 	{
@@ -93,6 +124,8 @@ static void	execute_with_signal_handling(t_node *ast, t_list **env,
 	{
 		setup_interactive_signals();
 	}
+	/* Close all preprocessed heredoc file descriptors */
+	close_preprocessed_heredocs(ast);
 	gc_free_context(TOKENIZER);
 	gc_free_context(AST);
 	gc_free_context(EXECUTOR);

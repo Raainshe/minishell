@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 14:23:46 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:06:05 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ typedef struct s_redirect
 {
 	char			*filename;
 	bool			expand_vars;
+	int				heredoc_fd;
 }					t_redirect;
 
 typedef struct s_parser_context

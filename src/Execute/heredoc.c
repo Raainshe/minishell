@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:35:40 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 14:06:05 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:05:54 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,84 @@
 
 /* Forward declarations */
 static void		close_heredoc_fds(int count);
+static int		handle_heredoc(char *delimiter, t_list *env, bool expand_vars);
+int				preprocess_heredocs(t_node *node, t_list **env);
+
+/**
+ * @brief Recursively processes all heredocs in the AST before execution
+ *
+ * This function traverses the AST and identifies all heredoc nodes.
+ * It processes them sequentially to avoid race conditions when reading
+ * from the terminal.
+ *
+ * @param node The root node of the AST or subtree
+ * @param env The environment variables list
+ * @return 0 on success, negative value on error (or -130 for SIGINT)
+ */
+int	preprocess_heredocs(t_node *node, t_list **env)
+{
+	t_redirect	*redirect;
+	int			result;
+
+	if (!node)
+		return (0);
+	/* First process left and right children */
+	if (node->left)
+	{
+		result = preprocess_heredocs(node->left, env);
+		if (result < 0)
+			return (result);
+	}
+	if (node->right)
+	{
+		result = preprocess_heredocs(node->right, env);
+		if (result < 0)
+			return (result);
+	}
+	/* Then process this node if it's a heredoc */
+	if (node->type == NODE_HERE_DOC)
+	{
+		redirect = (t_redirect *)node->data;
+		if (redirect->heredoc_fd == -1) /* Not yet processed */
+		{
+			redirect->heredoc_fd = handle_heredoc(redirect->filename, *env,
+					redirect->expand_vars);
+			if (redirect->heredoc_fd < 0)
+			{
+				if (redirect->heredoc_fd == -130)
+					return (-130); /* SIGINT received */
+				return (-1);       /* Other error */
+			}
+		}
+	}
+	return (0);
+}
+
+/**
+ * @brief Initializes heredoc_fd field for all redirects in the AST
+ *
+ * This must be called before preprocessing to ensure all heredoc_fd
+ * fields are set to -1 (unprocessed).
+ *
+ * @param node The root node of the AST or subtree
+ * @return void
+ */
+void	init_heredoc_fds(t_node *node)
+{
+	t_redirect	*redirect;
+
+	if (!node)
+		return ;
+	/* Recursively initialize all nodes */
+	init_heredoc_fds(node->left);
+	init_heredoc_fds(node->right);
+	/* Initialize heredoc_fd for any redirect node */
+	if (node->type == NODE_HERE_DOC && node->data)
+	{
+		redirect = (t_redirect *)node->data;
+		redirect->heredoc_fd = -1;
+	}
+}
 
 /**
  * @brief Handles the heredoc input, reading until the delimiter is encountered
@@ -178,11 +256,22 @@ static int	execute_with_heredoc(t_node *cmd_node, t_list **env, int fd)
  */
 int	handle_here_doc(t_node *node, t_list **env)
 {
-	t_node	*cmd_node;
-	int		heredoc_count;
-	t_node	*heredoc_nodes[100];
-	int		fd;
+	t_node		*cmd_node;
+	int			heredoc_count;
+	t_node		*heredoc_nodes[100];
+	int			fd;
+	t_redirect	*redirect;
 
+	/* Check if this heredoc has been pre-processed */
+	redirect = (t_redirect *)node->data;
+	if (redirect->heredoc_fd != -1)
+	{
+		/* Use the pre-processed FD */
+		cmd_node = collect_heredoc_nodes(node, heredoc_nodes, &heredoc_count);
+		fd = redirect->heredoc_fd;
+		return (execute_with_heredoc(cmd_node, env, fd));
+	}
+	/* Fall back to original implementation if not pre-processed */
 	cmd_node = collect_heredoc_nodes(node, heredoc_nodes, &heredoc_count);
 	fd = process_heredocs(heredoc_nodes, heredoc_count, env);
 	if (fd < 0)
@@ -220,5 +309,34 @@ static void	close_heredoc_fds(int count)
 	{
 		close(start_fd + i);
 		i++;
+	}
+}
+
+/**
+ * @brief Closes all preprocessed heredoc file descriptors in the AST
+ *
+ * This should be called after pipeline execution to clean up resources.
+ *
+ * @param node The root node of the AST or subtree
+ * @return void
+ */
+void	close_preprocessed_heredocs(t_node *node)
+{
+	t_redirect	*redirect;
+
+	if (!node)
+		return ;
+	/* First recursively close FDs in children */
+	close_preprocessed_heredocs(node->left);
+	close_preprocessed_heredocs(node->right);
+	/* Close any heredoc FD in this node */
+	if (node->type == NODE_HERE_DOC && node->data)
+	{
+		redirect = (t_redirect *)node->data;
+		if (redirect->heredoc_fd >= 0)
+		{
+			close(redirect->heredoc_fd);
+			redirect->heredoc_fd = -1;
+		}
 	}
 }
