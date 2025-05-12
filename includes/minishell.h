@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 16:27:13 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:20:55 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,9 @@ int								*ft_exit_code_holder(void);
 /* minishell_utils.c */
 void							print_banner(void);
 bool							is_only_spaces(char *str);
+void							cleanup_execution_resources(t_node *ast);
+t_list							*init_shell(int **exit_code);
+t_node							*parse_input(char *input, t_list *env);
 
 extern char						**environ;
 extern volatile sig_atomic_t	g_signal_received;
