@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:35:40 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 16:05:54 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:01:41 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ int	preprocess_heredocs(t_node *node, t_list **env)
 
 	if (!node)
 		return (0);
-	/* First process left and right children */
 	if (node->left)
 	{
 		result = preprocess_heredocs(node->left, env);
@@ -48,19 +47,18 @@ int	preprocess_heredocs(t_node *node, t_list **env)
 		if (result < 0)
 			return (result);
 	}
-	/* Then process this node if it's a heredoc */
 	if (node->type == NODE_HERE_DOC)
 	{
 		redirect = (t_redirect *)node->data;
-		if (redirect->heredoc_fd == -1) /* Not yet processed */
+		if (redirect->heredoc_fd == -1)
 		{
 			redirect->heredoc_fd = handle_heredoc(redirect->filename, *env,
 					redirect->expand_vars);
 			if (redirect->heredoc_fd < 0)
 			{
 				if (redirect->heredoc_fd == -130)
-					return (-130); /* SIGINT received */
-				return (-1);       /* Other error */
+					return (-130);
+				return (-1);
 			}
 		}
 	}
@@ -82,10 +80,8 @@ void	init_heredoc_fds(t_node *node)
 
 	if (!node)
 		return ;
-	/* Recursively initialize all nodes */
 	init_heredoc_fds(node->left);
 	init_heredoc_fds(node->right);
-	/* Initialize heredoc_fd for any redirect node */
 	if (node->type == NODE_HERE_DOC && node->data)
 	{
 		redirect = (t_redirect *)node->data;
@@ -106,30 +102,22 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 	pid_t	pid;
 	int		fd_result;
 
-	/* Initialize pipe_fd to prevent warnings */
 	pipe_fd[0] = -1;
 	pipe_fd[1] = -1;
-	/* Create pipe for heredoc communication */
 	if (pipe(pipe_fd) == -1)
 		return (-1);
-	/* Fork process to handle heredoc input */
 	pid = fork();
 	if (pid == -1)
 	{
-		/* Close pipe on fork error */
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
 		return (-1);
 	}
-	/* Child process: read input until delimiter */
 	if (pid == 0)
 		handle_heredoc_child(pipe_fd, delimiter, env, expand_vars);
-	/* Parent process: wait for child to finish */
 	fd_result = handle_heredoc_parent(pipe_fd, pid);
-	/* Handle error case to ensure no leaks */
 	if (fd_result == -1 && pipe_fd[0] != -1)
 	{
-		/* Ensure pipe_fd[0] is closed if parent failed */
 		close(pipe_fd[0]);
 		return (-1);
 	}
@@ -172,27 +160,21 @@ static int	process_heredocs(t_node *heredoc_nodes[100], int heredoc_count,
 	int			i;
 	int			last_fd;
 
-	/* Initialize variables */
 	i = heredoc_count - 1;
 	last_fd = -1;
 	fd = -1;
-	/* Process heredoc nodes in reverse order */
 	while (i >= 0)
 	{
 		redirect = (t_redirect *)heredoc_nodes[i]->data;
 		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
-		/* Handle errors and signal interruption */
 		if (fd == -1)
 		{
-			/* Close previously opened fd */
 			if (last_fd != -1)
 				close(last_fd);
-			/* Return special code for SIGINT */
 			if (g_signal_received == SIGINT)
 				return (-130);
 			return (-1);
 		}
-		/* If not the last heredoc, close fd after processing */
 		if (i != 0)
 		{
 			if (last_fd != -1)
@@ -201,7 +183,6 @@ static int	process_heredocs(t_node *heredoc_nodes[100], int heredoc_count,
 		}
 		i--;
 	}
-	/* Return the file descriptor for the first heredoc */
 	return (fd);
 }
 
@@ -262,24 +243,19 @@ int	handle_here_doc(t_node *node, t_list **env)
 	int			fd;
 	t_redirect	*redirect;
 
-	/* Check if this heredoc has been pre-processed */
 	redirect = (t_redirect *)node->data;
 	if (redirect->heredoc_fd != -1)
 	{
-		/* Use the pre-processed FD */
 		cmd_node = collect_heredoc_nodes(node, heredoc_nodes, &heredoc_count);
 		fd = redirect->heredoc_fd;
 		return (execute_with_heredoc(cmd_node, env, fd));
 	}
-	/* Fall back to original implementation if not pre-processed */
 	cmd_node = collect_heredoc_nodes(node, heredoc_nodes, &heredoc_count);
 	fd = process_heredocs(heredoc_nodes, heredoc_count, env);
 	if (fd < 0)
 	{
-		/* Ensure any lingering file descriptors are closed */
 		if (fd == -130)
 		{
-			/* Clean up file descriptors after Ctrl+C */
 			close_heredoc_fds(heredoc_count);
 			return (130);
 		}
@@ -301,10 +277,8 @@ static void	close_heredoc_fds(int count)
 	int	i;
 	int	start_fd;
 
-	/* Start from fd 3 (first non-standard fd) */
 	start_fd = 3;
 	i = 0;
-	/* Try to close potentially opened file descriptors */
 	while (i < count + 3)
 	{
 		close(start_fd + i);
@@ -326,10 +300,8 @@ void	close_preprocessed_heredocs(t_node *node)
 
 	if (!node)
 		return ;
-	/* First recursively close FDs in children */
 	close_preprocessed_heredocs(node->left);
 	close_preprocessed_heredocs(node->right);
-	/* Close any heredoc FD in this node */
 	if (node->type == NODE_HERE_DOC && node->data)
 	{
 		redirect = (t_redirect *)node->data;

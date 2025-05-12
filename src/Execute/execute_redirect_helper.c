@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/12 14:04:18 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:59:53 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,7 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 	saved_stdin = -1;
 	term_name = NULL;
 	setup_heredoc_signals();
-	close(pipe_fd[0]); // Child doesn't read from heredoc pipe
-	// Get the terminal name (use STDOUT as it's likely connected)
+	close(pipe_fd[0]);
 	term_name = ttyname(STDOUT_FILENO);
 	if (!term_name)
 	{
@@ -77,7 +76,6 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 	}
 	while (1)
 	{
-		// Save current stdin (might be pipe)
 		saved_stdin = dup(STDIN_FILENO);
 		if (saved_stdin == -1)
 		{
@@ -86,7 +84,6 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 			close(pipe_fd[1]);
 			exit(1);
 		}
-		// Redirect stdin to terminal
 		if (dup2(tty_fd, STDIN_FILENO) == -1)
 		{
 			perror("minishell: dup2 failed for heredoc tty->stdin");
@@ -96,27 +93,21 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 			exit(1);
 		}
 		line = readline("> ");
-		// Restore original stdin
 		if (dup2(saved_stdin, STDIN_FILENO) == -1)
 		{
 			perror("minishell: dup2 failed for heredoc saved->stdin");
-			// Attempt cleanup, but state might be bad
 			close(saved_stdin);
 			close(tty_fd);
 			close(pipe_fd[1]);
 			exit(1);
 		}
-		close(saved_stdin); // Close the duplicated handle
-		saved_stdin = -1;   // Reset for safety
+		close(saved_stdin);
+		saved_stdin = -1;
 		if (!line)
-		{
-			// EOF detected
 			break ;
-		}
 		if (ft_strlen(line) == ft_strlen(delimiter) && ft_strncmp(delimiter,
 				line, ft_strlen(delimiter)) == 0)
 		{
-			// Delimiter found
 			free(line);
 			close(pipe_fd[1]);
 			close(tty_fd);
@@ -127,7 +118,6 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 		ft_putendl_fd(line, pipe_fd[1]);
 		free(line);
 	}
-	// Clean up and exit if loop was broken by EOF (!line)
 	close(pipe_fd[1]);
 	close(tty_fd);
 	exit(130);
@@ -152,44 +142,33 @@ int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 	struct sigaction	sa_orig_quit;
 	struct sigaction	sa_ign_quit;
 
-	/* Initialize all variables to prevent uninitialized value errors */
 	status = 0;
 	memset(&sa_orig_quit, 0, sizeof(struct sigaction));
 	memset(&sa_ign_quit, 0, sizeof(struct sigaction));
-	/* Set up signal handling for SIGQUIT */
 	sa_ign_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_ign_quit.sa_mask);
 	sa_ign_quit.sa_flags = 0;
-	/* Install signal handler and save original */
 	if (sigaction(SIGQUIT, &sa_ign_quit, &sa_orig_quit) == -1)
 	{
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
 		return (-1);
 	}
-	/* Close write end of pipe */
 	close(pipe_fd[1]);
-	/* Wait for child process to finish */
 	if (waitpid(pid, &status, 0) == -1)
 	{
 		close(pipe_fd[0]);
 		sigaction(SIGQUIT, &sa_orig_quit, NULL);
 		return (-1);
 	}
-	/* Restore original signal handler */
 	sigaction(SIGQUIT, &sa_orig_quit, NULL);
-	/* Check child process status */
 	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
 	{
 		close(pipe_fd[0]);
 		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		{
 			g_signal_received = SIGINT;
-		}
 		else if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
-		{
 			g_signal_received = SIGINT;
-		}
 		return (-1);
 	}
 	return (pipe_fd[0]);
