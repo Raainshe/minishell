@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:51:04 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/09 17:00:57 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/12 16:31:35 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static void	print_exit_msg(int *exit_code)
 
 static void	print_exit_msg_two(int *exit_code, char *str)
 {
+	ft_putendl_fd("exit", STDOUT_FILENO);
 	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 	ft_putstr_fd(str, STDERR_FILENO);
 	ft_putendl_fd(": numeric argument required", STDERR_FILENO);
