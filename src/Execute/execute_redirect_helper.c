@@ -93,13 +93,33 @@ int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 	struct sigaction	sa_orig_quit;
 	struct sigaction	sa_ign_quit;
 
+	/* Initialize all variables to prevent uninitialized value errors */
+	status = 0;
+	memset(&sa_orig_quit, 0, sizeof(struct sigaction));
+	memset(&sa_ign_quit, 0, sizeof(struct sigaction));
+	/* Set up signal handling for SIGQUIT */
 	sa_ign_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_ign_quit.sa_mask);
 	sa_ign_quit.sa_flags = 0;
-	sigaction(SIGQUIT, &sa_ign_quit, &sa_orig_quit);
+	/* Install signal handler and save original */
+	if (sigaction(SIGQUIT, &sa_ign_quit, &sa_orig_quit) == -1)
+	{
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		return (-1);
+	}
+	/* Close write end of pipe */
 	close(pipe_fd[1]);
-	waitpid(pid, &status, 0);
+	/* Wait for child process to finish */
+	if (waitpid(pid, &status, 0) == -1)
+	{
+		close(pipe_fd[0]);
+		sigaction(SIGQUIT, &sa_orig_quit, NULL);
+		return (-1);
+	}
+	/* Restore original signal handler */
 	sigaction(SIGQUIT, &sa_orig_quit, NULL);
+	/* Check child process status */
 	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
 	{
 		close(pipe_fd[0]);

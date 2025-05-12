@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:35:40 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 16:38:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 12:36:56 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,21 +23,36 @@ static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
 {
 	int		pipe_fd[2];
 	pid_t	pid;
+	int		fd_result;
 
+	/* Initialize pipe_fd to prevent warnings */
+	pipe_fd[0] = -1;
+	pipe_fd[1] = -1;
+	/* Create pipe for heredoc communication */
 	if (pipe(pipe_fd) == -1)
 		return (-1);
+	/* Fork process to handle heredoc input */
 	pid = fork();
 	if (pid == -1)
 	{
+		/* Close pipe on fork error */
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
 		return (-1);
 	}
+	/* Child process: read input until delimiter */
 	if (pid == 0)
 		handle_heredoc_child(pipe_fd, delimiter, env, expand_vars);
-	else
-		return (handle_heredoc_parent(pipe_fd, pid));
-	return (-1);
+	/* Parent process: wait for child to finish */
+	fd_result = handle_heredoc_parent(pipe_fd, pid);
+	/* Handle error case to ensure no leaks */
+	if (fd_result == -1 && pipe_fd[0] != -1)
+	{
+		/* Ensure pipe_fd[0] is closed if parent failed */
+		close(pipe_fd[0]);
+		return (-1);
+	}
+	return (fd_result);
 }
 
 /**
@@ -74,22 +89,38 @@ static int	process_heredocs(t_node *heredoc_nodes[100], int heredoc_count,
 	t_redirect	*redirect;
 	int			fd;
 	int			i;
+	int			last_fd;
 
+	/* Initialize variables */
 	i = heredoc_count - 1;
+	last_fd = -1;
+	fd = -1;
+	/* Process heredoc nodes in reverse order */
 	while (i >= 0)
 	{
 		redirect = (t_redirect *)heredoc_nodes[i]->data;
 		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
+		/* Handle errors and signal interruption */
 		if (fd == -1)
 		{
+			/* Close previously opened fd */
+			if (last_fd != -1)
+				close(last_fd);
+			/* Return special code for SIGINT */
 			if (g_signal_received == SIGINT)
 				return (-130);
 			return (-1);
 		}
+		/* If not the last heredoc, close fd after processing */
 		if (i != 0)
-			close(fd);
+		{
+			if (last_fd != -1)
+				close(last_fd);
+			last_fd = fd;
+		}
 		i--;
 	}
+	/* Return the file descriptor for the first heredoc */
 	return (fd);
 }
 
