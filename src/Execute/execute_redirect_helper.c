@@ -4,13 +4,15 @@
 /*   execute_redirect_helper.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/08 12:54:24 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 14:04:18 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <fcntl.h>  // Needed for O_RDONLY
+#include <unistd.h> // Needed for ttyname, isatty? Included via minishell.h?
 
 /**
  * @brief Prints an error message for redirection failures.
@@ -49,22 +51,75 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 		bool expand_vars)
 {
 	char	*line;
+	int		tty_fd;
+	int		saved_stdin;
+	char	*term_name;
 
+	tty_fd = -1;
+	saved_stdin = -1;
+	term_name = NULL;
 	setup_heredoc_signals();
-	close(pipe_fd[0]);
+	close(pipe_fd[0]); // Child doesn't read from heredoc pipe
+	// Get the terminal name (use STDOUT as it's likely connected)
+	term_name = ttyname(STDOUT_FILENO);
+	if (!term_name)
+	{
+		perror("minishell: ttyname failed for heredoc");
+		close(pipe_fd[1]);
+		exit(1);
+	}
+	tty_fd = open(term_name, O_RDONLY);
+	if (tty_fd == -1)
+	{
+		perror("minishell: failed to open terminal for heredoc");
+		close(pipe_fd[1]);
+		exit(1);
+	}
 	while (1)
 	{
+		// Save current stdin (might be pipe)
+		saved_stdin = dup(STDIN_FILENO);
+		if (saved_stdin == -1)
+		{
+			perror("minishell: dup failed for heredoc saved_stdin");
+			close(tty_fd);
+			close(pipe_fd[1]);
+			exit(1);
+		}
+		// Redirect stdin to terminal
+		if (dup2(tty_fd, STDIN_FILENO) == -1)
+		{
+			perror("minishell: dup2 failed for heredoc tty->stdin");
+			close(saved_stdin);
+			close(tty_fd);
+			close(pipe_fd[1]);
+			exit(1);
+		}
 		line = readline("> ");
+		// Restore original stdin
+		if (dup2(saved_stdin, STDIN_FILENO) == -1)
+		{
+			perror("minishell: dup2 failed for heredoc saved->stdin");
+			// Attempt cleanup, but state might be bad
+			close(saved_stdin);
+			close(tty_fd);
+			close(pipe_fd[1]);
+			exit(1);
+		}
+		close(saved_stdin); // Close the duplicated handle
+		saved_stdin = -1;   // Reset for safety
 		if (!line)
 		{
-			close(pipe_fd[1]);
-			exit(130);
+			// EOF detected
+			break ;
 		}
 		if (ft_strlen(line) == ft_strlen(delimiter) && ft_strncmp(delimiter,
 				line, ft_strlen(delimiter)) == 0)
 		{
+			// Delimiter found
 			free(line);
 			close(pipe_fd[1]);
+			close(tty_fd);
 			exit(0);
 		}
 		if (expand_vars && ft_strchr(line, '$'))
@@ -72,6 +127,10 @@ void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 		ft_putendl_fd(line, pipe_fd[1]);
 		free(line);
 	}
+	// Clean up and exit if loop was broken by EOF (!line)
+	close(pipe_fd[1]);
+	close(tty_fd);
+	exit(130);
 }
 
 /**
