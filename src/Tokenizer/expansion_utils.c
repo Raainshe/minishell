@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:19:20 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/03 15:40:46 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:27:12 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,14 @@ char	*process_expansion_loop(char *str, t_list *env, char *result)
 	t_expansion_info	info;
 
 	init_expansion_info(&info, result);
+	// Check for tilde at the beginning of the string
+	if (str[info.i] == '~' && (!str[info.i + 1] || str[info.i + 1] == '/'
+			|| ft_isspace(str[info.i + 1])))
+	{
+		info.result = process_tilde_expansion(str, env, info.result, &info.i);
+		if (!info.result)
+			return (NULL);
+	}
 	while (str[info.i])
 	{
 		if (!info.in_quotes && (str[info.i] == '\'' || str[info.i] == '\"'))

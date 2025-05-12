@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 16:06:10 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:27:13 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ char							*process_exit_code(char *result, int *i);
 char							*get_env_value(char *var_name, t_list *env);
 char							*extract_var_name(char *str);
 char							*process_variable(char *str, t_list *env,
+									char *result, int *i_ptr);
+char							*process_tilde_expansion(char *str, t_list *env,
 									char *result, int *i_ptr);
 /*expansion_utlis.c*/
 void							initialise_expand_var(int *i, int *in_quotes,
