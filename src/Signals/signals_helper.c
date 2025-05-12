@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 12:53:14 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/08 13:23:23 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 12:50:01 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,20 @@
  * @brief Handles SIGINT signal in heredoc mode
  * @param signum The signal number (always SIGINT)
  *
- * This function sets the global signal flag, writes a newline to stderr,
- * and exits the heredoc process with status 1.
+ * This function sets the global signal flag, closes file descriptors 3-20
+ * (to be thorough in cleanup), and exits the heredoc process with status 1.
  */
 void	handle_sigint_heredoc(int signum)
 {
+	int	i;
+
 	g_signal_received = signum;
+	i = 3;
+	while (i < 20)
+	{
+		close(i);
+		i++;
+	}
 	exit(1);
 }
 

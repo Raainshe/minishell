@@ -6,11 +6,14 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:35:40 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 12:36:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 12:49:16 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/* Forward declarations */
+static void		close_heredoc_fds(int count);
 
 /**
  * @brief Handles the heredoc input, reading until the delimiter is encountered
@@ -184,9 +187,38 @@ int	handle_here_doc(t_node *node, t_list **env)
 	fd = process_heredocs(heredoc_nodes, heredoc_count, env);
 	if (fd < 0)
 	{
+		/* Ensure any lingering file descriptors are closed */
 		if (fd == -130)
+		{
+			/* Clean up file descriptors after Ctrl+C */
+			close_heredoc_fds(heredoc_count);
 			return (130);
+		}
 		return (1);
 	}
 	return (execute_with_heredoc(cmd_node, env, fd));
+}
+
+/**
+ * @brief Closes any lingering heredoc file descriptors
+ *
+ * This function is called after a signal interruption to ensure
+ * all potential file descriptors are closed.
+ *
+ * @param count The number of potential file descriptors to check
+ */
+static void	close_heredoc_fds(int count)
+{
+	int	i;
+	int	start_fd;
+
+	/* Start from fd 3 (first non-standard fd) */
+	start_fd = 3;
+	i = 0;
+	/* Try to close potentially opened file descriptors */
+	while (i < count + 3)
+	{
+		close(start_fd + i);
+		i++;
+	}
 }
