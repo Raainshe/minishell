@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 17:20:55 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 12:55:33 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,28 @@ int								execute_pipe(t_node *node, t_list **env);
 /*execute_redirect.c*/
 int								execute_redirect(t_node *node, t_list **env);
 /*execute_redirect_helper.c*/
+int								handle_heredoc_parent(int pipe_fd[2],
+									pid_t pid);
+int								setup_heredoc_terminal(void);
+int								redirect_stdin_to_tty(int tty_fd);
+void							restore_stdin(int saved_stdin);
+void							process_heredoc_line(t_process_heredoc_line *phl);
+/*execute_redirect_helper_helper.c*/
+void							clean_and_exit(int pipe_fd, int tty_fd,
+									int exit_code);
+int								setup_heredoc_signal(struct sigaction *sa_orig_quit,
+									struct sigaction *sa_ign_quit,
+									int pipe_fd[2]);
+int								wait_for_heredoc_child(pid_t pid, int *status,
+									int pipe_fd,
+									struct sigaction *sa_orig_quit);
+void							restore_heredoc_signal(struct sigaction *sa_orig_quit);
+int								process_heredoc_status(int status, int pipe_fd);
+/*execute_redirect_helper_helper_helper.c*/
 int								print_redirect_error(t_redirect *redirect);
 void							handle_heredoc_child(int pipe_fd[2],
 									char *delimiter, t_list *env,
 									bool expand_vars);
-int								handle_heredoc_parent(int pipe_fd[2],
-									pid_t pid);
 /*redirect_in.c*/
 int								handle_redirect_in(t_node *node, t_list **env);
 /*redirect_out.c*/

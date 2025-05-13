@@ -44,6 +44,8 @@ SRCS =	minishell.c \
 		execute_pipe.c \
 		execute_redirect.c \
 		execute_redirect_helper.c \
+		execute_redirect_helper_helper.c \
+		execute_redirect_helper_helper_helper.c \
 		redirect_in.c \
 		redirect_out.c \
 		heredoc.c \

@@ -6,121 +6,104 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/12 16:59:53 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 12:58:24 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <fcntl.h>  // Needed for O_RDONLY
-#include <unistd.h> // Needed for ttyname, isatty? Included via minishell.h?
 
 /**
- * @brief Prints an error message for redirection failures.
+ * @brief Sets up the terminal for heredoc input.
  *
- * Displays a formatted error to `STDERR_FILENO`:
- * "minishell: [filename]: [error_description]".
- * Used when a file redirection operation fails.
+ * Gets the terminal name and opens it for reading.
  *
- * @param redirect Ptr to `t_redirect` with the problematic `filename`.
- * @return Always returns 1 (error).
+ * @return Terminal file descriptor on success, -1 on failure.
  */
-int	print_redirect_error(t_redirect *redirect)
+int	setup_heredoc_terminal(void)
 {
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(redirect->filename, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putendl_fd(strerror(errno), STDERR_FILENO);
-	return (1);
-}
-
-/**
- * @brief Handles heredoc input in the child process.
- *
- * Sets heredoc signal handlers. Reads lines using `readline` until `delimiter`
- * is matched or EOF (Ctrl+D) is received. Input lines are written to `pipe_fd
- * [1]`.
- * Variables are expanded if `expand_vars` is true.
- * Exits 0 on success, 130 on EOF/Ctrl+D.
- *
- * @param pipe_fd Pipe FDs. Child writes to `pipe_fd[1]`.
- * @param delimiter String ending heredoc.
- * @param env Environment variables for expansion.
- * @param expand_vars If true, expand variables in heredoc.
- */
-void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
-		bool expand_vars)
-{
-	char	*line;
-	int		tty_fd;
-	int		saved_stdin;
 	char	*term_name;
+	int		tty_fd;
 
-	tty_fd = -1;
-	saved_stdin = -1;
-	term_name = NULL;
-	setup_heredoc_signals();
-	close(pipe_fd[0]);
 	term_name = ttyname(STDOUT_FILENO);
 	if (!term_name)
 	{
 		perror("minishell: ttyname failed for heredoc");
-		close(pipe_fd[1]);
-		exit(1);
+		return (-1);
 	}
 	tty_fd = open(term_name, O_RDONLY);
 	if (tty_fd == -1)
 	{
 		perror("minishell: failed to open terminal for heredoc");
-		close(pipe_fd[1]);
-		exit(1);
+		return (-1);
 	}
-	while (1)
+	return (tty_fd);
+}
+
+/**
+ * @brief Redirects standard input to the terminal.
+ *
+ * Duplicates stdin and redirects it to the terminal file descriptor.
+ *
+ * @param tty_fd Terminal file descriptor.
+ * @return Saved stdin file descriptor on success, -1 on failure.
+ */
+int	redirect_stdin_to_tty(int tty_fd)
+{
+	int	saved_stdin;
+
+	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin == -1)
 	{
-		saved_stdin = dup(STDIN_FILENO);
-		if (saved_stdin == -1)
-		{
-			perror("minishell: dup failed for heredoc saved_stdin");
-			close(tty_fd);
-			close(pipe_fd[1]);
-			exit(1);
-		}
-		if (dup2(tty_fd, STDIN_FILENO) == -1)
-		{
-			perror("minishell: dup2 failed for heredoc tty->stdin");
-			close(saved_stdin);
-			close(tty_fd);
-			close(pipe_fd[1]);
-			exit(1);
-		}
-		line = readline("> ");
-		if (dup2(saved_stdin, STDIN_FILENO) == -1)
-		{
-			perror("minishell: dup2 failed for heredoc saved->stdin");
-			close(saved_stdin);
-			close(tty_fd);
-			close(pipe_fd[1]);
-			exit(1);
-		}
-		close(saved_stdin);
-		saved_stdin = -1;
-		if (!line)
-			break ;
-		if (ft_strlen(line) == ft_strlen(delimiter) && ft_strncmp(delimiter,
-				line, ft_strlen(delimiter)) == 0)
-		{
-			free(line);
-			close(pipe_fd[1]);
-			close(tty_fd);
-			exit(0);
-		}
-		if (expand_vars && ft_strchr(line, '$'))
-			line = expand_variables(line, env);
-		ft_putendl_fd(line, pipe_fd[1]);
-		free(line);
+		perror("minishell: dup failed for heredoc saved_stdin");
+		return (-1);
 	}
-	close(pipe_fd[1]);
-	close(tty_fd);
-	exit(130);
+	if (dup2(tty_fd, STDIN_FILENO) == -1)
+	{
+		perror("minishell: dup2 failed for heredoc tty->stdin");
+		close(saved_stdin);
+		return (-1);
+	}
+	return (saved_stdin);
+}
+
+/**
+ * @brief Restores standard input from saved file descriptor.
+ *
+ * @param saved_stdin Saved stdin file descriptor.
+ */
+void	restore_stdin(int saved_stdin)
+{
+	if (dup2(saved_stdin, STDIN_FILENO) == -1)
+		perror("minishell: dup2 failed for heredoc saved->stdin");
+	close(saved_stdin);
+}
+
+/**
+ * @brief Processes a line from heredoc input.
+ *
+ * Checks if the line matches the delimiter. If not, expands variables
+ * if necessary and writes to the pipe.
+ *
+ * @param line Input line to process.
+ * @param delimiter Heredoc delimiter.
+ * @param env Environment variables list.
+ * @param expand_vars Whether to expand variables.
+ * @param pipe_fd Pipe file descriptor to write to.
+ * @param tty_fd Terminal file descriptor for cleanup.
+ */
+void	process_heredoc_line(t_process_heredoc_line *phl)
+{
+	if (ft_strlen(phl->line) == ft_strlen(phl->delimiter)
+		&& ft_strncmp(phl->delimiter, phl->line,
+			ft_strlen(phl->delimiter)) == 0)
+	{
+		free(phl->line);
+		clean_and_exit(phl->pipe_fd, phl->tty_fd, 0);
+	}
+	if (phl->expand_vars && ft_strchr(phl->line, '$'))
+		phl->line = expand_variables(phl->line, phl->env);
+	ft_putendl_fd(phl->line, phl->pipe_fd);
+	free(phl->line);
 }
 
 /**
@@ -143,33 +126,11 @@ int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 	struct sigaction	sa_ign_quit;
 
 	status = 0;
-	memset(&sa_orig_quit, 0, sizeof(struct sigaction));
-	memset(&sa_ign_quit, 0, sizeof(struct sigaction));
-	sa_ign_quit.sa_handler = SIG_IGN;
-	sigemptyset(&sa_ign_quit.sa_mask);
-	sa_ign_quit.sa_flags = 0;
-	if (sigaction(SIGQUIT, &sa_ign_quit, &sa_orig_quit) == -1)
-	{
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
+	if (setup_heredoc_signal(&sa_orig_quit, &sa_ign_quit, pipe_fd) == -1)
 		return (-1);
-	}
 	close(pipe_fd[1]);
-	if (waitpid(pid, &status, 0) == -1)
-	{
-		close(pipe_fd[0]);
-		sigaction(SIGQUIT, &sa_orig_quit, NULL);
+	if (wait_for_heredoc_child(pid, &status, pipe_fd[0], &sa_orig_quit) == -1)
 		return (-1);
-	}
-	sigaction(SIGQUIT, &sa_orig_quit, NULL);
-	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
-	{
-		close(pipe_fd[0]);
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-			g_signal_received = SIGINT;
-		else if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
-			g_signal_received = SIGINT;
-		return (-1);
-	}
-	return (pipe_fd[0]);
+	restore_heredoc_signal(&sa_orig_quit);
+	return (process_heredoc_status(status, pipe_fd[0]));
 }

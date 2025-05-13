@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 16:06:05 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 12:54:35 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,5 +132,15 @@ typedef struct s_print_export
 	t_list			*current;
 	char			*content;
 }					t_print_export;
+
+typedef struct s_process_heredoc_line
+{
+	char			*line;
+	char			*delimiter;
+	t_list			*env;
+	bool			expand_vars;
+	int				pipe_fd;
+	int				tty_fd;
+}					t_process_heredoc_line;
 
 #endif
