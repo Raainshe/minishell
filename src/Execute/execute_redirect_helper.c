@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/13 12:58:24 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:23:52 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	restore_stdin(int saved_stdin)
  * @param pipe_fd Pipe file descriptor to write to.
  * @param tty_fd Terminal file descriptor for cleanup.
  */
-void	process_heredoc_line(t_process_heredoc_line *phl)
+void	process_heredoc_line(t_proc_heredoc_line *phl)
 {
 	if (ft_strlen(phl->line) == ft_strlen(phl->delimiter)
 		&& ft_strncmp(phl->delimiter, phl->line,

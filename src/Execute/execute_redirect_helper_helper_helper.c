@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 12:45:00 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/13 12:55:56 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:23:52 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	print_redirect_error(t_redirect *redirect)
 void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
 		bool expand_vars)
 {
-	t_process_heredoc_line	phl;
+	t_proc_heredoc_line	phl;
 	int						saved_stdin;
 
 	phl.pipe_fd = pipe_fd[1];

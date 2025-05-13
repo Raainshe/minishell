@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/13 12:54:35 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:23:52 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,6 @@ typedef struct s_process_heredoc_line
 	bool			expand_vars;
 	int				pipe_fd;
 	int				tty_fd;
-}					t_process_heredoc_line;
+}					t_proc_heredoc_line;
 
 #endif
