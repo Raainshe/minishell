@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/13 13:26:05 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:31:40 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static char	*process_expansion_char2(char *str, t_list *env, char *result,
 	if (str[*i] == '$' && str[*i + 1] == '?')
 		return (process_exit_code(result, i));
 	if (str[*i] == '$' && str[*i + 1] && (ft_isalnum(str[*i + 1]) || str[*i
-			+ 1] == '_'))
+				+ 1] == '_'))
 	{
 		temp = process_variable(str, env, result, i);
 		if (!temp)
