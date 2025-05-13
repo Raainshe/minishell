@@ -6,97 +6,131 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 12:15:31 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/08 12:54:24 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:23:52 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * @brief Prints an error message for redirection failures
+ * @brief Sets up the terminal for heredoc input.
  *
-
-	* This function prints a formatted error message when a redirection
-	operation fails,
-
-	* displaying the filename that caused the error along with the corresponding
-		error
- * message from the system.
+ * Gets the terminal name and opens it for reading.
  *
-
-	* @param redirect The redirection structure containing the filename that
-	caused the error
- * @return Always returns 1 to indicate an error occurred
+ * @return Terminal file descriptor on success, -1 on failure.
  */
-int	print_redirect_error(t_redirect *redirect)
+int	setup_heredoc_terminal(void)
 {
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(redirect->filename, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putendl_fd(strerror(errno), STDERR_FILENO);
-	return (1);
-}
+	char	*term_name;
+	int		tty_fd;
 
-/**
- * @brief Handles the child process for heredoc
- * @param pipe_fd The pipe file descriptors
- * @param delimiter The delimiter string that ends the heredoc
- * @param env The environment variables list for expansion
- * @param expand_vars Whether to expand variables in the heredoc
- */
-void	handle_heredoc_child(int pipe_fd[2], char *delimiter, t_list *env,
-		bool expand_vars)
-{
-	char	*line;
-
-	setup_heredoc_signals();
-	close(pipe_fd[0]);
-	while (1)
+	term_name = ttyname(STDOUT_FILENO);
+	if (!term_name)
 	{
-		line = readline("> ");
-		if (!line)
-		{
-			close(pipe_fd[1]);
-			exit(130);
-		}
-		if (ft_strlen(line) == ft_strlen(delimiter) && ft_strncmp(delimiter,
-				line, ft_strlen(delimiter)) == 0)
-		{
-			free(line);
-			close(pipe_fd[1]);
-			exit(0);
-		}
-		if (expand_vars && ft_strchr(line, '$'))
-			line = expand_variables(line, env);
-		ft_putendl_fd(line, pipe_fd[1]);
-		free(line);
+		perror("minishell: ttyname failed for heredoc");
+		return (-1);
 	}
+	tty_fd = open(term_name, O_RDONLY);
+	if (tty_fd == -1)
+	{
+		perror("minishell: failed to open terminal for heredoc");
+		return (-1);
+	}
+	return (tty_fd);
 }
 
 /**
- * @brief Handles the parent process for heredoc
- * @param pipe_fd The pipe file descriptors
- * @param pid The child process ID
- * @return The heredoc file descriptor, or -1 on error
+ * @brief Redirects standard input to the terminal.
+ *
+ * Duplicates stdin and redirects it to the terminal file descriptor.
+ *
+ * @param tty_fd Terminal file descriptor.
+ * @return Saved stdin file descriptor on success, -1 on failure.
+ */
+int	redirect_stdin_to_tty(int tty_fd)
+{
+	int	saved_stdin;
+
+	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin == -1)
+	{
+		perror("minishell: dup failed for heredoc saved_stdin");
+		return (-1);
+	}
+	if (dup2(tty_fd, STDIN_FILENO) == -1)
+	{
+		perror("minishell: dup2 failed for heredoc tty->stdin");
+		close(saved_stdin);
+		return (-1);
+	}
+	return (saved_stdin);
+}
+
+/**
+ * @brief Restores standard input from saved file descriptor.
+ *
+ * @param saved_stdin Saved stdin file descriptor.
+ */
+void	restore_stdin(int saved_stdin)
+{
+	if (dup2(saved_stdin, STDIN_FILENO) == -1)
+		perror("minishell: dup2 failed for heredoc saved->stdin");
+	close(saved_stdin);
+}
+
+/**
+ * @brief Processes a line from heredoc input.
+ *
+ * Checks if the line matches the delimiter. If not, expands variables
+ * if necessary and writes to the pipe.
+ *
+ * @param line Input line to process.
+ * @param delimiter Heredoc delimiter.
+ * @param env Environment variables list.
+ * @param expand_vars Whether to expand variables.
+ * @param pipe_fd Pipe file descriptor to write to.
+ * @param tty_fd Terminal file descriptor for cleanup.
+ */
+void	process_heredoc_line(t_proc_heredoc_line *phl)
+{
+	if (ft_strlen(phl->line) == ft_strlen(phl->delimiter)
+		&& ft_strncmp(phl->delimiter, phl->line,
+			ft_strlen(phl->delimiter)) == 0)
+	{
+		free(phl->line);
+		clean_and_exit(phl->pipe_fd, phl->tty_fd, 0);
+	}
+	if (phl->expand_vars && ft_strchr(phl->line, '$'))
+		phl->line = expand_variables(phl->line, phl->env);
+	ft_putendl_fd(phl->line, phl->pipe_fd);
+	free(phl->line);
+}
+
+/**
+ * @brief Manages the parent process during heredoc.
+ *
+ * Ignores `SIGQUIT` while waiting for the child. Waits for child (PID `pid`)
+ * to finish heredoc input. Restores `SIGQUIT` handler.
+ * If child is signaled (esp. `SIGINT`) or exits non-zero, sets
+ * `g_signal_received` and returns -1.
+ * On successful child completion, returns read end of pipe `pipe_fd[0]`.
+ *
+ * @param pipe_fd Pipe FDs. Parent reads from `pipe_fd[0]`.
+ * @param pid PID of the child process handling heredoc.
+ * @return Read FD of pipe on success, -1 on error/signal.
  */
 int	handle_heredoc_parent(int pipe_fd[2], pid_t pid)
 {
-	int	status;
+	int					status;
+	struct sigaction	sa_orig_quit;
+	struct sigaction	sa_ign_quit;
 
-	close(pipe_fd[1]);
-	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
-	{
-		close(pipe_fd[0]);
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		{
-			g_signal_received = SIGINT;
-		}
-		else if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
-		{
-			g_signal_received = SIGINT;
-		}
+	status = 0;
+	if (setup_heredoc_signal(&sa_orig_quit, &sa_ign_quit, pipe_fd) == -1)
 		return (-1);
-	}
-	return (pipe_fd[0]);
+	close(pipe_fd[1]);
+	if (wait_for_heredoc_child(pid, &status, pipe_fd[0], &sa_orig_quit) == -1)
+		return (-1);
+	restore_heredoc_signal(&sa_orig_quit);
+	return (process_heredoc_status(status, pipe_fd[0]));
 }

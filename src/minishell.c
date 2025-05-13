@@ -6,27 +6,12 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:42 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:33:25 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:20:46 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "minishell.h"
-
-/**
- * Initialize shell environment and settings
- * Returns a pointer to the environment list
- */
-static t_list	*init_shell(int **exit_code)
-{
-	t_list	*env;
-
-	print_banner();
-	env = copy_environ(environ);
-	*exit_code = ft_exit_code_holder();
-	setup_interactive_signals();
-	return (env);
-}
 
 /**
  * Get user input from terminal or pipe
@@ -55,24 +40,36 @@ static char	*get_input(bool *is_from_pipe)
 }
 
 /**
- * Parse input string into an AST
- * Returns the root node of the AST or NULL on error
+ * Set up heredocs and handle preprocessing signals
+ * Returns preprocessing result code
  */
-static t_node	*parse_input(char *input, t_list *env)
+static int	setup_heredocs_with_signals(t_node *ast, t_list **env)
 {
-	char	**token_strings;
-	t_token	*tokens;
-	t_node	*ast;
+	int	preprocess_result;
 
-	token_strings = ft_split_tokens(input);
-	free(input);
-	if (!token_strings)
-		return (NULL);
-	tokens = ft_tokenize(token_strings, env);
-	if (!tokens)
-		return (NULL);
-	ast = parse_tokens(tokens);
-	return (ast);
+	init_heredoc_fds(ast);
+	setup_noninteractive_signals();
+	preprocess_result = preprocess_heredocs(ast, env);
+	return (preprocess_result);
+}
+
+/**
+ * Execute command and handle any signals that occur during execution
+ * Returns the appropriate exit code based on execution result
+ */
+static int	handle_command_execution(t_node *ast, t_list **env)
+{
+	int	exit_code;
+
+	exit_code = execute_node(ast, env);
+	if (g_signal_received)
+	{
+		exit_code = get_signal_status();
+		reset_term_after_signal();
+	}
+	else
+		setup_interactive_signals();
+	return (exit_code);
 }
 
 /**
@@ -82,20 +79,25 @@ static t_node	*parse_input(char *input, t_list *env)
 static void	execute_with_signal_handling(t_node *ast, t_list **env,
 		int *exit_code)
 {
-	setup_noninteractive_signals();
-	*exit_code = execute_node(ast, env);
-	if (g_signal_received)
+	int	preprocess_result;
+
+	preprocess_result = setup_heredocs_with_signals(ast, env);
+	if (preprocess_result < 0)
 	{
-		*exit_code = get_signal_status();
+		if (preprocess_result == -130)
+		{
+			*exit_code = 130;
+			g_signal_received = SIGINT;
+		}
+		else
+			*exit_code = 1;
 		reset_term_after_signal();
-	}
-	else
-	{
 		setup_interactive_signals();
+		cleanup_execution_resources(ast);
+		return ;
 	}
-	gc_free_context(TOKENIZER);
-	gc_free_context(AST);
-	gc_free_context(EXECUTOR);
+	*exit_code = handle_command_execution(ast, env);
+	cleanup_execution_resources(ast);
 }
 
 int	main(void)

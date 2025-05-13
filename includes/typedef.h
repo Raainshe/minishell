@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:49:03 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 14:23:46 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:23:52 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ typedef struct s_redirect
 {
 	char			*filename;
 	bool			expand_vars;
+	int				heredoc_fd;
 }					t_redirect;
 
 typedef struct s_parser_context
@@ -131,5 +132,15 @@ typedef struct s_print_export
 	t_list			*current;
 	char			*content;
 }					t_print_export;
+
+typedef struct s_process_heredoc_line
+{
+	char			*line;
+	char			*delimiter;
+	t_list			*env;
+	bool			expand_vars;
+	int				pipe_fd;
+	int				tty_fd;
+}					t_proc_heredoc_line;
 
 #endif

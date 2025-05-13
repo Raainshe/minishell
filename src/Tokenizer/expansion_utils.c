@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:19:20 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/05/03 15:40:46 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:21:42 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,26 +86,14 @@ char	*process_expansion_loop(char *str, t_list *env, char *result)
 	t_expansion_info	info;
 
 	init_expansion_info(&info, result);
+	result = handle_initial_tilde(str, env, &info);
+	if (!result)
+		return (NULL);
 	while (str[info.i])
 	{
-		if (!info.in_quotes && (str[info.i] == '\'' || str[info.i] == '\"'))
-			update_quote_type(&info.in_quotes, &info.quote_type, str[info.i],
-				&info.i);
-		else if (info.in_quotes && str[info.i] == info.quote_type)
-			update_quote_type_neg(&info.in_quotes, &info.quote_type, &info.i);
-		else if (is_expandable_variable(str, info.i, info.quote_type,
-				info.in_quotes))
-		{
-			info.result = process_var_expansion(str, env, info.result, &info.i);
-			if (!info.result)
-				return (NULL);
-		}
-		else
-		{
-			info.result = append_char_to_result(info.result, str, &info.i);
-			if (!info.result)
-				return (NULL);
-		}
+		result = process_expansion_char(str, env, &info);
+		if (!result)
+			return (NULL);
 	}
 	return (info.result);
 }

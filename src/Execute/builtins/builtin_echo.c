@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
+/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 12:43:31 by ksinn             #+#    #+#             */
-/*   Updated: 2025/04/29 14:34:48 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/09 19:50:09 by rmakoni          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,29 @@ static int	print_args(char **args, int start_idx)
 }
 
 /**
+ * @brief Checks if the argument is a valid -n option (e.g., "-n", "-nnn")
+ * @param arg The argument string to check
+ * @return True if it's a valid -n option, false otherwise
+ */
+static bool	is_n_option(char *arg)
+{
+	int	j;
+
+	if (arg[0] == '-' && arg[1] == 'n')
+	{
+		j = 1;
+		while (arg[j] != '\0')
+		{
+			if (arg[j] != 'n')
+				return (false);
+			j++;
+		}
+		return (j > 1);
+	}
+	return (false);
+}
+
+/**
  * @brief Print argument strings to standard output
  * @param args Command arguments (args[0] is "echo")
  * @return 0 on success, 1 on error
@@ -52,7 +75,7 @@ int	builtin_echo(char **args)
 		return (1);
 	newline = true;
 	i = 1;
-	if (args[i] && (ft_strncmp("-n", args[i], 3) == 0))
+	while (args[i] && is_n_option(args[i]))
 	{
 		newline = false;
 		i++;

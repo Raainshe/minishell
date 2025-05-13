@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 13:33:07 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 13:33:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:20:57 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,51 @@ bool	is_only_spaces(char *str)
 		i++;
 	}
 	return (true);
+}
+
+/**
+ * Clean up resources after command execution
+ */
+void	cleanup_execution_resources(t_node *ast)
+{
+	close_preprocessed_heredocs(ast);
+	gc_free_context(TOKENIZER);
+	gc_free_context(AST);
+	gc_free_context(EXECUTOR);
+}
+
+/**
+ * Initialize shell environment and settings
+ * Returns a pointer to the environment list
+ */
+t_list	*init_shell(int **exit_code)
+{
+	t_list	*env;
+
+	print_banner();
+	env = copy_environ(environ);
+	*exit_code = ft_exit_code_holder();
+	setup_interactive_signals();
+	return (env);
+}
+
+/**
+ * Parse input string into an AST
+ * Returns the root node of the AST or NULL on error
+ */
+t_node	*parse_input(char *input, t_list *env)
+{
+	char	**token_strings;
+	t_token	*tokens;
+	t_node	*ast;
+
+	token_strings = ft_split_tokens(input);
+	free(input);
+	if (!token_strings)
+		return (NULL);
+	tokens = ft_tokenize(token_strings, env);
+	if (!tokens)
+		return (NULL);
+	ast = parse_tokens(tokens);
+	return (ast);
 }

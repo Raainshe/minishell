@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmakoni <rmakoni@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 14:46:48 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/09 13:05:34 by rmakoni          ###   ########.fr       */
+/*   Updated: 2025/05/12 17:18:41 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,21 @@
 static int	is_builtin(char *cmd)
 {
 	char	*lower_cmd;
+	int		len;
 
 	if (!cmd)
 		return (0);
 	lower_cmd = ft_strlower(cmd);
+	len = ft_strlen(lower_cmd);
 	if (!lower_cmd)
 		return (0);
-	if (ft_strncmp("echo", lower_cmd, 5) == 0 || ft_strncmp("cd", lower_cmd,
-			3) == 0 || ft_strncmp("pwd", lower_cmd, 4) == 0
-		|| ft_strncmp("export", lower_cmd, 7) == 0 || ft_strncmp("unset",
-			lower_cmd, 6) == 0 || ft_strncmp("env", lower_cmd, 4) == 0
-		|| ft_strncmp("exit", lower_cmd, 5) == 0)
+	if ((ft_strncmp("echo", lower_cmd, 5) == 0 && len == 4)
+		|| (ft_strncmp("cd", lower_cmd, 3) == 0 && len == 2)
+		|| (ft_strncmp("pwd", lower_cmd, 4) == 0 && len == 3)
+		|| (ft_strncmp("export", lower_cmd, 7) == 0 && len == 6)
+		|| (ft_strncmp("unset", lower_cmd, 6) == 0 && len == 5)
+		|| (ft_strncmp("env", lower_cmd, 4) == 0 && len == 3)
+		|| (ft_strncmp("exit", lower_cmd, 5) == 0 && len == 4))
 		return (1);
 	return (0);
 }
@@ -43,28 +47,29 @@ static int	is_builtin(char *cmd)
  */
 static int	execute_builtin(char **args, t_list **env)
 {
-	int	len;
+	int		len;
+	char	*lower_cmd;
 
 	if (!args || !args[0])
 		return (1);
-	(void)env;
-	len = ft_strlen(args[0]);
-	if (ft_strncmp("pwd", args[0], 4) == 0 && len == 3)
+	lower_cmd = ft_strlower(args[0]);
+	if (!lower_cmd)
+		return (1);
+	len = ft_strlen(lower_cmd);
+	if (ft_strncmp("pwd", lower_cmd, 4) == 0 && len == 3)
 		return (builtin_pwd(args));
-	else if (ft_strncmp("echo", args[0], 5) == 0 && len == 4)
+	else if (ft_strncmp("echo", lower_cmd, 5) == 0 && len == 4)
 		return (builtin_echo(args));
-	else if (ft_strncmp("exit", args[0], 5) == 0 && len == 4)
+	else if (ft_strncmp("exit", lower_cmd, 5) == 0 && len == 4)
 		return (builtin_exit(args));
-	else if (ft_strncmp("cd", args[0], 3) == 0 && len == 2)
+	else if (ft_strncmp("cd", lower_cmd, 3) == 0 && len == 2)
 		return (builtin_cd(args, env));
-	else if (ft_strncmp("env", args[0], 4) == 0 && len == 3)
+	else if (ft_strncmp("env", lower_cmd, 4) == 0 && len == 3)
 		return (builtin_env(*env));
-	else if (ft_strncmp("export", args[0], 7) == 0 && len == 6)
+	else if (ft_strncmp("export", lower_cmd, 7) == 0 && len == 6)
 		return (builtin_export(args, env));
-	else if (ft_strncmp("unset", args[0], 6) == 0 && len == 5)
+	else if (ft_strncmp("unset", lower_cmd, 6) == 0 && len == 5)
 		return (builtin_unset(args, env));
-	else
-		print_builtin_error(args[0]);
 	return (0);
 }
 

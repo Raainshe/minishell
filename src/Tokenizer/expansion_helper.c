@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 12:04:13 by rmakoni           #+#    #+#             */
-/*   Updated: 2025/04/22 14:38:47 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/12 16:27:12 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,5 +108,32 @@ char	*process_variable(char *str, t_list *env, char *result, int *i_ptr)
 		return (NULL);
 	gc_add_context(TOKENIZER, temp);
 	*i_ptr += ft_strlen(var_name) + 1;
+	return (temp);
+}
+
+/**
+ * @brief Process tilde expansion at the beginning of a string
+ * @param str String being processed
+ * @param env Environment list
+ * @param result Current result string
+ * @param i_ptr Pointer to current index (will be updated)
+ * @return Updated result string or NULL on failure
+ */
+char	*process_tilde_expansion(char *str, t_list *env, char *result,
+		int *i_ptr)
+{
+	char	*temp;
+	char	*home_value;
+
+	if (*i_ptr != 0 || !str || !str[0])
+		return (result);
+	home_value = get_env_value("HOME", env);
+	if (!home_value)
+		home_value = "";
+	temp = ft_strjoin(result, home_value);
+	if (!temp)
+		return (NULL);
+	gc_add_context(TOKENIZER, temp);
+	(*i_ptr)++;
 	return (temp);
 }

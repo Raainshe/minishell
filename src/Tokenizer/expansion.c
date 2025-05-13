@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 14:20:38 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/03 15:41:00 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:31:40 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * @param i Pointer to current position in string
  * @return Updated result string or NULL on failure
  */
-static char	*process_expansion_char(char *str, t_list *env, char *result,
+static char	*process_expansion_char2(char *str, t_list *env, char *result,
 		int *i)
 {
 	char	*temp;
@@ -64,7 +64,7 @@ char	*expand_variables(char *str, t_list *env)
 	i = 0;
 	while (str[i])
 	{
-		result = process_expansion_char(str, env, result, &i);
+		result = process_expansion_char2(str, env, result, &i);
 		if (!result)
 			return (NULL);
 	}

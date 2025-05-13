@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/08 16:12:28 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:30:19 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,30 @@ int								execute_pipe(t_node *node, t_list **env);
 /*execute_redirect.c*/
 int								execute_redirect(t_node *node, t_list **env);
 /*execute_redirect_helper.c*/
+int								handle_heredoc_parent(int pipe_fd[2],
+									pid_t pid);
+int								setup_heredoc_terminal(void);
+int								redirect_stdin_to_tty(int tty_fd);
+void							restore_stdin(int saved_stdin);
+void							process_heredoc_line(t_proc_heredoc_line *phl);
+/*execute_redirect_helper_helper.c*/
+void							clean_and_exit(int pipe_fd, int tty_fd,
+									int exit_code);
+int								setup_heredoc_signal(struct sigaction
+									*sa_orig_quit,
+									struct sigaction *sa_ign_quit,
+									int pipe_fd[2]);
+int								wait_for_heredoc_child(pid_t pid, int *status,
+									int pipe_fd,
+									struct sigaction *sa_orig_quit);
+void							restore_heredoc_signal(struct sigaction
+									*sa_orig_quit);
+int								process_heredoc_status(int status, int pipe_fd);
+/*execute_redirect_helper_helper_helper.c*/
 int								print_redirect_error(t_redirect *redirect);
 void							handle_heredoc_child(int pipe_fd[2],
 									char *delimiter, t_list *env,
 									bool expand_vars);
-int								handle_heredoc_parent(int pipe_fd[2],
-									pid_t pid);
 /*redirect_in.c*/
 int								handle_redirect_in(t_node *node, t_list **env);
 /*redirect_out.c*/
@@ -131,6 +149,21 @@ int								var_len(char *arg);
 t_list							*find_duplicate(char *arg, t_list **env);
 /* heredoc.c */
 int								handle_here_doc(t_node *node, t_list **env);
+/* heredoc_helper.c */
+int								preprocess_heredocs(t_node *node, t_list **env);
+void							close_heredoc_fds(int count);
+int								handle_heredoc(char *delimiter, t_list *env,
+									bool expand_vars);
+int								process_heredoc_node(t_node *node,
+									t_list **env);
+int								traverse_tree_nodes(t_node *node, t_list **env);
+/* heredoc_helper_helper.c */
+void							init_heredoc_fds(t_node *node);
+void							close_preprocessed_heredocs(t_node *node);
+t_node							*collect_heredoc_nodes(t_node *node,
+									t_node *heredoc_nodes[100],
+									int *heredoc_count);
+int								handle_heredoc_error(int last_fd);
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
@@ -145,6 +178,8 @@ char							*get_env_value(char *var_name, t_list *env);
 char							*extract_var_name(char *str);
 char							*process_variable(char *str, t_list *env,
 									char *result, int *i_ptr);
+char							*process_tilde_expansion(char *str, t_list *env,
+									char *result, int *i_ptr);
 /*expansion_utlis.c*/
 void							initialise_expand_var(int *i, int *in_quotes,
 									char *quote_type);
@@ -154,8 +189,6 @@ void							update_quote_type_neg(int *in_quotes,
 									char *quote_type, int *i);
 char							*process_expansion_loop(char *str, t_list *env,
 									char *result);
-void							init_expansion_info(t_expansion_info *info,
-									char *result);
 char							*process_var_expansion(char *str, t_list *env,
 									char *result, int *i);
 char							*append_char_to_result(char *result, char *str,
@@ -163,6 +196,15 @@ char							*append_char_to_result(char *result, char *str,
 /*expansion_utlis_two.c*/
 bool							is_expandable_variable(char *str, int i,
 									char quote_type, int in_quotes);
+void							init_expansion_info(t_expansion_info *info,
+									char *result);
+char							*handle_initial_tilde(char *str, t_list *env,
+									t_expansion_info *info);
+char							*handle_quotes(char *str,
+									t_expansion_info *info);
+char							*process_expansion_char(char *str, t_list *env,
+									t_expansion_info *info);
+
 /* signals.c */
 void							setup_interactive_signals(void);
 void							setup_noninteractive_signals(void);
@@ -178,6 +220,9 @@ int								*ft_exit_code_holder(void);
 /* minishell_utils.c */
 void							print_banner(void);
 bool							is_only_spaces(char *str);
+void							cleanup_execution_resources(t_node *ast);
+t_list							*init_shell(int **exit_code);
+t_node							*parse_input(char *input, t_list *env);
 
 extern char						**environ;
 extern volatile sig_atomic_t	g_signal_received;
