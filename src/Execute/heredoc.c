@@ -6,143 +6,49 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:35:40 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/12 17:01:41 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:15:26 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* Forward declarations */
-static void		close_heredoc_fds(int count);
-static int		handle_heredoc(char *delimiter, t_list *env, bool expand_vars);
-int				preprocess_heredocs(t_node *node, t_list **env);
-
 /**
- * @brief Recursively processes all heredocs in the AST before execution
+ * @brief Processes a single heredoc and returns its file descriptor
  *
- * This function traverses the AST and identifies all heredoc nodes.
- * It processes them sequentially to avoid race conditions when reading
- * from the terminal.
- *
- * @param node The root node of the AST or subtree
+ * @param node The heredoc node to process
  * @param env The environment variables list
- * @return 0 on success, negative value on error (or -130 for SIGINT)
+ * @return The file descriptor, or negative value on error
  */
-int	preprocess_heredocs(t_node *node, t_list **env)
+static int	process_single_heredoc(t_node *node, t_list **env)
 {
 	t_redirect	*redirect;
-	int			result;
+	int			fd;
 
-	if (!node)
+	redirect = (t_redirect *)node->data;
+	fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
+	return (fd);
+}
+
+/**
+ * @brief Manages file descriptors between heredoc processing
+ *
+ * @param fd The current file descriptor
+ * @param last_fd The previous file descriptor
+ * @param is_last Whether this is the last heredoc in the chain
+ * @return The file descriptor to be returned or -1 on error
+ */
+static int	manage_heredoc_fds(int fd, int *last_fd, bool is_last)
+{
+	if (fd == -1)
+		return (handle_heredoc_error(*last_fd));
+	if (!is_last)
+	{
+		if (*last_fd != -1)
+			close(*last_fd);
+		*last_fd = fd;
 		return (0);
-	if (node->left)
-	{
-		result = preprocess_heredocs(node->left, env);
-		if (result < 0)
-			return (result);
 	}
-	if (node->right)
-	{
-		result = preprocess_heredocs(node->right, env);
-		if (result < 0)
-			return (result);
-	}
-	if (node->type == NODE_HERE_DOC)
-	{
-		redirect = (t_redirect *)node->data;
-		if (redirect->heredoc_fd == -1)
-		{
-			redirect->heredoc_fd = handle_heredoc(redirect->filename, *env,
-					redirect->expand_vars);
-			if (redirect->heredoc_fd < 0)
-			{
-				if (redirect->heredoc_fd == -130)
-					return (-130);
-				return (-1);
-			}
-		}
-	}
-	return (0);
-}
-
-/**
- * @brief Initializes heredoc_fd field for all redirects in the AST
- *
- * This must be called before preprocessing to ensure all heredoc_fd
- * fields are set to -1 (unprocessed).
- *
- * @param node The root node of the AST or subtree
- * @return void
- */
-void	init_heredoc_fds(t_node *node)
-{
-	t_redirect	*redirect;
-
-	if (!node)
-		return ;
-	init_heredoc_fds(node->left);
-	init_heredoc_fds(node->right);
-	if (node->type == NODE_HERE_DOC && node->data)
-	{
-		redirect = (t_redirect *)node->data;
-		redirect->heredoc_fd = -1;
-	}
-}
-
-/**
- * @brief Handles the heredoc input, reading until the delimiter is encountered
- * @param delimiter The delimiter string that ends the heredoc
- * @param env The environment variables list for expansion
- * @param expand_vars Whether to expand variables in the heredoc content
- * @return The file descriptor to read from, or -1 on error
- */
-static int	handle_heredoc(char *delimiter, t_list *env, bool expand_vars)
-{
-	int		pipe_fd[2];
-	pid_t	pid;
-	int		fd_result;
-
-	pipe_fd[0] = -1;
-	pipe_fd[1] = -1;
-	if (pipe(pipe_fd) == -1)
-		return (-1);
-	pid = fork();
-	if (pid == -1)
-	{
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		return (-1);
-	}
-	if (pid == 0)
-		handle_heredoc_child(pipe_fd, delimiter, env, expand_vars);
-	fd_result = handle_heredoc_parent(pipe_fd, pid);
-	if (fd_result == -1 && pipe_fd[0] != -1)
-	{
-		close(pipe_fd[0]);
-		return (-1);
-	}
-	return (fd_result);
-}
-
-/**
- * @brief Collects all heredoc nodes into an array
- * @param node The starting node
- * @param heredoc_nodes Array to store the collected heredoc nodes
- * @return The command node after all heredoc nodes
- */
-static t_node	*collect_heredoc_nodes(t_node *node, t_node *heredoc_nodes[100],
-		int *heredoc_count)
-{
-	t_node	*cmd_node;
-
-	*heredoc_count = 0;
-	cmd_node = node;
-	while (cmd_node && cmd_node->type == NODE_HERE_DOC)
-	{
-		heredoc_nodes[(*heredoc_count)++] = cmd_node;
-		cmd_node = cmd_node->left;
-	}
-	return (cmd_node);
+	return (fd);
 }
 
 /**
@@ -155,32 +61,22 @@ static t_node	*collect_heredoc_nodes(t_node *node, t_node *heredoc_nodes[100],
 static int	process_heredocs(t_node *heredoc_nodes[100], int heredoc_count,
 		t_list **env)
 {
-	t_redirect	*redirect;
-	int			fd;
-	int			i;
-	int			last_fd;
+	int		i;
+	int		last_fd;
+	int		fd;
+	int		result;
+	bool	is_last;
 
 	i = heredoc_count - 1;
 	last_fd = -1;
 	fd = -1;
 	while (i >= 0)
 	{
-		redirect = (t_redirect *)heredoc_nodes[i]->data;
-		fd = handle_heredoc(redirect->filename, *env, redirect->expand_vars);
-		if (fd == -1)
-		{
-			if (last_fd != -1)
-				close(last_fd);
-			if (g_signal_received == SIGINT)
-				return (-130);
-			return (-1);
-		}
-		if (i != 0)
-		{
-			if (last_fd != -1)
-				close(last_fd);
-			last_fd = fd;
-		}
+		fd = process_single_heredoc(heredoc_nodes[i], env);
+		is_last = (i == 0);
+		result = manage_heredoc_fds(fd, &last_fd, is_last);
+		if (result != 0 || is_last)
+			return (result);
 		i--;
 	}
 	return (fd);
@@ -262,53 +158,4 @@ int	handle_here_doc(t_node *node, t_list **env)
 		return (1);
 	}
 	return (execute_with_heredoc(cmd_node, env, fd));
-}
-
-/**
- * @brief Closes any lingering heredoc file descriptors
- *
- * This function is called after a signal interruption to ensure
- * all potential file descriptors are closed.
- *
- * @param count The number of potential file descriptors to check
- */
-static void	close_heredoc_fds(int count)
-{
-	int	i;
-	int	start_fd;
-
-	start_fd = 3;
-	i = 0;
-	while (i < count + 3)
-	{
-		close(start_fd + i);
-		i++;
-	}
-}
-
-/**
- * @brief Closes all preprocessed heredoc file descriptors in the AST
- *
- * This should be called after pipeline execution to clean up resources.
- *
- * @param node The root node of the AST or subtree
- * @return void
- */
-void	close_preprocessed_heredocs(t_node *node)
-{
-	t_redirect	*redirect;
-
-	if (!node)
-		return ;
-	close_preprocessed_heredocs(node->left);
-	close_preprocessed_heredocs(node->right);
-	if (node->type == NODE_HERE_DOC && node->data)
-	{
-		redirect = (t_redirect *)node->data;
-		if (redirect->heredoc_fd >= 0)
-		{
-			close(redirect->heredoc_fd);
-			redirect->heredoc_fd = -1;
-		}
-	}
 }

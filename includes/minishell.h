@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/13 12:55:33 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:15:54 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,9 +147,21 @@ int								var_len(char *arg);
 t_list							*find_duplicate(char *arg, t_list **env);
 /* heredoc.c */
 int								handle_here_doc(t_node *node, t_list **env);
-void							init_heredoc_fds(t_node *node);
+/* heredoc_helper.c */
 int								preprocess_heredocs(t_node *node, t_list **env);
+void							close_heredoc_fds(int count);
+int								handle_heredoc(char *delimiter, t_list *env,
+									bool expand_vars);
+int								process_heredoc_node(t_node *node,
+									t_list **env);
+int								traverse_tree_nodes(t_node *node, t_list **env);
+/* heredoc_helper_helper.c */
+void							init_heredoc_fds(t_node *node);
 void							close_preprocessed_heredocs(t_node *node);
+t_node							*collect_heredoc_nodes(t_node *node,
+									t_node *heredoc_nodes[100],
+									int *heredoc_count);
+int								handle_heredoc_error(int last_fd);
 /* environ.c */
 t_list							*copy_environ(char **environ);
 char							**convert_env_to_array(t_list *env);
