@@ -6,7 +6,7 @@
 /*   By: ksinn <ksinn@student.42heilbronn.de>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 17:18:57 by ksinn             #+#    #+#             */
-/*   Updated: 2025/05/13 13:15:54 by ksinn            ###   ########.fr       */
+/*   Updated: 2025/05/13 13:21:20 by ksinn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,8 +187,6 @@ void							update_quote_type_neg(int *in_quotes,
 									char *quote_type, int *i);
 char							*process_expansion_loop(char *str, t_list *env,
 									char *result);
-void							init_expansion_info(t_expansion_info *info,
-									char *result);
 char							*process_var_expansion(char *str, t_list *env,
 									char *result, int *i);
 char							*append_char_to_result(char *result, char *str,
@@ -196,6 +194,15 @@ char							*append_char_to_result(char *result, char *str,
 /*expansion_utlis_two.c*/
 bool							is_expandable_variable(char *str, int i,
 									char quote_type, int in_quotes);
+void							init_expansion_info(t_expansion_info *info,
+									char *result);
+char							*handle_initial_tilde(char *str, t_list *env,
+									t_expansion_info *info);
+char							*handle_quotes(char *str,
+									t_expansion_info *info);
+char							*process_expansion_char(char *str, t_list *env,
+									t_expansion_info *info);
+
 /* signals.c */
 void							setup_interactive_signals(void);
 void							setup_noninteractive_signals(void);
